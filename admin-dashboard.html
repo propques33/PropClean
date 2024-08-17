@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Rubik', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #111;
+            color: #FFF;
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            z-index: 1;
+        }
+
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #FDFDFD;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 30px;
+            color: #FFF;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 900px;
+            margin: 50px auto;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 18px;
+        }
+
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #7243CD;
+            color: #FFF;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #402773;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        #reset-button {
+            color: #FDFDFD;
+            background-color: #7243CD;
+            border: 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 20px;
+            text-align: center;
+            font-family: 'Rubik', sans-serif;
+            margin-top: 10px;
+            display: block;
+        }
+
+        #reset-button:hover {
+            background-color: #402773;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="land.html">Homepage</a>
+        <a href="#" id="adminDashboardLink" style="display: none;">Admin Dashboard</a>
+        <a href="#" id="logoutBtn">Logout</a>
+    </div>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <div class="section">
+            <h2>Invite User</h2>
+            <form id="invite-user-form">
+                <label for="invite-user-email">Email:</label>
+                <input type="email" id="invite-user-email" required>
+                <button type="submit">Invite User</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Add New Task</h2>
+            <form id="add-task-form">
+                <label for="office-select">Select Office:</label>
+                <select id="office-select" required>
+                    <option value="Cubispace">Cubispace</option>
+                    <option value="Karyasthal">Karyasthal</option>
+                    <option value="Worqspot">Worqspot</option>
+                    <option value="Workdesq">Workdesq</option>
+                    <option value="Workvia">Workvia</option>
+                    <option value="sso">Sapna Sangeeta</option>
+                </select>
+                <label for="task-name">Task Name:</label>
+                <input type="text" id="task-name" required>
+                <label for="task-date">Date:</label>
+                <input type="date" id="task-date" required>
+                <label for="task-time">Time:</label>
+                <input type="time" id="task-time" required>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Remove User</h2>
+            <form id="remove-user-form">
+                <label for="remove-user-email">Email:</label>
+                <input type="email" id="remove-user-email" required>
+                <button type="submit">Remove User</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>View Reports</h2>
+            <button onclick="navigateTo('reports.html')">See Weekly Report</button>
+        </div>
+        <button id="reset-button">Reset All Tasks</button>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        function openNav() {
+            document.getElementById("sidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+        }
+
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
+            authDomain: "propclean.firebaseapp.com",
+            databaseURL: "https://propclean-default-rtdb.firebaseio.com",
+            projectId: "propclean",
+            storageBucket: "propclean.appspot.com",
+            messagingSenderId: "795234019311",
+            appId: "1:795234019311:web:369566b90b91139164781a",
+            measurementId: "G-CE3LFP4HSJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Function to reset the status of all tasks to 'incomplete'
+        async function resetAllTasks() {
+            const nodes = ['Cubispace', 'Karyasthal', 'Workdesq', 'Workvia', 'sso','Worqspot'];
+
+            for (let node of nodes) {
+                const tasksRef = database.ref(node);
+                tasksRef.once('value', snapshot => {
+                    if (snapshot.exists()) {
+                        snapshot.forEach(childSnapshot => {
+                            const taskKey = childSnapshot.key;
+                            database.ref(`${node}/${taskKey}/status`).set('incomplete');
+                        });
+                    }
+                });
+            }
+            alert("All tasks have been reset to 'incomplete'");
+        }
+
+        // Event listener for the reset button
+        document.getElementById('reset-button').addEventListener('click', resetAllTasks);
+
+        // Function to add a new task to the selected office
+        document.getElementById('add-task-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const office = document.getElementById('office-select').value;
+            const taskName = document.getElementById('task-name').value;
+            const taskDate = document.getElementById('task-date').value;
+            const taskTime = document.getElementById('task-time').value;
+
+            const newTask = {
+                task: taskName,
+                date: taskDate,
+                time: taskTime,
+                status: 'incomplete'
+            };
+
+            const newTaskRef = database.ref(`${office}`).push();
+            newTaskRef.set(newTask)
+                .then(() => {
+                    alert('Task added successfully');
+                    document.getElementById('add-task-form').reset();
+                })
+                .catch(error => {
+                    console.error('Error adding task:', error);
+                    alert('Error adding task');
+                });
+        });
+    </script>
+</body>
+</html>

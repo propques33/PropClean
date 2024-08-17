@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+            <link rel="manifest" href="/site.webmanifest">
+            
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div id="splash-screen">
+    <div id="sp">
+      <img src="propimg.png" class="img" alt="PropClean Logo">
+      <h3 class="head bold">Prop Clean</h3>
+      <h3 class="tag">Clean Spaces, Compliant Places</h3>
+    </div>
+  </div>
+  <select id="languageSelector">
+    <option value="en">English</option>
+    <option value="hi">Hindi</option>
+    <!-- Add more languages as needed -->
+  </select>
+  <div class="login-container">
+    <div id="main">
+      <div class="head" data-translate>Sign In</div>
+        <div class="floating-label">
+          <input type="text" id="email" placeholder="" required/>
+          <label for="email" data-translate>Email</label>
+        </div>
+        <div class="floating-label">
+          <input type="password" id="password" placeholder="" required/>
+          <label for="password" data-translate>Password</label>
+        </div>
+          <div class='check'>
+              <input
+                  type='checkbox'
+                  id="checkbox"
+                  checked={rememberMe}
+              />
+              <label for="checkbox" data-translate>Remember me</label>
+          </div>
+        <button id="submit" class="slide" >Submit</button>
+        <p id="forgot-password" ><a href="#" data-translate>Forgot Password?</a></p> 
+        <h3 class="continue" data-translate>Continue with</h3>
+        <div class="center">
+          <button id="google-sign-in"  class="google-sign-button" alt="signin">
+            <img src="google.png" alt="icon">
+          </button>
+        </div>
+        <p class="or" data-translate><span>Or</span></p>
+        <h3 class="acc" data-translate="Don't Have an account">Don't have an account? </h3>
+        <button id="sign-up" >Sign Up</button>
+      
+      <!-- Added Forgot Password -->
+    </div>
+
+    <div id="create-acct">
+      <div class="head" data-translate>Create an Account</div>
+      <div class="floating-label">
+        <input type="text" id="email-signup" placeholder="" required/>
+        <label for="email-signup" data-translate>Email</label>
+      </div>
+      <div class="floating-label">
+        <input type="text" id="confirm-email-signup" placeholder="" required/>
+        <label for="confirm-email-signup" data-translate>Confirm Email</label>
+      </div>
+      <div class="floating-label">
+        <input type="password" id="password-signup" placeholder="" required/>
+        <label for="password-signup" data-translate>Password</label>
+      </div>
+      <div class="floating-label">
+        <input type="password" id="confirm-password-signup" placeholder="" required/>
+        <label for="confirm-password-signup" data-translate>Confirm Password</label>
+      </div>
+      <select id="office-signup">
+        <option value="" data-translate>Select Office</option>
+        <option value="workviaa" data-translate>Workviaa</option>
+        <option value="workdesq" data-translate>Workdesq</option>
+        <option value="worqspot" data-translate>Worqspot</option>
+        <option value="sso" data-translate>Sapna Sangeeta</option>
+        <option value="cubispace" data-translate>Cubispace</option>
+        <option value="karyasthal" data-translate>Karyasthal</option>
+      </select>
+      
+      <button id="create-acct-btn" data-translate>Create Account</button>
+      <button id="google-sign-up" >Sign up with <img src="google.png" alt="icon"></button>
+      <div class="rt"><span data-translate>Already Have an account? </span><button id="return-btn">Login</button></div>
+    </div>
+  </div>
+  <!-- <script>
+    function redirectToSignup() {
+  const container = document.querySelector('.signin-container');
+  container.style.opacity = '0';
+  
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 500); 
+}
+
+  </script> -->
+<script>
+  const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
+
+document.getElementById('languageSelector').addEventListener('change', function() {
+  const selectedLanguage = this.value;
+  localStorage.setItem('preferredLanguage', selectedLanguage);
+  translatePage(selectedLanguage);
+});
+
+function getPreferredLanguage() {
+      return localStorage.getItem('preferredLanguage') || 'en';
+    }
+
+async function translatePage(targetLanguage) {
+  const elementsToTranslate = document.querySelectorAll('[data-translate]');
+  elementsToTranslate.forEach(async (element) => {
+    const text = element.innerText;
+    const translatedText = await fetchTranslation(text, targetLanguage);
+    element.innerText = translatedText;
+  });
+}
+
+async function fetchTranslation(text, targetLanguage) {
+  const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      q: text,
+      target: targetLanguage,
+    })
+  });
+  const data = await response.json();
+  return data.data.translations[0].translatedText;
+}
+document.addEventListener('DOMContentLoaded', () => {
+      const preferredLanguage = getPreferredLanguage();
+      document.getElementById('languageSelector').value = preferredLanguage;
+      translatePage(preferredLanguage);
+    });
+</script>
+  <script type="module" src="script.js"></script>
+</body>
+</html>

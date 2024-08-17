@@ -1,0 +1,39 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Rubik', sans-serif;
+    background-color: hsl(0, 0%, 100%);
+    color: #0e0d0c;
+    user-select: none;
+}
+
+/* .container {
+    display: flex;
+    flex-direction: column;
+    max-width: 320px;
+    margin: 30px auto;
+} */
+
+/* img {
+    width: 150px;
+    margin: 0 auto;
+} */
+
+
+/* input {
+    color: #7243CD;
+    background-color: #e3e4e7;
+    border:2px;
+    border-color: #7243CD;
+    border: 0;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Rubik', sans-serif;
+    margin: 10px 0;
+    flex-wrap: wrap;
+} */
+.logo {
+    border-radius: 100px;
+}

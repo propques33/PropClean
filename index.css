@@ -1,0 +1,43 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+@font-face {
+    font-family: mulish;
+    src: url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+}
+html, body {
+    font-family: 'mulish','Rubik', sans-serif;
+    background-color: #FFFFFF;
+    color: #000000;
+    user-select: none;
+}
+
+button {
+    color: #FDFDFD;
+    background-color: #7243CD;
+    border: 0;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Rubik', sans-serif;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #402773;
+    cursor: pointer;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 320px;
+    margin: 30px auto;
+}
+.head{
+    text-align: center;
+    font-size: 30px;
+    padding: 10px;
+}

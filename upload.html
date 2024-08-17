@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="upload.css">
+    <title>Real-time Image Capture and Upload to Firebase</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Rubik', sans-serif;
+            background-color: hsl(0, 0%, 100%);
+            color: #0e0d0c;
+            user-select: none;
+            width:100%;
+            height: 100%;
+            overflow:hidden;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            margin:0 auto;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #captureButton {
+            position: absolute;
+            z-index: 10;
+            background-color: #335ef7;
+            color: #FFF;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 20px;
+            bottom: 5px;
+            left: 47%;
+            transform: translateX(-50%);
+            transition: all 100ms ease;
+        }
+
+        #captureButton:hover {
+            background-color: rgba(19, 37, 104, 0.95);
+        }
+
+        #capturedImage {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        #uploadMessage {
+            display: none;
+        }
+        button#back{
+            display:flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            z-index: 10;
+            background-color: #7243CD;
+            color: #FFF;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px;
+            top: 8px;
+            background-color: #eaeffe;
+            color: #335ef7;
+            font-weight: 700;
+        }
+        button:active{
+            transform:scale(0.98);
+        }
+        button:hover{
+            border:2px solid #335ef7;
+        }
+        span img{
+            width:30px;
+            margin-top:2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <button id="back"><span><img src="arrow.png"></span>Go Back</button> -->
+        <video id="video" autoplay></video>
+        <button id="captureButton">Capture</button>
+        <img id="capturedImage">
+        <p id="uploadMessage">Image uploaded successfully!</p>
+    </div>
+    <!-- Load Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script>
+        function openNav() {
+            document.getElementById("sidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+        }
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
+            authDomain: "propclean.firebaseapp.com",
+            databaseURL: "https://propclean-default-rtdb.firebaseio.com",
+            projectId: "propclean",
+            storageBucket: "propclean.appspot.com",
+            messagingSenderId: "795234019311",
+            appId: "1:795234019311:web:369566b90b91139164781a",
+            measurementId: "G-CE3LFP4HSJ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+
+        const video = document.getElementById('video');
+        const captureButton = document.getElementById('captureButton');
+        const capturedImage = document.getElementById('capturedImage');
+        const uploadMessage = document.getElementById('uploadMessage');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('id');
+        const office = urlParams.get('office');
+
+        // Get access to the webcam stream
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: { ideal: "environment" }
+            }
+        }).then(stream => {
+            video.srcObject = stream;
+            console.log('Webcam stream started');
+        }).catch(error => {
+            console.error('Error accessing webcam: ', error);
+        });
+
+        // Capture image from webcam stream
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert captured image to a data URL and display it as a file
+            const imageDataURL = canvas.toDataURL('image/png');
+            capturedImage.src = imageDataURL;
+            capturedImage.style.display = 'block';
+            console.log('Image captured:', imageDataURL);
+
+            // Hide the video element
+            video.style.display = 'none';
+
+            // Upload the image
+            const file = dataURLtoFile(imageDataURL);
+            const storageRef = storage.ref();
+
+            // Generate a unique filename
+            const timestamp = new Date().getTime();
+            const randomString = Math.random().toString(36).substring(7); // Generate a random string
+            const filename = `captured_image_${timestamp}_${randomString}.png`;
+
+            const imagesRef = storageRef.child('images/' + filename);
+
+            // Upload file to Firebase Storage with the generated filename
+            imagesRef.put(file).then((snapshot) => {
+                console.log('Uploaded the image successfully');
+
+                // Get the download URL of the uploaded image
+                imagesRef.getDownloadURL().then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+
+                // Display upload message
+                uploadMessage.style.display = 'block';
+
+                // Get the current user's email
+                const user = auth.currentUser;
+                const userEmail = user ? user.email : 'unknown';
+
+                // Update task status and record upload time and user email
+                const taskRef = database.ref(`${office}/${taskId}`);
+                taskRef.update({
+                    status: 'complete',
+                    uploadTime: new Date().toISOString(),
+                    completedBy: userEmail,
+                    imageUrl: downloadURL
+                }).then(() => {
+                    console.log('Task status updated to Complete');
+                    alert('Image uploaded successfully and task marked as complete!');
+                    window.location.href = `daily.html`;
+                    history.replaceState(null, '', 'land.html');
+                }).catch((error) => {
+                    console.error('Error updating task status:', error);
+                });
+            }).catch((error) => {
+                    console.error('Error getting download URL:', error);
+                });
+
+            }).catch((error) => {
+                console.error('Error uploading image:', error);
+            });
+        });
+
+        // Convert data URL to a File object
+        function dataURLtoFile(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], 'captured_image.png', { type: mime });
+        }
+
+        document.getElementById("back").addEventListener("click", () => {
+            window.location.href = `taskdetails.html?id=${taskId}&office=${office}`;
+        });
+
+        // document.getElementById("logoutBtn").addEventListener("click", function() {
+        //     auth.signOut().then(() => {
+        //         window.location.href = "index.html"; // Redirect to login page
+        //     }).catch((error) => {
+        //         console.error("Error signing out:", error);
+        //     });
+        // });
+    </script>
+</body>
+</html>
+ 

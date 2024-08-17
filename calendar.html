@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar View</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+            padding: 10px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2; /* Ensure menu icon is on top */
+        }
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: rgba(17, 17, 17, 0.95); /* Slight transparency */
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            z-index: 3; /* Ensure sidebar is on top of everything */
+        }
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #FDFDFD;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 30px;
+        }
+        #calendar {
+            max-width: 900px;
+            margin: 70px auto 50px; /* Adjusted margin to make space for menu icon */
+            padding: 0 10px;
+        }
+        @media (max-width: 768px) {
+            #calendar {
+                width: 100%;
+                margin: 100px auto 50px; /* More space for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-icon" onclick="openNav()">&#9776;</div>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
+        <a href="land.html">Homepage</a>
+        <a href="#" id="logoutBtn">Logout</a>
+    </div>
+    <div id="calendar"></div>
+    <!-- Load Firebase scripts (version 7.x) -->
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-auth.js"></script>
+    <!-- Load FullCalendar scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.min.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
+            authDomain: "propclean.firebaseapp.com",
+            databaseURL: "https://propclean-default-rtdb.firebaseio.com",
+            projectId: "propclean",
+            storageBucket: "propclean.appspot.com",
+            messagingSenderId: "795234019311",
+            appId: "1:795234019311:web:369566b90b91139164781a",
+            measurementId: "G-CE3LFP4HSJ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Force long-polling
+        firebase.database.INTERNAL.forceWebSockets(false);
+
+        const database = firebase.database();
+
+        // Function to combine date and time
+        function combineDateAndTime(dateStr, timeStr) {
+            if (!timeStr) {
+                console.error("Time string is undefined or null");
+                return null;
+            }
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const date = new Date(dateStr);
+            date.setHours(hours, minutes, 0, 0);
+            return date.toISOString();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridDay', // Changed to day view
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: async function(fetchInfo, successCallback, failureCallback) {
+                    try {
+                        let tasks = [];
+                        const snapshot = await database.ref('Daily Tasks').once('value');
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            console.log("Data from Firebase:", data);
+                            tasks = Object.keys(data).map(key => {
+                                const task = data[key];
+                                console.log("Processing task:", task);
+                                const currentDate = new Date().toISOString().split('T')[0];
+                                const taskStartTime = combineDateAndTime(currentDate, task.time);
+                                if (!taskStartTime) {
+                                    console.error(`Invalid time for task: ${key}`);
+                                    return null;
+                                }
+                                return {
+                                    title: task.task,
+                                    start: taskStartTime,
+                                    backgroundColor: task.status === "Complete" ? "green" : "red",
+                                    extendedProps: {
+                                        id: key
+                                    }
+                                };
+                            }).filter(task => task !== null); // Filter out invalid tasks
+                        }
+                        successCallback(tasks);
+                    } catch (error) {
+                        console.error("Error fetching tasks:", error);
+                        failureCallback(error);
+                    }
+                },
+                eventClick: function(info) {
+                    alert('Task: ' + info.event.title + '\nTime: ' + info.event.start.toLocaleString());
+                }
+            });
+
+            calendar.render();
+        });
+
+        function openNav() {
+            document.getElementById("sidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", function() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "index.html"; // Redirect to login page
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+            });
+        });
+    </script>
+</body>
+</html>

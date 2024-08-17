@@ -1,0 +1,339 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Mulish', sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  color: #0e0d0c;
+  overflow-y: hidden;
+  user-select: none;
+}
+
+#languageSelector{
+  position:absolute;
+  top: 30px;
+  right:30px;
+  border:2px solid black;
+  padding:6px;
+  border-radius:9999px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 8%;
+  text-align: center;
+  font-family: "Mulish", cursive;
+  letter-spacing: 0.1em;
+}
+
+p {
+  margin-top:5px;
+  width: 90%;
+  margin:auto;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 0.2em;
+}
+.or{
+  border-bottom: 1px solid #000;
+  margin-bottom:30px;
+}
+h3.acc{
+  font-size:18px;
+  text-align:center;
+  margin-bottom: 12px;
+}
+p span {
+  background: #fff;
+  padding: 0 10px;
+  font-size:18px;
+}
+
+.floating-label {
+  position: relative;
+}
+
+.floating-label input{
+  width: 100%;
+  padding: 15px;
+  background-color: #f9f9ff;
+  border: 2px solid #f9f9ff;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  font-size: 20px;
+  border-radius: 30px;
+  margin: 8px 0;
+}
+#office-signup{
+  position:relative;
+  left:28%;
+  top:5px;
+  margin-bottom: 10px;
+  background-color: #f9f9ff;
+  border: 2px solid #f9f9ff;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  padding: 15px;
+  border-radius: 30px;
+  font-size: 16px;
+  margin: 8px 0;
+  width:40%;
+}
+#office-signup:focus{
+  border-color: #335ef7;
+  outline: none;
+}
+
+.floating-label label {
+  position: absolute;
+  top: 24px;
+  left: 20px;
+  background: #f9f9ff;
+  padding: 0px 5px;
+  font-weight:500;
+  font-size: 20px;
+  color:#878787;
+  transition: 0.2s ease all;
+  pointer-events: none;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+  top: -1px;
+  left: 20px;
+  font-size: 16px;
+  color: #335ef7;
+}
+
+/* Input focus styling */
+.floating-label input:focus {
+  border-color: #335ef7;
+  outline: none;
+}
+
+input {
+  background-color: #f9f9ff;
+  border: 2px solid #f9f9ff;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  padding: 15px;
+  border-radius: 30px;
+  font-size: 20px;
+  margin: 8px 0;
+  width: 100%;
+}
+
+input::placeholder{
+  font-weight:500;
+  font-size: 20px;
+  color:#878787;
+  padding-left: 10px;
+}
+
+.check{
+   display:flex;
+   align-items: center;
+   width:40%;
+   margin-top: 3px;
+   margin-left: 20px;
+}
+.check input[type="checkbox"] {
+  border:none;
+  box-shadow: none;
+  width: 15px;
+  height: 20px;
+}
+
+.check label{
+  text-wrap: nowrap;
+  font-size: 16px;
+  position: relative;
+  bottom:0px;
+  left: 6px;
+  color:#878787
+}
+
+
+button {
+  color: #FDFDFD;
+  background-color: #335ef7;
+  border: 0;
+  padding: 15px;
+  border-radius: 35px;
+  font-size: 22px;
+  text-align: center;
+  margin-top: 10px;
+  width: 100%;
+}
+button:hover {
+  background-color: #357ae8;
+  cursor: pointer;
+  transition: all 100ms ease-in;
+}
+button:active{
+  background-color: #2a65cc; 
+  transform: scale(0.97); 
+  transition: all 100ms ease-in-out;
+}
+
+.login-container {
+  background-color: #ffffff;
+  padding: 40px;
+  width: 95%;
+  max-width: 500px;
+  margin: 6vh auto;
+  border-radius: 8px;
+}
+
+.continue{
+  text-align:center;
+  margin-top: 35px;
+  font-size:24px;
+}
+
+#create-acct {
+  display: none;
+}
+
+#return-btn {
+  background: none;
+  color: blue;
+  margin-bottom: 11px;
+  text-decoration-line: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  width:10%;
+  position:relative;
+  right:4px;
+  text-wrap:nowrap;
+}
+div.rt{
+  display:flex;
+  width:90%;
+  margin:auto;
+  justify-content:center;
+  align-items: center;
+  margin-top:-20px;
+  text-wrap:nowrap;
+}
+#sign-up {
+  margin-top: 10px;
+  border: none;
+  display: block; /* Change display to block to force the next element to a new line */
+  transition: all 100ms ease-in-out;
+}
+
+#forgot-password {
+  text-align: center;
+  margin-top: 30px; /* Add some top margin */
+}
+
+#forgot-password a {
+  color: #000000;
+  font-size:19px;
+  text-decoration-line: none;
+  cursor: pointer;
+  display: block; /* Make the link a block element */
+  margin-top: 10px; /* Add some top margin to separate it from other elements */
+}
+.google-sign-button {
+  color: #fff;
+  background-color: #ffffff;
+  text-align: center;
+  justify-content: center;
+  margin-right: 10px;
+  margin-top: -5px;
+  margin-bottom: 5px;
+  display: inline-flex; /* Ensure it centers the image inside */
+  align-items: center; /* Center vertically */
+  padding: 10px; /* Add padding for the border */
+   /* Add a border */
+  border-radius: 8px; 
+}
+.google-sign-button img {
+  border: 2px solid #878787; /* Add border to the image */
+  border-radius: 4px; /* Slight rounding for a squarish look */
+  padding: 10px; /* Add padding inside the border */
+}
+div.center{
+  margin:auto;
+  text-align:center;
+}
+
+.google-sign-button:hover {
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.head{
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+#google-sign-up{
+  background-color:#ffffff;
+  color:black;
+  width:50%;
+  min-width:250px;
+  margin:auto;
+  margin-top:4px;
+  display:flex;
+  justify-content:center;
+  align-items: center;
+  column-gap: 10px;
+  font-weight:700;
+}
+#google-sign-up img {
+  border: 2px solid #878787; /* Add border to the image */
+  border-radius: 4px; /* Slight rounding for a squarish look */
+  padding: 10px; /* Add padding inside the border */
+}
+
+/* styles.css */
+#splash-screen {
+  position: fixed;
+  top:0;
+  left:0;
+  width: 100%;
+  height:100%;
+  background: #335ef7;
+  z-index: 1000;
+  transition: opacity 1s ease-out;
+  opacity: 1;
+  color:white;
+  font-size:20px;
+}
+#splash-screen.hide {
+  opacity: 0;
+}
+#main-content {
+  display: none;
+}
+#splash-screen #sp .img{
+  width:60px;
+  height:70px;
+  transform:scale(1.8);
+}
+#sp{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  row-gap: 40px;
+  width: 100%;
+  height:100%;
+}
+h3.bold{
+  font-weight:700;
+  font-size:50px;
+}
+h3.tag{
+  font-weight:400;
+  font-size:16px;
+  position:relative;
+  bottom:40px;
+}
