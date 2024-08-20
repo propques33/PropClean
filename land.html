@@ -525,49 +525,33 @@ document.addEventListener('DOMContentLoaded', () => {
           if (userData) {
             const userOffice = userData.office;
 
-            if(!userOffice){
+            if(userOffice==="defaultOffice" || !userOffice){
               showPopup();
-            }
-            else{
-              document.body.classList.add(userOffice);
+              document.getElementById('save-info').addEventListener('click', () => {
+                const office = document.getElementById('office').value;
 
-              if (isAdmin(user.email)) {
-                document.getElementById("adminDashboardLink").style.display = "block";
-                document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
-                document.querySelector("button.repo").style.display = "block";
+                if (office) {
+                saveUserOffice(userRef, user.email, office);
               } else {
-                document.getElementById("adminDashboardLink").style.display = "none";
-                document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should be displayed for non-admins
-              }
-
-              let tasksRef;
-              switch (userOffice) {
-                case 'workviaa':
-                  tasksRef = ref(database, "Workviaa");
-                  break;
-                case 'workdesq':
-                  tasksRef = ref(database, "Workdesq");
-                  break;
-                case 'sso':
-                  tasksRef = ref(database, "Sapna Sangeeta");
-                  break;
-                case 'karyasthal':
-                  tasksRef = ref(database, "Karyasthal");
-                  break;
-                case 'cubispace':
-                  tasksRef = ref(database, "Cubispace");
-                  break; 
-                case 'worqspot':
-                  tasksRef = ref(database, "Worqspot");
-                  break;  
-                default:
-                  alert('Unknown office');
-                  window.location.href = 'index.html';
-                  return;
-              }
-
-              fetchAndDisplayTasks(tasksRef);
+                alert('Please select an office.');
+              }})
             }
+            else {
+          setupUserInterface(userOffice, user.email);
+        }
+            // else{
+            //   document.body.classList.add(userOffice);
+
+            //   if (isAdmin(user.email)) {
+            //     document.getElementById("adminDashboardLink").style.display = "block";
+            //     document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
+            //     document.querySelector("button.repo").style.display = "block";
+            //   } else {
+            //     document.getElementById("adminDashboardLink").style.display = "none";
+            //     document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should be displayed for non-admins
+            //   }
+            //   loadTasksBasedOnOffice(userOffice);
+            // }
         } else {
           console.error("User data not found for user: ", user.uid);
           showPopup();
@@ -575,52 +559,31 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('save-info').addEventListener('click', () => {
             const office = document.getElementById('office').value;
 
-            if(office){
-              set(userRef, {
-                email: user.email,
-                office: office
-              }).then(() => {
-                hidePopup();
-                document.body.classList.add(office);
-
-                if (isAdmin(user.email)) {
-                document.getElementById("adminDashboardLink").style.display = "block";
-              }
-
-              let tasksRef;
-              switch (office) {
-                case 'workviaa':
-                  tasksRef = ref(database, "Workviaa");
-                  break;
-                case 'cubispace':
-                  tasksRef = ref(database, "Cubispace");
-                  break;
-                case 'workdesq':
-                  tasksRef = ref(database, "Workdesq");
-                  break;
-                case 'sso':
-                  tasksRef = ref(database, "Sapna Sangeeta");
-                  break;
-                case 'karyasthal':
-                  tasksRef = ref(database, "Karyasthal");
-                  break;
-                case 'worqspot':
-                  tasksRef = ref(database, "Worqspot");
-                  break;
-                default:
-                  alert('Unknown office');
-                  window.location.href = 'index.html';
-                  return;
-              }
-
-              fetchAndDisplayTasks(tasksRef);
-            }).catch((error) => {
-              console.error("Error saving user data: ", error);
-              alert('Error saving user data.');
-            });
+            if (office) {
+            saveUserOffice(userRef, user.email, office);
           } else {
             alert('Please select an office.');
           }
+          //   if(office){
+          //     set(userRef, {
+          //       email: user.email,
+          //       office: office
+          //     }).then(() => {
+          //       hidePopup();
+          //       document.body.classList.add(office);
+
+          //       if (isAdmin(user.email)) {
+          //       document.getElementById("adminDashboardLink").style.display = "block";
+          //     }
+
+          //     loadTasksBasedOnOffice(userOffice);
+          //   }).catch((error) => {
+          //     console.error("Error saving user data: ", error);
+          //     alert('Error saving user data.');
+          //   });
+          // } else {
+          //   alert('Please select an office.');
+          // }
         });
       }
     }, (error) => {
@@ -632,6 +595,63 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'index.html';
     }
   });
+
+  function saveUserOffice(userRef, email, office) {
+  set(userRef, {
+    email: email,
+    office: office
+  }).then(() => {
+    hidePopup();
+    setupUserInterface(office, email);
+  }).catch((error) => {
+    console.error("Error saving user data: ", error);
+    alert('Error saving user data.');
+  });
+}
+
+function setupUserInterface(office, email) {
+  document.body.classList.add(office);
+
+  if (isAdmin(email)) {
+    document.getElementById("adminDashboardLink").style.display = "block";
+    document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
+    document.querySelector("button.repo").style.display = "block";
+  } else {
+    document.getElementById("adminDashboardLink").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should be displayed for non-admins
+  }
+
+  loadTasksBasedOnOffice(office);
+}
+
+
+  function loadTasksBasedOnOffice(office) {
+    let tasksRef;
+    switch (office) {
+        case 'workviaa':
+            tasksRef = ref(database, "Workviaa");
+            break;
+        case 'workdesq':
+            tasksRef = ref(database, "Workdesq");
+            break;
+        case 'sso':
+            tasksRef = ref(database, "Sapna Sangeeta");
+            break;
+        case 'karyasthal':
+            tasksRef = ref(database, "Karyasthal");
+            break;
+        case 'cubispace':
+            tasksRef = ref(database, "Cubispace");
+            break;
+        case 'worqspot':
+            tasksRef = ref(database, "Worqspot");
+            break;
+        default:
+            alert('Unknown office');
+            return;
+    }
+    fetchAndDisplayTasks(tasksRef);
+}
 
     function fetchAndDisplayTasks(tasksRef) {
       const shoppingListEl = document.getElementById("shopping-list");

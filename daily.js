@@ -141,8 +141,8 @@ function fetchAndDisplayTasks(ref) {
       if (snapshot.exists()) {
         let tasksArray = Object.entries(snapshot.val());
         
-        let tasksFrom8AM = tasksArray.filter(task => parseTime(task[1].time) >= parseTime("08:00 AM"));
-            let tasksBefore8AM = tasksArray.filter(task => parseTime(task[1].time) < parseTime("08:00 AM"));
+        let tasksFrom8AM = tasksArray.filter(task => parseTime(task[1].time) >= parseTime("00:00 AM"));
+            let tasksBefore8AM = tasksArray.filter(task => parseTime(task[1].time) < parseTime("00:00 AM"));
         
             tasksFrom8AM.sort((a, b) => {
                 const timeA = parseTime(a[1].time);
