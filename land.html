@@ -639,7 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Element with ID 'shopping-list' not found.");
         return;
       }
-
+      /**/
       onValue(tasksRef, function(snapshot) {
         if (snapshot.exists()) {
           let tasksArray = Object.entries(snapshot.val());
