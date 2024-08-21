@@ -5,96 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        html, body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Rubik', sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f4f7fc;
             color: #333;
-        }
-
-        .menu-icon {
-            font-size: 30px;
-            cursor: pointer;
-            padding: 10px;
-            background-color: #111;
-            color: #FFF;
-        }
-
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-            z-index: 1;
-        }
-
-        .sidebar a {
-            padding: 15px 25px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #FDFDFD;
-            display: block;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #575757;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            font-size: 30px;
-            color: #FFF;
-        }
-
-        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
-            max-width: 900px;
-            margin: 50px auto;
+        }
+        .con{
+            display:flex;
+            flex-direction:column;
+            width:100%;
+            justify-content: center;
+            /* align-items: center; */
+        }
+        .container {
             background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            transition: all 0.3s ease;
+            margin:0 auto;
         }
 
         h1 {
             text-align: center;
             font-size: 24px;
+            color: #4A4A4A;
+            margin-bottom: 20px;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            gap: 10px;
         }
 
         label {
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #484848;
+            transition: all 0.3s ease;
+            margin-top:15px;
         }
 
-        input, select, button {
-            padding: 10px;
+        input,
+        select,
+        button {
+            padding: 12px;
             font-size: 16px;
-            border-radius: 5px;
+            border-radius: 6px;
             border: 1px solid #ddd;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 5px;
+        }
+        
+        input:focus,
+        select:focus,
+        button:focus {
+            border-color: #7243CD;
+            outline: none;
         }
 
         button {
-            background-color: #7243CD;
+            background-color: #335ef7;
+            padding:20px;
             color: #FFF;
             cursor: pointer;
             border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top:20px;
         }
 
         button:hover {
             background-color: #402773;
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         .section {
@@ -102,96 +101,252 @@
         }
 
         #reset-button {
-            color: #FDFDFD;
-            background-color: #7243CD;
+            color: #FFF;
+            background-color: #ff6b6b;
             border: 0;
             padding: 15px;
             border-radius: 8px;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
-            font-family: 'Rubik', sans-serif;
-            margin-top: 10px;
-            display: block;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         #reset-button:hover {
-            background-color: #402773;
+            background-color: #d9534f;
             cursor: pointer;
+        }
+
+        #reset-button:active {
+            transform: scale(0.98);
+        }
+
+        #back {
+            display: inline-flex;
+            width:120px;
+            justify-self: flex-start;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4f7fc;
+            color: #4f74f7;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 2px solid #4f74f7;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        #back:active {
+            transform: scale(0.98);
+        }
+
+        #back img {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .admin {
+            background-color: #eaeffe;
+            width: 250px;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 0 auto;
+            color: #335ef7;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                box-shadow: none;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            button,
+            input,
+            select {
+                font-size: 14px;
+                padding: 15px;
+            }
+
+            #reset-button {
+                font-size: 16px;
+            }
+
+            #back {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            button,
+            input,
+            select {
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            #reset-button {
+                font-size: 14px;
+            }
+
+            #back {
+                font-size: 12px;
+            }
+
+            #back img {
+                width: 16px;
+            }
+        }
+        .ts{
+            font-size:22px;
+            margin:0 auto;
+            width:90%;
+            text-align:center;
+            margin-bottom:10px;
+        }
+        button#ad{
+            padding:15px;
+            background-color: #335ef7;
+            font-size:16px;
+        }
+        button#ad:hover{
+            background-color: #0b38dc;
+        }
+        button#del,.delete-section {
+            margin-top: 30px;
+        }
+
+        button#del,.delete-section button {
+            background-color: #e74c3c;
+            margin-top: 20px;
+            padding:15px;
+        }
+
+        button#del:hover,.delete-section button:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
 <body>
-    <div class="menu-icon" onclick="openNav()">&#9776;</div>
-    <div id="sidebar" class="sidebar">
-        <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
-        <a href="land.html">Homepage</a>
-        <a href="#" id="adminDashboardLink" style="display: none;">Admin Dashboard</a>
-        <a href="#" id="logoutBtn">Logout</a>
-    </div>
+    <div class="con">
+    <button id="back"><span><img src="arrow.png"></span>Go Back</button>
     <div class="container">
-        <h1>Admin Dashboard</h1>
+        <h1 class="admin">Admin Dashboard</h1>
 
         <div class="section">
-            <h2>Invite User</h2>
-            <form id="invite-user-form">
-                <label for="invite-user-email">Email:</label>
-                <input type="email" id="invite-user-email" required>
-                <button type="submit">Invite User</button>
-            </form>
-        </div>
-
-        <div class="section">
-            <h2>Add New Task</h2>
+            <h2 class="ts">Add New Task</h2>
             <form id="add-task-form">
                 <label for="office-select">Select Office:</label>
                 <select id="office-select" required>
+                    <!-- Office options will be populated dynamically based on the admin's office -->
+                </select>
+                <!-- <select id="office-select" required>
                     <option value="Cubispace">Cubispace</option>
                     <option value="Karyasthal">Karyasthal</option>
                     <option value="Worqspot">Worqspot</option>
                     <option value="Workdesq">Workdesq</option>
                     <option value="Workvia">Workvia</option>
                     <option value="sso">Sapna Sangeeta</option>
-                </select>
+                </select> -->
+
                 <label for="task-name">Task Name:</label>
                 <input type="text" id="task-name" required>
-                <label for="task-date">Date:</label>
-                <input type="date" id="task-date" required>
+
                 <label for="task-time">Time:</label>
                 <input type="time" id="task-time" required>
-                <button type="submit">Add Task</button>
+
+                <label for="user-select">Assign To:</label>
+                <select id="user-select" required>
+                    <!-- Users will be populated dynamically based on the office -->
+                </select>
+
+                <label for="image-select">Select Image:</label>
+                <select id="image-select" required>
+                    <option value="cabin.webp">Cabin and Conference room cleaning</option>
+                    <option value="cabin1.webp">Conference Hall cleaning</option>
+                    <option value="water.jpg">Filling Water Bottles</option>
+                    <option value="reception.avif">Reception Cleaning</option>
+                    <option value="glass.jpeg">Glass</option>
+                    <option value="lunch.jpeg">Lunch Duty</option>
+                    <option value="break.jpeg">Lunch Break</option>
+                    <option value="washroom.jpeg">Washroom Cleaning</option>
+                    <option value="dustbin.webp">Dustbin Cleaning</option>
+                    <option value="client.jpeg">Tea/Coffee Service</option>
+                    <option value="coffee.jpg">Coffee Machine</option>
+                    <option value="lift.jpg">Lift Cleaning</option>
+                    <option value="lock.jpeg">Locking up Cabins</option>
+                    <option value="pantry.jpeg">Pantry Work</option>
+                    <option value="plant.jpeg">Watering Plants</option>
+                    <option value="stairs.jpeg">Stairs Cleaning</option>
+                    <option value="terrace.jpeg">Terrace Cleaning</option>
+                    <option value="utensil.jpeg">Utensil Cleaning</option>
+                    <option value="waste.webp">Waste Vehicle</option>
+                    <option value="wet.jpeg">Mopping</option>
+                </select>
+
+                <button type="submit" id="ad">Add Daily Task</button>
             </form>
         </div>
 
-        <div class="section">
-            <h2>Remove User</h2>
-            <form id="remove-user-form">
-                <label for="remove-user-email">Email:</label>
-                <input type="email" id="remove-user-email" required>
-                <button type="submit">Remove User</button>
-            </form>
+        <div class="assign-section" style="margin: 30px 0px;">
+            <h2 class="ts" style="margin-bottom:20px;">Assign User to Unassigned Task</h2>
+            <label for="unassigned-task-select">Select Unassigned Task:</label>
+            <select id="unassigned-task-select" style="margin-bottom:15px;" required>
+                <!-- Unassigned tasks will be populated dynamically -->
+            </select>
+        
+            <label for="assign-user-select">Assign To:</label>
+            <select id="assign-user-select" required>
+                <!-- Users will be populated dynamically based on the office -->
+            </select>
+        
+            <button id="assign-task-button" id="asn">Assign Task</button>
+        </div>
+
+        <div class="delete-section">
+            <h2 class="ts">Delete Task</h2>
+            <label for="task-select">Select Task:</label>
+            <select id="task-select" required>
+                <!-- Task options will be populated dynamically based on the selected office -->
+            </select>
+            <button id="delete-task-button">Delete Task</button>
         </div>
 
         <div class="section">
-            <h2>View Reports</h2>
-            <button onclick="navigateTo('reports.html')">See Weekly Report</button>
+            <label for="remove-user-select">Select User to Remove:</label>
+<select id="remove-user-select" required>
+    <!-- User options will be populated dynamically based on the office -->
+</select>
+                <button type="submit" id="del">Remove User</button>
         </div>
-        <button id="reset-button">Reset All Tasks</button>
+
+        <button id="reset-button" style="margin-top: 40px; background-color:#151d31;">Reset All Tasks</button>
     </div>
+</div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script>
-        function openNav() {
-            document.getElementById("sidebar").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("sidebar").style.width = "0";
-        }
-
         function navigateTo(page) {
-            window.location.href = page;
-        }
-
+      window.location.href = page;
+    }
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
@@ -205,29 +360,142 @@
         };
 
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const database = firebase.database();
+        const auth = firebase.auth();
 
         // Function to reset the status of all tasks to 'incomplete'
         async function resetAllTasks() {
-            const nodes = ['Cubispace', 'Karyasthal', 'Workdesq', 'Workvia', 'sso','Worqspot'];
+            const office = document.getElementById('office-select').value;
+            const tasksRef = database.ref(office);
 
-            for (let node of nodes) {
-                const tasksRef = database.ref(node);
-                tasksRef.once('value', snapshot => {
-                    if (snapshot.exists()) {
-                        snapshot.forEach(childSnapshot => {
-                            const taskKey = childSnapshot.key;
-                            database.ref(`${node}/${taskKey}/status`).set('incomplete');
+            tasksRef.once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    snapshot.forEach(childSnapshot => {
+                        const taskKey = childSnapshot.key;
+                        tasksRef.child(taskKey).update({
+                            status: 'incomplete',
+                            imageUrl: null,
+                            completedBy: null,
+                            uploadTime: null
                         });
-                    }
-                });
-            }
-            alert("All tasks have been reset to 'incomplete'");
+                    });
+                }
+            }).then(() => {
+                alert("All tasks have been reset to 'incomplete'");
+            });
         }
 
         // Event listener for the reset button
         document.getElementById('reset-button').addEventListener('click', resetAllTasks);
+
+        document.getElementById("back").addEventListener("click", () => {
+            window.location.href = `land.html`;
+        });
+
+        // Populate the office dropdown based on the admin's office
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                userRef.once('value').then(snapshot => {
+                    const userData = snapshot.val();
+                    const officeSelect = document.getElementById('office-select');
+                    const userSelect = document.getElementById('user-select');
+
+                    // Capitalize the office name correctly
+                    const officeName = userData.office.charAt(0).toUpperCase() + userData.office.slice(1).toLowerCase();
+
+                    const option = document.createElement('option');
+                    option.value = officeName;
+                    option.textContent = officeName;
+                    officeSelect.appendChild(option);
+
+                    populateUserDropdown(userData.office);
+                    populateTaskDropdown(officeName);
+                    populateRemoveUserDropdown(userData.office);
+                    populateUnassignedTaskDropdown(officeName);
+                });
+            } else {
+                window.location.href = 'index.html'; // Redirect to login if user is not authenticated
+            }
+        });
+
+        // Function to populate the dropdown with tasks that have no assigned user
+function populateUnassignedTaskDropdown(office) {
+    const tasksRef = database.ref(office);
+    tasksRef.once('value', snapshot => {
+        const tasks = snapshot.val();
+        const unassignedTaskSelect = document.getElementById('unassigned-task-select');
+        unassignedTaskSelect.innerHTML = ''; // Clear existing options
+
+        for (const taskId in tasks) {
+            if (!tasks[taskId].assigned) { // Check if the task has no assigned user
+                const taskOption = document.createElement('option');
+                taskOption.value = taskId;
+                taskOption.textContent = tasks[taskId].task;
+                unassignedTaskSelect.appendChild(taskOption);
+            }
+        }
+    });
+}
+
+        function populateRemoveUserDropdown(office) {
+            const usersRef = database.ref('users');
+            usersRef.once('value', snapshot => {
+                const users = snapshot.val();
+                const removeUserSelect = document.getElementById('remove-user-select');
+                removeUserSelect.innerHTML = ''; // Clear existing options
+
+                for (const userId in users) {
+                    if (users[userId].office === office) {
+                        const userOption = document.createElement('option');
+                        userOption.value = users[userId].email;
+                        userOption.textContent = users[userId].email;
+                        removeUserSelect.appendChild(userOption);
+                    }
+                }
+            });
+        }
+
+        function populateUserDropdown(office) {
+            const usersRef = database.ref('users');
+            usersRef.once('value', snapshot => {
+                const users = snapshot.val();
+                const userSelect = document.getElementById('user-select');
+                const assignUserSelect = document.getElementById('assign-user-select'); // Assign task dropdown
+                userSelect.innerHTML = ''; // Clear existing options
+                assignUserSelect.innerHTML = ''; 
+
+                for (const userId in users) {
+                    if (users[userId].office === office) {
+                        const userOption = document.createElement('option');
+                        userOption.value = users[userId].email;
+                        userOption.textContent = users[userId].email;
+                         // Append to both dropdowns
+                userSelect.appendChild(userOption);
+                assignUserSelect.appendChild(userOption.cloneNode(true)); // Clone the option for the assign dropdown
+                    }
+                }
+            });
+        }
+
+        function populateTaskDropdown(office) {
+            const tasksRef = database.ref(office);
+            tasksRef.once('value', snapshot => {
+                const tasks = snapshot.val();
+                const taskSelect = document.getElementById('task-select');
+                taskSelect.innerHTML = ''; // Clear existing options
+
+                for (const taskId in tasks) {
+                    const taskOption = document.createElement('option');
+                    taskOption.value = taskId;
+                    taskOption.textContent = tasks[taskId].task;
+                    taskSelect.appendChild(taskOption);
+                }
+            });
+        }
 
         // Function to add a new task to the selected office
         document.getElementById('add-task-form').addEventListener('submit', function(event) {
@@ -235,27 +503,108 @@
 
             const office = document.getElementById('office-select').value;
             const taskName = document.getElementById('task-name').value;
-            const taskDate = document.getElementById('task-date').value;
             const taskTime = document.getElementById('task-time').value;
+            const assignedUser = document.getElementById('user-select').value;
+            const selectedImage = document.getElementById('image-select').value;
 
             const newTask = {
                 task: taskName,
-                date: taskDate,
                 time: taskTime,
+                assigned: assignedUser,
+                imageUrlAtt: selectedImage,
                 status: 'incomplete'
             };
+
+            console.log('Adding task:', newTask); // Debugging line
 
             const newTaskRef = database.ref(`${office}`).push();
             newTaskRef.set(newTask)
                 .then(() => {
                     alert('Task added successfully');
                     document.getElementById('add-task-form').reset();
+                    populateTaskDropdown(office); // Refresh the task dropdown after adding a new task
                 })
                 .catch(error => {
                     console.error('Error adding task:', error);
                     alert('Error adding task');
                 });
         });
+
+        // Event listener for assigning a user to an unassigned task
+document.getElementById('assign-task-button').addEventListener('click', function() {
+    const office = document.getElementById('office-select').value;
+    const taskId = document.getElementById('unassigned-task-select').value;
+    const assignedUser = document.getElementById('assign-user-select').value;
+
+    if (taskId && assignedUser) {
+        const taskRef = database.ref(`${office}/${taskId}`);
+        taskRef.update({
+            assigned: assignedUser
+        })
+        .then(() => {
+            alert('Task assigned successfully');
+            populateUnassignedTaskDropdown(office); // Refresh the unassigned task dropdown after assignment
+        })
+        .catch(error => {
+            console.error('Error assigning task:', error);
+            alert('Error assigning task');
+        });
+    } else {
+        alert('Please select a task and a user');
+    }
+});
+
+        // Event listener for deleting a task
+        document.getElementById('delete-task-button').addEventListener('click', function() {
+            const office = document.getElementById('office-select').value;
+            const taskId = document.getElementById('task-select').value;
+
+            if (taskId) {
+                const taskRef = database.ref(`${office}/${taskId}`);
+                taskRef.remove()
+                    .then(() => {
+                        alert('Task deleted successfully');
+                        populateTaskDropdown(office); // Refresh the task dropdown after deletion
+                    })
+                    .catch(error => {
+                        console.error('Error deleting task:', error);
+                        alert('Error deleting task');
+                    });
+            } else {
+                alert('Please select a task to delete');
+            }
+        });
+
+        // Event listener for removing a user
+document.getElementById('del').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    const selectedUserEmail = document.getElementById('remove-user-select').value;
+
+    if (selectedUserEmail) {
+        const usersRef = database.ref('users');
+        usersRef.once('value').then(snapshot => {
+            const users = snapshot.val();
+            for (const userId in users) {
+                if (users[userId].email === selectedUserEmail) {
+                    const userRef = database.ref('users/' + userId);
+                    userRef.remove()
+                        .then(() => {
+                            alert('User removed successfully');
+                            populateRemoveUserDropdown(document.getElementById('office-select').value); // Refresh the remove user dropdown after deletion
+                        })
+                        .catch(error => {
+                            console.error('Error removing user:', error);
+                            alert('Error removing user');
+                        });
+                    break;
+                }
+            }
+        });
+    } else {
+        alert('Please select a user to remove');
+    }
+});
     </script>
 </body>
 </html>

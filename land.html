@@ -315,6 +315,7 @@ button#save-info{
     <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
     <a href="land.html"><img src="user.png">Homepage</a>
     <a href="#" id="adminDashboardLink" style="display: none; text-wrap: wrap;" onclick="navigateTo('reports.html')"><img src="admin-panel.png">View Reports</a>
+    <a href="#" id="adminDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('admin-dashboard.html')"><img src="admin-panel.png">Admin Dashboard</a>
     <a href="#" id="logoutBtn"><img src="logout.png">Logout</a>
   </div>
   <select id="languageSelector">
@@ -614,6 +615,7 @@ function setupUserInterface(office, email) {
 
   if (isAdmin(email)) {
     document.getElementById("adminDashboardLink").style.display = "block";
+    document.getElementById("adminDashboardLink1").style.display = "block";
     document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
     document.querySelector("button.repo").style.display = "block";
   } else {

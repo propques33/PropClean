@@ -336,6 +336,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const taskImage = document.getElementById("task-image");
+                taskImage.src = "cabin1.webp"; // Replace with the actual image path
+
+    if (taskData.time === "07:00") {
+        taskImage.src = "cabin1.webp"; 
+            } else if (taskData.time === "9:00") {
+                taskImage.src = "water.jpg"; 
+            } else if (taskData.time === "9:30") {
+                taskImage.src = "reception.avif"; 
+            } 
+        else if (taskData.time === "10:00") {
+            taskImage.src = "glass.jpeg"; 
+        }
+        else if (taskData.time === "12:00") {
+            taskImage.src = "lunch.jpeg"; 
+        }
+        else if (taskData.time === "13:30") {
+            taskImage.src = "break.jpeg"; 
+        }
+        else if (taskData.time === "14:00") {
+            taskImage.src = "washroom.jpeg"; 
+        }
+        else if (taskData.time === "14:30") {
+            taskImage.src = "dustbin.webp"; 
+        }
+            else {
+                taskImage.src = "reception.avif"; 
+            }
+
                 if(taskData.assigned==="Prakash")
     {
         if(taskData.time==="08:20 AM")

@@ -94,6 +94,17 @@
             width: 100%;
             height: auto;
         }
+        .star {
+    font-size: 20px;
+    color: gold;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.star:hover,
+.star:hover ~ .star {
+    color: darkorange;
+}
     </style>
 </head>
 <body>
@@ -199,6 +210,7 @@
                             <th>Upload Time</th>
                             <th>Completed By</th>
                             <th>Image</th>
+                            <th>Rating</th> 
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -249,6 +261,11 @@
                     }
                     row.appendChild(imageCell);
 
+                    // Star Rating Cell
+            const ratingCell = document.createElement('td');
+            ratingCell.innerHTML = createStarRating(task.rating || 0, taskId, office, task.imageUrl); // Pass the imageUrl to the function
+            row.appendChild(ratingCell);
+                    
                     const actionCell = document.createElement('td');
                     if (task.status.toLowerCase() === 'complete') {
                         const approveButton = document.createElement('button');
@@ -270,7 +287,38 @@
             });
         }
 
+        function createStarRating(rating, taskId, office, imageUrl) {
+    let starsHtml = '';
+    const isClickable = imageUrl && rating === 0; // Only allow rating if image exists and rating is not yet given
 
+    for (let i = 1; i <= 5; i++) {
+        const filled = i <= rating ? '★' : '☆';
+        const cursorStyle = isClickable ? 'pointer' : 'default';
+        starsHtml += `<span data-taskid="${taskId}" data-office="${office}" data-rating="${i}" class="star" style="cursor: ${cursorStyle}; font-size: 20px;">${filled}</span>`;
+    }
+    return starsHtml;
+}
+
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('star') && event.target.style.cursor === 'pointer') {
+        const taskId = event.target.getAttribute('data-taskid');
+        const office = event.target.getAttribute('data-office');
+        const rating = event.target.getAttribute('data-rating');
+        setTaskRating(office, taskId, rating);
+    }
+});
+
+function setTaskRating(office, taskId, rating) {
+    const taskRef = firebase.database().ref(`${office}/${taskId}`);
+    taskRef.update({
+        rating: parseInt(rating)
+    }).then(() => {
+        loadReports(); // Refresh the reports to show the updated rating
+    }).catch(error => {
+        console.error("Error setting rating:", error);
+        alert("Error occurred while setting the rating. Please try again.");
+    });
+}
 
         function approveTask(office, taskId) {
             const taskRef = firebase.database().ref(`${office}/${taskId}`);
@@ -290,7 +338,8 @@
                 status: 'incomplete',
                 imageUrl: null,
                 completedBy: null,
-                uploadTime: null
+                uploadTime: null,
+                rating:0
             }).then(() => {
                 loadReports();
             }).catch(error => {
@@ -418,7 +467,8 @@ function resetAllTasks() {
                     status: 'incomplete',
                     imageUrl: null,
                     completedBy: null,
-                    uploadTime: null
+                    uploadTime: null,
+                    rating:0
                 });
             });
         });

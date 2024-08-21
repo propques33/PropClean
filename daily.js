@@ -546,7 +546,7 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     statusEl.style.padding = "5px 8px";
     statusEl.style.borderRadius = "5px";
     statusEl.style.position = "absolute";
-    statusEl.style.bottom = "-50px";
+    statusEl.style.bottom = "-110px";
     statusEl.style.right = "0px";
     statusEl.style.fontSize = "20px";
     statusEl.style.fontWeight = "700";
