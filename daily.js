@@ -89,6 +89,7 @@ onAuthStateChanged(auth, user => {
 
                 if (isAdmin(user.email)) {
                     document.getElementById("adminDashboardLink").style.display = "block";
+                    document.getElementById("adminDashboardLink1").style.display = "block";
                     document.getElementById("adminOfficeSelectionBtn").style.display = "block";
                 }
 
@@ -266,161 +267,164 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     imgEl.style.objectFit = "cover";
     imgEl.style.boxShadow = "4px 4px 15px 0px rgb(51,94,247,0.2)";
 
+    // Set image source from taskData.imageUrlAtt
+    imgEl.src = taskData.imageUrlAtt || "reception.avif"; 
+
     // Set image source based on taskData.time
-    imgEl.src = "cabin1.webp"; // Replace with the actual image path
+    // imgEl.src = "cabin1.webp"; // Replace with the actual image path
 
-    if (taskData.time === "07:00") {
-                imgEl.src = "cabin1.webp"; 
-            } else if (taskData.time === "9:00") {
-                imgEl.src = "water.jpg"; 
-            } else if (taskData.time === "9:30") {
-                imgEl.src = "reception.avif"; 
-            } 
-        else if (taskData.time === "10:00") {
-            imgEl.src = "glass.jpeg"; 
-        }
-        else if (taskData.time === "12:00") {
-            imgEl.src = "lunch.jpeg"; 
-        }
-        else if (taskData.time === "13:30") {
-            imgEl.src = "break.jpeg"; 
-        }
-        else if (taskData.time === "14:00") {
-            imgEl.src = "washroom.jpeg"; 
-        }
-        else if (taskData.time === "14:30") {
-            imgEl.src = "dustbin.webp"; 
-        }
-            else {
-                imgEl.src = "reception.avif"; 
-            }
+    // if (taskData.time === "07:00") {
+    //             imgEl.src = "cabin1.webp"; 
+    //         } else if (taskData.time === "9:00") {
+    //             imgEl.src = "water.jpg"; 
+    //         } else if (taskData.time === "9:30") {
+    //             imgEl.src = "reception.avif"; 
+    //         } 
+    //     else if (taskData.time === "10:00") {
+    //         imgEl.src = "glass.jpeg"; 
+    //     }
+    //     else if (taskData.time === "12:00") {
+    //         imgEl.src = "lunch.jpeg"; 
+    //     }
+    //     else if (taskData.time === "13:30") {
+    //         imgEl.src = "break.jpeg"; 
+    //     }
+    //     else if (taskData.time === "14:00") {
+    //         imgEl.src = "washroom.jpeg"; 
+    //     }
+    //     else if (taskData.time === "14:30") {
+    //         imgEl.src = "dustbin.webp"; 
+    //     }
+    //         else {
+    //             imgEl.src = "reception.avif"; 
+    //         }
 
-    if(taskData.assigned==="Prakash")
-    {
-        if(taskData.time==="08:20 AM")
-        {
-            imgEl.src = "water.jpg"; 
-        }
-        else if(taskData.time==="09:00 AM")
-        {
-            imgEl.src = "lunch.jpeg"; 
-        }
-        else if(taskData.time==="09:30 AM")
-            {
-                imgEl.src = "cabin.webp"; 
-            }
-        else if(taskData.time==="10:00 AM")
-            {
-                imgEl.src = "wet.jpeg"; 
-            }
-        else if(taskData.time==="12:30 PM")
-        {
-            imgEl.src = "pantry.jpeg"; 
-        }
-        else if(taskData.time==="1:30 PM")
-        {
-            imgEl.src = "break.jpeg"; 
-        }
-        else if(taskData.time==="2:30 PM")
-        {
-            imgEl.src = "client.jpeg"; 
-        }
-        else if(taskData.time==="2:40 PM")
-        {
-            imgEl.src = "reception.avif"; 
-        }
-        else{
-            imgEl.src = "reception.avif"; 
-        }
-    }
-    else if(taskData.assigned==="Ankesh")
-    {
-        if(taskData.time==="1:30 PM")
-            {
-                imgEl.src = "wet.jpeg"; 
-            }
-        else if(taskData.time==="3:00 PM")
-            {
-                imgEl.src = "pantry.jpeg"; 
-            }
-        else if(taskData.time==="4:00 PM")
-        {
-            imgEl.src = "cabin.webp"; 
-        }
-        else if(taskData.time==="5:00 PM")
-            {
-                imgEl.src = "glass.jpeg"; 
-            }
-        else if(taskData.time==="6:00 PM")
-            {
-                imgEl.src = "plant.jpeg"; 
-            }
-        else if(taskData.time==="7:00 PM")
-            {
-                imgEl.src = "waste.webp"; 
-            }
-        else if(taskData.time==="8:00 PM")
-            {
-                imgEl.src = "client.jpeg"; 
-            }
-        else if(taskData.time==="9:00 PM")
-            {
-                imgEl.src = "dustbin.webp"; 
-            }
-        else{
-                imgEl.src = "reception.avif"; 
-            }
-    }
-    else if(taskData.assigned==="Neetesh")
-        {
-            if(taskData.time==="10:10 PM")
-                {
-                    imgEl.src = "lock.jpeg"; 
-                }
-            else if(taskData.time==="10:15 PM")
-                {
-                    imgEl.src = "washroom.jpeg"; 
-                }
-            else if(taskData.time==="11:00 PM")
-            {
-                imgEl.src = "wet.jpeg"; 
-            }
-            else if(taskData.time==="12:00 AM")
-                {
-                    imgEl.src = "reception.avif"; 
-                }
-            else if(taskData.time==="12:30 AM")
-                {
-                    imgEl.src = "stairs.jpeg"; 
-                }
-            else if(taskData.time==="1:00 AM")
-                {
-                    imgEl.src = "lift.jpg"; 
-                }
-            else if(taskData.time==="1:15 AM")
-                {
-                    imgEl.src = "terrace.jpeg"; 
-                }
-            else if(taskData.time==="6:00 AM")
-                {
-                    imgEl.src = "utensil.jpeg"; 
-                }
-            else if(taskData.time==="6:30 AM")
-                {
-                    imgEl.src = "cabin.webp"; 
-                }
-            else if(taskData.time==="7:00 AM")
-                {
-                    imgEl.src = "coffee.jpg"; 
-                }
-            else if(taskData.time==="7:30 AM")
-                {
-                    imgEl.src = "wet.jpeg"; 
-                }
-            else{
-                    imgEl.src = "reception.avif"; 
-                }
-        }
+    // if(taskData.assigned==="Prakash")
+    // {
+    //     if(taskData.time==="08:20 AM")
+    //     {
+    //         imgEl.src = "water.jpg"; 
+    //     }
+    //     else if(taskData.time==="09:00 AM")
+    //     {
+    //         imgEl.src = "lunch.jpeg"; 
+    //     }
+    //     else if(taskData.time==="09:30 AM")
+    //         {
+    //             imgEl.src = "cabin.webp"; 
+    //         }
+    //     else if(taskData.time==="10:00 AM")
+    //         {
+    //             imgEl.src = "wet.jpeg"; 
+    //         }
+    //     else if(taskData.time==="12:30 PM")
+    //     {
+    //         imgEl.src = "pantry.jpeg"; 
+    //     }
+    //     else if(taskData.time==="1:30 PM")
+    //     {
+    //         imgEl.src = "break.jpeg"; 
+    //     }
+    //     else if(taskData.time==="2:30 PM")
+    //     {
+    //         imgEl.src = "client.jpeg"; 
+    //     }
+    //     else if(taskData.time==="2:40 PM")
+    //     {
+    //         imgEl.src = "reception.avif"; 
+    //     }
+    //     else{
+    //         imgEl.src = "reception.avif"; 
+    //     }
+    // }
+    // else if(taskData.assigned==="Ankesh")
+    // {
+    //     if(taskData.time==="1:30 PM")
+    //         {
+    //             imgEl.src = "wet.jpeg"; 
+    //         }
+    //     else if(taskData.time==="3:00 PM")
+    //         {
+    //             imgEl.src = "pantry.jpeg"; 
+    //         }
+    //     else if(taskData.time==="4:00 PM")
+    //     {
+    //         imgEl.src = "cabin.webp"; 
+    //     }
+    //     else if(taskData.time==="5:00 PM")
+    //         {
+    //             imgEl.src = "glass.jpeg"; 
+    //         }
+    //     else if(taskData.time==="6:00 PM")
+    //         {
+    //             imgEl.src = "plant.jpeg"; 
+    //         }
+    //     else if(taskData.time==="7:00 PM")
+    //         {
+    //             imgEl.src = "waste.webp"; 
+    //         }
+    //     else if(taskData.time==="8:00 PM")
+    //         {
+    //             imgEl.src = "client.jpeg"; 
+    //         }
+    //     else if(taskData.time==="9:00 PM")
+    //         {
+    //             imgEl.src = "dustbin.webp"; 
+    //         }
+    //     else{
+    //             imgEl.src = "reception.avif"; 
+    //         }
+    // }
+    // else if(taskData.assigned==="Neetesh")
+    //     {
+    //         if(taskData.time==="10:10 PM")
+    //             {
+    //                 imgEl.src = "lock.jpeg"; 
+    //             }
+    //         else if(taskData.time==="10:15 PM")
+    //             {
+    //                 imgEl.src = "washroom.jpeg"; 
+    //             }
+    //         else if(taskData.time==="11:00 PM")
+    //         {
+    //             imgEl.src = "wet.jpeg"; 
+    //         }
+    //         else if(taskData.time==="12:00 AM")
+    //             {
+    //                 imgEl.src = "reception.avif"; 
+    //             }
+    //         else if(taskData.time==="12:30 AM")
+    //             {
+    //                 imgEl.src = "stairs.jpeg"; 
+    //             }
+    //         else if(taskData.time==="1:00 AM")
+    //             {
+    //                 imgEl.src = "lift.jpg"; 
+    //             }
+    //         else if(taskData.time==="1:15 AM")
+    //             {
+    //                 imgEl.src = "terrace.jpeg"; 
+    //             }
+    //         else if(taskData.time==="6:00 AM")
+    //             {
+    //                 imgEl.src = "utensil.jpeg"; 
+    //             }
+    //         else if(taskData.time==="6:30 AM")
+    //             {
+    //                 imgEl.src = "cabin.webp"; 
+    //             }
+    //         else if(taskData.time==="7:00 AM")
+    //             {
+    //                 imgEl.src = "coffee.jpg"; 
+    //             }
+    //         else if(taskData.time==="7:30 AM")
+    //             {
+    //                 imgEl.src = "wet.jpeg"; 
+    //             }
+    //         else{
+    //                 imgEl.src = "reception.avif"; 
+    //             }
+    //     }
 
     // Create a container for the text details
     let textContainerEl = document.createElement("div");
