@@ -51,16 +51,16 @@ onValue(taskRef, (snapshot) => {
         const taskStatus = taskData.status ? taskData.status.toLowerCase() : 'unknown';
         console.log('Task status:', taskStatus);
 
-        const uploadTime = new Date(taskData.uploadTime);
-        const currentTime = new Date();
-        const timeDifference = (currentTime - uploadTime) / (1000 * 60 * 60); // Time difference in hours
-        console.log(uploadTime);
-        console.log(currentTime);
-        console.log(timeDifference);
-        if (timeDifference >= 15 && taskStatus === "complete") {
-            update(taskRef, { status: "incomplete" });
-            taskData.status = "incomplete";
-        }
+        // const uploadTime = new Date(taskData.uploadTime);
+        // const currentTime = new Date();
+        // const timeDifference = (currentTime - uploadTime) / (1000 * 60 * 60); // Time difference in hours
+        // console.log(uploadTime);
+        // console.log(currentTime);
+        // console.log(timeDifference);
+        // if (timeDifference >= 15 && taskStatus === "complete") {
+        //     update(taskRef, { status: "incomplete" });
+        //     taskData.status = "incomplete";
+        // }
 
         document.getElementById("task-name").textContent = `Task: ${taskData.task}`;
         document.getElementById("task-time").textContent = `Time: ${taskData.time}`;

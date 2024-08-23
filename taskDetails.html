@@ -359,84 +359,84 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        function backupAndResetTasks() {
-        const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
-        const taskHistoryRef = database.ref('taskhistory');
-        const currentDate = new Date();
-        const backupDate = currentDate.toISOString().split('T')[0];
+    //     function backupAndResetTasks() {
+    //     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
+    //     const taskHistoryRef = database.ref('taskhistory');
+    //     const currentDate = new Date();
+    //     const backupDate = currentDate.toISOString().split('T')[0];
 
-        const backupPromises = officeRefs.map(office => {
-            const tasksRef = database.ref(office);
-            return tasksRef.once('value').then(snapshot => {
-                const officeTasks = snapshot.val();
-                if (officeTasks) {
-                    // Create backup in taskhistory with timestamp
-                    return taskHistoryRef.child(backupDate).child(office).set(officeTasks);
-                }
-            });
-        });
+    //     const backupPromises = officeRefs.map(office => {
+    //         const tasksRef = database.ref(office);
+    //         return tasksRef.once('value').then(snapshot => {
+    //             const officeTasks = snapshot.val();
+    //             if (officeTasks) {
+    //                 // Create backup in taskhistory with timestamp
+    //                 return taskHistoryRef.child(backupDate).child(office).set(officeTasks);
+    //             }
+    //         });
+    //     });
 
-        Promise.all(backupPromises).then(() => {
-            // After backup, reset all tasks
-            resetAllTasks();
-            removeOldBackups();
-            database.ref('lastResetDate').set(backupDate);
-        }).catch(error => {
-            console.error("Error backing up and resetting tasks:", error);
-        });
-    }
+    //     Promise.all(backupPromises).then(() => {
+    //         // After backup, reset all tasks
+    //         resetAllTasks();
+    //         removeOldBackups();
+    //         database.ref('lastResetDate').set(backupDate);
+    //     }).catch(error => {
+    //         console.error("Error backing up and resetting tasks:", error);
+    //     });
+    // }
 
-    function resetAllTasks() {
-        const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
-        officeRefs.forEach(office => {
-            const tasksRef = database.ref(office);
-            tasksRef.once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const taskKey = childSnapshot.key;
-                    tasksRef.child(taskKey).update({
-                        status: 'incomplete',
-                        imageUrl: null,
-                        completedBy: null,
-                        uploadTime: null,
-                        rating:0
-                    });
-                });
-            });
-        });
-    }
+    // function resetAllTasks() {
+    //     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
+    //     officeRefs.forEach(office => {
+    //         const tasksRef = database.ref(office);
+    //         tasksRef.once('value').then(snapshot => {
+    //             snapshot.forEach(childSnapshot => {
+    //                 const taskKey = childSnapshot.key;
+    //                 tasksRef.child(taskKey).update({
+    //                     status: 'incomplete',
+    //                     imageUrl: null,
+    //                     completedBy: null,
+    //                     uploadTime: null,
+    //                     rating:0
+    //                 });
+    //             });
+    //         });
+    //     });
+    // }
 
-    function removeOldBackups() {
-        const taskHistoryRef = database.ref('taskhistory');
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
-        const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+    // function removeOldBackups() {
+    //     const taskHistoryRef = database.ref('taskhistory');
+    //     const cutoffDate = new Date();
+    //     cutoffDate.setDate(cutoffDate.getDate() - 30);
+    //     const cutoffDateString = cutoffDate.toISOString().split('T')[0];
 
-        taskHistoryRef.once('value').then(snapshot => {
-            snapshot.forEach(childSnapshot => {
-                const backupDate = childSnapshot.key;
-                if (backupDate < cutoffDateString) {
-                    taskHistoryRef.child(backupDate).remove();
-                }
-            });
-        });
-    }
+    //     taskHistoryRef.once('value').then(snapshot => {
+    //         snapshot.forEach(childSnapshot => {
+    //             const backupDate = childSnapshot.key;
+    //             if (backupDate < cutoffDateString) {
+    //                 taskHistoryRef.child(backupDate).remove();
+    //             }
+    //         });
+    //     });
+    // }
 
-    function resetTasksIfNeeded() {
-        const resetRef = database.ref('lastResetDate');
-        resetRef.once('value').then(snapshot => {
-            const lastResetDate = snapshot.val();
-            const currentDate = new Date();
-            const currentDay = currentDate.toISOString().split('T')[0];
+    // function resetTasksIfNeeded() {
+    //     const resetRef = database.ref('lastResetDate');
+    //     resetRef.once('value').then(snapshot => {
+    //         const lastResetDate = snapshot.val();
+    //         const currentDate = new Date();
+    //         const currentDay = currentDate.toISOString().split('T')[0];
 
-            if (lastResetDate !== currentDay) {
-                const currentHour = currentDate.getHours();
-                if (currentHour >= 6) {
-                    backupAndResetTasks();
-                }
-            }
-        });
-    }       
-        resetTasksIfNeeded();
+    //         if (lastResetDate !== currentDay) {
+    //             const currentHour = currentDate.getHours();
+    //             if (currentHour >= 6) {
+    //                 resetAllTasks();
+    //             }
+    //         }
+    //     });
+    // }       
+    //     resetTasksIfNeeded();
     </script>
     <script src="taskDetails.js"></script>
 </body>
