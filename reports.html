@@ -448,32 +448,76 @@ function setTaskRating(office, taskId, rating) {
         if (lastResetDate !== currentDay) {
             const currentHour = currentDate.getHours();
             if (currentHour >= 6) {
-                resetAllTasks();
+                backupAndResetTasks();
                 resetRef.set(currentDay);
             }
         }
     });
 }
 
-function resetAllTasks() {
-    const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
+function backupAndResetTasks() {
+            const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
+            const backupDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
 
-    officeRefs.forEach(office => {
-        const tasksRef = database.ref(office);
-        tasksRef.once('value').then(snapshot => {
-            snapshot.forEach(childSnapshot => {
-                const taskKey = childSnapshot.key;
-                tasksRef.child(taskKey).update({
-                    status: 'incomplete',
-                    imageUrl: null,
-                    completedBy: null,
-                    uploadTime: null,
-                    rating:0
+            officeRefs.forEach(office => {
+                const tasksRef = database.ref(office);
+                const backupRef = database.ref(`backup/${office}/${backupDate}`); // Create a backup reference
+
+                tasksRef.once('value').then(snapshot => {
+                    const tasks = snapshot.val();
+                    if (tasks) {
+                        backupRef.set(tasks) // Backup tasks
+                        .then(() => {
+                            console.log(`Backup for ${office} on ${backupDate} successful.`);
+                            resetTasksInOffice(office); // Reset tasks after backup
+                        })
+                        .catch(error => {
+                            console.error(`Error backing up data for ${office}:`, error);
+                        });
+                    }
                 });
             });
-        });
-    });
-}
+        }
+
+        function resetTasksInOffice(office) {
+            const tasksRef = database.ref(office);
+            tasksRef.once('value').then(snapshot => {
+                snapshot.forEach(childSnapshot => {
+                    const taskKey = childSnapshot.key;
+                    tasksRef.child(taskKey).update({
+                        status: 'incomplete',
+                        imageUrl: null,
+                        completedBy: null,
+                        uploadTime: null,
+                        rating: 0
+                    });
+                });
+            }).then(() => {
+                console.log(`Tasks in ${office} have been reset.`);
+            }).catch(error => {
+                console.error(`Error resetting tasks in ${office}:`, error);
+            });
+        }
+
+// function resetAllTasks() {
+//     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
+
+//     officeRefs.forEach(office => {
+//         const tasksRef = database.ref(office);
+//         tasksRef.once('value').then(snapshot => {
+//             snapshot.forEach(childSnapshot => {
+//                 const taskKey = childSnapshot.key;
+//                 tasksRef.child(taskKey).update({
+//                     status: 'incomplete',
+//                     imageUrl: null,
+//                     completedBy: null,
+//                     uploadTime: null,
+//                     rating:0
+//                 });
+//             });
+//         });
+//     });
+// }
     </script>
 </body>
 </html>
