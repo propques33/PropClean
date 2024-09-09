@@ -96,19 +96,8 @@
       <div class="rt"><span data-translate>Already Have an account? </span><button id="return-btn">Login</button></div>
     </div>
   </div>
-  <!-- <script>
-    function redirectToSignup() {
-  const container = document.querySelector('.signin-container');
-  container.style.opacity = '0';
-  
-  setTimeout(() => {
-    window.location.href = 'index.html';
-  }, 500); 
-}
-
-  </script> -->
-<script>
-  const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
+<!-- <script>
+  const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs';// Replace with your API key
 
 document.getElementById('languageSelector').addEventListener('change', function() {
   const selectedLanguage = this.value;
@@ -120,34 +109,140 @@ function getPreferredLanguage() {
       return localStorage.getItem('preferredLanguage') || 'en';
     }
 
-async function translatePage(targetLanguage) {
-  const elementsToTranslate = document.querySelectorAll('[data-translate]');
-  elementsToTranslate.forEach(async (element) => {
-    const text = element.innerText;
-    const translatedText = await fetchTranslation(text, targetLanguage);
-    element.innerText = translatedText;
-  });
-}
+// async function translatePage(targetLanguage) {
+//   const elementsToTranslate = document.querySelectorAll('[data-translate]');
+//   elementsToTranslate.forEach(async (element) => {
+//     const text = element.innerText;
+//     const translatedText = await fetchTranslation(text, targetLanguage);
+//     element.innerText = translatedText;
+//   });
+// }
 
-async function fetchTranslation(text, targetLanguage) {
-  const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      q: text,
-      target: targetLanguage,
-    })
-  });
-  const data = await response.json();
-  return data.data.translations[0].translatedText;
-}
+async function translatePage(targetLanguage) {
+    const elementsToTranslate = Array.from(document.querySelectorAll('[data-translate]'));
+    const texts = elementsToTranslate.map(el => el.innerText);
+
+    // Fetch the translations in a single batch request
+    const translatedTexts = await fetchTranslationBatch(texts, targetLanguage);
+
+    if (translatedTexts) {
+      elementsToTranslate.forEach((element, index) => {
+        element.innerText = translatedTexts[index];
+      });
+    }
+  }
+
+// async function fetchTranslation(text, targetLanguage) {
+//   const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({
+//       q: text,
+//       target: targetLanguage,
+//     })
+//   });
+//   const data = await response.json();
+//   return data.data.translations[0].translatedText;
+// }
+
+async function fetchTranslationBatch(texts, targetLanguage) {
+    try {
+      const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          q: texts, // Array of text strings to translate
+          target: targetLanguage,
+        })
+      });
+      const data = await response.json();
+      if (data.data && data.data.translations) {
+        return data.data.translations.map(t => t.translatedText);
+      } else {
+        console.error('Translation API error: ', data);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching translation:', error);
+      return null;
+    }
+  }
+
 document.addEventListener('DOMContentLoaded', () => {
       const preferredLanguage = getPreferredLanguage();
       document.getElementById('languageSelector').value = preferredLanguage;
       translatePage(preferredLanguage);
     });
+</script> -->
+<script>
+  const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
+
+  // Ensure DOM is loaded before adding event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    const languageSelector = document.getElementById('languageSelector');
+
+    // Set the preferred language
+    const preferredLanguage = getPreferredLanguage();
+    languageSelector.value = preferredLanguage;
+    translatePage(preferredLanguage);
+
+    // Add event listener for language change
+    languageSelector.addEventListener('change', function() {
+      const selectedLanguage = this.value;
+      localStorage.setItem('preferredLanguage', selectedLanguage);
+      translatePage(selectedLanguage);
+    });
+  });
+
+  // Get preferred language from localStorage
+  function getPreferredLanguage() {
+    return localStorage.getItem('preferredLanguage') || 'en';
+  }
+
+  // Batch translation for all elements with data-translate attribute
+  async function translatePage(targetLanguage) {
+    const elementsToTranslate = Array.from(document.querySelectorAll('[data-translate]'));
+    const texts = elementsToTranslate.map(el => el.innerText);
+
+    // Fetch the translations in a single batch request
+    const translatedTexts = await fetchTranslationBatch(texts, targetLanguage);
+
+    if (translatedTexts) {
+      elementsToTranslate.forEach((element, index) => {
+        element.innerText = translatedTexts[index];
+      });
+    }
+  }
+
+  // Batch request to Translation API
+  async function fetchTranslationBatch(texts, targetLanguage) {
+    try {
+      const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          q: texts, // Array of text strings to translate
+          target: targetLanguage,
+        })
+      });
+      const data = await response.json();
+      if (data.data && data.data.translations) {
+        return data.data.translations.map(t => t.translatedText);
+      } else {
+        console.error('Translation API error: ', data);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error fetching translation:', error);
+      return null;
+    }
+  }
 </script>
   <script type="module" src="script.js"></script>
 </body>
