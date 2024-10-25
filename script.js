@@ -1,5 +1,4 @@
 // script.js
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, onAuthStateChanged,signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
@@ -81,6 +80,7 @@ function checkUserBlockStatus(user) {
 }
 
 // Check authentication state when the page loads
+// Check authentication state when the page loads
 onAuthStateChanged(auth, (user) => {
   if (user) {
     checkUserBlockStatus(user).then(isBlocked => {
@@ -89,11 +89,27 @@ onAuthStateChanged(auth, (user) => {
           window.alert("Your account has been blocked. Please contact the administrator.");
         });
       } else {
-        window.location.href = "land.html"; // Redirect to landing page if user is not blocked
+        // Ensure the currently logged-in user is not overwritten by previous credentials
+        const storedAdminEmail = localStorage.getItem('adminEmail');
+        if (storedAdminEmail && user.email === storedAdminEmail) {
+          // Re-authenticate only if the stored email matches the current user
+          const adminPassword = localStorage.getItem('adminPassword');
+          if (adminPassword) {
+            signInWithEmailAndPassword(auth, storedAdminEmail, adminPassword)
+              .then(() => {
+                console.log("Re-authenticated as admin after page reload.");
+              })
+              .catch((error) => {
+                console.error("Error re-authenticating admin:", error);
+              });
+          }
+        }
+        window.location.href = "land.html"; // Redirect to the landing page if the user is not blocked
       }
     });
   }
 });
+
 
 
 
@@ -103,6 +119,11 @@ googleSignInButton.addEventListener("click", function() {
   signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
+
+      // Clear any previous credentials in localStorage
+      localStorage.removeItem('adminEmail');
+      localStorage.removeItem('adminPassword');
+
       checkUserBlockStatus(user).then(isBlocked => {
         if (isBlocked) {
           signOut(auth).then(() => {
@@ -118,12 +139,17 @@ googleSignInButton.addEventListener("click", function() {
       handleAuthError(error);
     });
 });
+
 // Google Sign-Up
 googleSignUpButton.addEventListener("click", function() {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
     .then((result) => {
       const user = result.user;
+      // Clear any previous credentials in localStorage
+      localStorage.removeItem('adminEmail');
+      localStorage.removeItem('adminPassword');
+
       // Check if user already exists in the database
       get(ref(database, 'users/' + user.uid)).then((snapshot) => {
         if (!snapshot.exists()) {
@@ -234,6 +260,10 @@ submitButton.addEventListener("click", function() {
   email = emailInput.value;
   password = passwordInput.value;
 
+  // Clear any previously stored credentials in localStorage
+  localStorage.removeItem('adminEmail');
+  localStorage.removeItem('adminPassword');
+
   signInWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
     const user = userCredential.user;
@@ -241,6 +271,8 @@ submitButton.addEventListener("click", function() {
     get(userRef).then((snapshot) => {
       const userData = snapshot.val();
       if (adminEmails.includes(user.email)) {
+        localStorage.setItem('adminEmail', user.email);
+        localStorage.setItem('adminPassword', password);
         window.alert("Success! Welcome back, admin!");
         window.location.href = "land.html";
       } else if (userData.blocked) {

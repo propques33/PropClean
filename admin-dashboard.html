@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        * {
+        *{
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Rubik', sans-serif;
             background-color: #f4f7fc;
@@ -242,41 +241,177 @@
         button#del:hover,.delete-section button:hover {
             background-color: #c0392b;
         }
+        /* Style for the input and button group */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .input-group input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .input-group button {
+            padding: 10px 15px;
+            background-color: #335ef7;
+            color: white;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-group button:hover {
+            background-color: #1d3ebd;
+        }
+
+        /* Style for the subcompany list */
+        .subcompany-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .subcompany-list li {
+            background-color: #f0f0f5;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subcompany-list li span {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .subcompany-list li button {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            width:40%;
+        }
+
+        .subcompany-list li button:hover {
+            background-color: #c0392b;
+        }
+
+        button#add-company-btn[disabled] {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+
+        button#add-company-btn:not([disabled]):hover {
+            background-color: #1d3ebd;
+        }
+
+        .non{
+            display:none;
+        }
     </style>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 </head>
 <body>
     <div class="con">
     <button id="back"><span><img src="arrow.png"></span>Go Back</button>
     <div class="container">
-        <h1 class="admin">Admin Dashboard</h1>
+        <h1 class="admin">Space Setup</h1>
+        <!-- Add Company and Subcompany Section -->
+       <!-- Add Company and Subcompany Section -->
+<div id="add-company-section" class="section" >
+    <h2 class="ts">Add New Company</h2>
+    <form id="add-company-form">
+        <label for="company-name">Company Name:</label>
+        <input type="text" id="company-name" required>
+
+        <div id="subcompany-section">
+            <label for="subcompany-name">Subcompany Name:</label>
+            <div class="input-group">
+                <input type="text" id="subcompany-name" placeholder="Enter subcompany name">
+                <button type="button" id="add-subcompany-btn">+ Add Subcompany</button>
+            </div>
+        </div>
+
+        <!-- List of subcompanies will be displayed here -->
+        <ul id="subcompany-list" class="subcompany-list"></ul>
+
+        <button type="submit" id="add-company-btn" disabled>Add Company</button>
+    </form>
+</div>
+
+<div class="section" style="display:none;">
+    <h2 class="ts">Add Subcompany to Existing Company</h2>
+    <form id="add-subcompany-form">
+        <label for="existing-company-select">Select Existing Company:</label>
+        <select id="existing-company-select" required>
+            <option value="" disabled selected>Select Company</option>
+        </select>
+
+        <label for="new-subcompany-name">Subcompany Name:</label>
+        <input type="text" id="new-subcompany-name" placeholder="Enter new subcompany name" required>
+
+        <button type="submit" id="add-new-subcompany-btn">Add Subcompany</button>
+    </form>
+</div>
+
+
+        <!-- Add New User Section -->
+        <div class="section">
+            <h2 class="ts">Add New User</h2>
+            <form id="add-user-form">
+                <label for="role-select">Select User Role:</label>
+                <select id="role-select" required>
+                    <option value="" disabled selected>Select Role</option>
+                    <option value="owner">Owner</option>
+                    <option value="center-manager">Center Manager</option>
+                    <option value="office-boy">Office Boy</option>
+                    <option value="developer">Developer</option> 
+                </select>
+        
+                <div id="dynamic-fields"></div> <!-- Placeholder for dynamic fields based on role -->
+                <button type="submit" id="add-user-btn">Add New User</button>
+            </form>
+        </div>
 
         <div class="section">
             <h2 class="ts">Add New Task</h2>
             <form id="add-task-form">
-                <label for="office-select">Select Office:</label>
-                <select id="office-select" required>
-                    <!-- Office options will be populated dynamically based on the admin's office -->
+                <!-- Select Company -->
+                <label for="task-company-select">Select Company:</label>
+                <select id="task-company-select" required>
+                    <option value="" disabled selected>Select Company</option>
+                    <!-- Company options will be populated dynamically -->
                 </select>
-                <!-- <select id="office-select" required>
-                    <option value="Cubispace">Cubispace</option>
-                    <option value="Karyasthal">Karyasthal</option>
-                    <option value="Worqspot">Worqspot</option>
-                    <option value="Workdesq">Workdesq</option>
-                    <option value="Workvia">Workvia</option>
-                    <option value="sso">Sapna Sangeeta</option>
-                </select> -->
-
+        
+                <!-- Select Subcompany -->
+                <label for="task-subcompany-select">Select Subcompany:</label>
+                <select id="task-subcompany-select" required disabled>
+                    <option value="" disabled selected>Select Subcompany</option>
+                    <!-- Subcompany options will be populated dynamically -->
+                </select>
+        
                 <label for="task-name">Task Name:</label>
                 <input type="text" id="task-name" required>
-
+        
                 <label for="task-time">Time:</label>
                 <input type="time" id="task-time" required>
-
+        
                 <label for="user-select">Assign To:</label>
                 <select id="user-select" required>
-                    <!-- Users will be populated dynamically based on the office -->
+                    <!-- Users will be populated dynamically based on the company and subcompany -->
                 </select>
-
+        
                 <label for="image-select">Select Image:</label>
                 <select id="image-select" required>
                     <option value="cabin.webp">Cabin and Conference room cleaning</option>
@@ -300,53 +435,128 @@
                     <option value="waste.webp">Waste Vehicle</option>
                     <option value="wet.jpeg">Mopping</option>
                 </select>
-
+        
                 <button type="submit" id="ad">Add Daily Task</button>
             </form>
         </div>
-
+        
         <div class="assign-section" style="margin: 30px 0px;">
             <h2 class="ts" style="margin-bottom:20px;">Assign User to Unassigned Task</h2>
+        
+            <!-- Select Company -->
+            <label for="assign-task-company-select">Select Company:</label>
+            <select id="assign-task-company-select" style="margin-bottom:15px;" required>
+                <option value="" disabled selected>Select Company</option>
+            </select>
+        
+            <!-- Select Subcompany -->
+            <label for="assign-task-subcompany-select">Select Subcompany:</label>
+            <select id="assign-task-subcompany-select" style="margin-bottom:15px;" required disabled>
+                <option value="" disabled selected>Select Subcompany</option>
+            </select>
+        
+            <!-- Select Unassigned Task -->
             <label for="unassigned-task-select">Select Unassigned Task:</label>
-            <select id="unassigned-task-select" style="margin-bottom:15px;" required>
-                <!-- Unassigned tasks will be populated dynamically -->
+            <select id="unassigned-task-select" style="margin-bottom:15px;" required disabled>
+                <option value="" disabled selected>Select Unassigned Task</option>
             </select>
         
+            <!-- Select User to Assign -->
             <label for="assign-user-select">Assign To:</label>
-            <select id="assign-user-select" required>
-                <!-- Users will be populated dynamically based on the office -->
+            <select id="assign-user-select" required disabled>
+                <option value="" disabled selected>Select Office Boy</option>
             </select>
         
-            <button id="assign-task-button" id="asn">Assign Task</button>
+            <button id="assign-task-button">Assign Task</button>
         </div>
-
+        
         <div class="delete-section">
             <h2 class="ts">Delete Task</h2>
-            <label for="task-select">Select Task:</label>
-            <select id="task-select" required>
-                <!-- Task options will be populated dynamically based on the selected office -->
+        
+            <label for="delete-task-company-select">Select Company:</label>
+            <select id="delete-task-company-select" required>
+                <option value="" disabled selected>Select Company</option>
+                <!-- Companies will be populated dynamically -->
             </select>
+        
+            <label for="delete-task-subcompany-select">Select Subcompany:</label>
+            <select id="delete-task-subcompany-select" required disabled>
+                <option value="" disabled selected>Select Subcompany</option>
+                <!-- Subcompanies will be populated dynamically -->
+            </select>
+        
+            <label for="delete-task-select">Select Task:</label>
+            <select id="delete-task-select" required disabled>
+                <option value="" disabled selected>Select Task</option>
+                <!-- Tasks will be populated dynamically -->
+            </select>
+        
             <button id="delete-task-button">Delete Task</button>
-        </div>
-
-        <div class="section">
-            <label for="remove-user-select">Select User to Remove:</label>
-            <select id="remove-user-select" required>
-                <!-- User options will be populated dynamically based on the office -->
-            </select>
-            <button type="submit" id="del">Remove User</button>
-        </div>
+        </div>        
         <button id="reset-button" style="margin-top: 40px; background-color:#151d31;display:none;">Reset All Tasks</button>
     </div>
 </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-functions.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+
+    (function(){
+       emailjs.init({
+         publicKey: "LfOXVZKgOdG8n4s2v",
+       });
+    })();
+
+function sendEmail(toEmail, loginEmail, password, appLink) {
+            var templateParams = {
+                user_email: loginEmail,
+                user_password: password,
+            };
+            console.log(toEmail);
+
+  emailjs.send('service_75pnkk7', 'template_mh12k7l', templateParams)
+  .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert("New user added successfully and email sent!");
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    alert("Failed to send the email. Please check your EmailJS configuration.");
+                });
+}
+ </script>
     <script>
-        function navigateTo(page) {
-      window.location.href = page;
+
+// Re-authenticate the admin only if credentials exist in localStorage
+window.addEventListener("load", function () {
+    const adminEmail = localStorage.getItem("adminEmail");
+    const adminPassword = localStorage.getItem("adminPassword");
+
+    if (adminEmail && adminPassword) {
+        firebase.auth().currentUser.reload().then(() => {
+            // Check if the user is still the one stored in localStorage
+            const currentUser = firebase.auth().currentUser;
+            if (currentUser && currentUser.email === adminEmail) {
+                firebase.auth().signInWithEmailAndPassword(adminEmail, adminPassword)
+                    .then(() => {
+                        console.log("Admin re-authenticated after page reload.");
+                    })
+                    .catch((error) => {
+                        console.error("Error re-authenticating admin:", error);
+                    });
+            } else {
+                console.log("Current session is not the stored admin credentials. Skipping re-authentication.");
+            }
+        });
     }
-        // Firebase configuration
+});
+
+        function navigateTo(page) {
+            window.location.href = page;
+         }
         const firebaseConfig = {
             apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
             authDomain: "propclean.firebaseapp.com",
@@ -364,6 +574,730 @@
         }
         const database = firebase.database();
         const auth = firebase.auth();
+
+        function populateExistingCompaniesDropdownForOwner(ownerCompany) {
+    const companySelect = document.getElementById('existing-company-select');
+    companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+
+    // Only add the owner's company to the dropdown
+    const option = document.createElement('option');
+    option.value = ownerCompany;
+    option.textContent = ownerCompany;
+    companySelect.appendChild(option);
+}
+
+function populateCompanyDropdownForOwnerTask(ownerCompany) {
+    const companySelect = document.getElementById('task-company-select');
+    companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+
+    // Only add the owner's company to the dropdown
+    const option = document.createElement('option');
+    option.value = ownerCompany;
+    option.textContent = ownerCompany;
+    companySelect.appendChild(option);
+}
+
+        auth.onAuthStateChanged(user => {
+    if (user) {
+        // Retrieve user data from Firebase Database
+        const userRef = database.ref('users/' + user.uid);
+        userRef.once('value').then(snapshot => {
+            const userData = snapshot.val();
+            const userRole = userData.role;
+            const userCompany = userData.companyName;
+            const userSubcompany = userData.subcompanyName;
+
+            populateRoleSelect(userData.role);
+            console.log(userData.role);
+
+            // If the user is an owner, populate the dropdown with only their company
+            if (userData.role === 'owner') {
+                populateExistingCompaniesDropdownForOwner(userData.companyName);
+                populateCompanyDropdownForOwnerTask(userData.companyName);
+
+                // For owner, populate only the company dropdown with their company and disable selection
+                const companySelectAssign = document.getElementById('assign-task-company-select');
+                companySelectAssign.innerHTML = `<option value="${userCompany}">${userCompany}</option>`;
+                companySelectAssign.disabled = true;
+
+                const companySelectDelete = document.getElementById('delete-task-company-select');
+                companySelectDelete.innerHTML = `<option value="${userCompany}">${userCompany}</option>`;
+                companySelectDelete.disabled = true;
+
+                // Populate the subcompany dropdown when owner selects a company
+                populateSubcompanyDropdownForAssign(userCompany);
+                populateSubcompanyDropdownForDelete(userCompany);
+            }
+            else if (userRole === 'center-manager') {
+                // For center-manager, populate both company and subcompany dropdowns automatically and disable selection
+
+                // Automatically populate and disable the company and subcompany dropdowns in "Add New Task"
+                const companySelectTask = document.getElementById('task-company-select');
+                const subcompanySelectTask = document.getElementById('task-subcompany-select');
+
+                companySelectTask.innerHTML = `<option value="${userCompany}">${userCompany}</option>`;
+                companySelectTask.disabled = true; // Disable the company select for center-manager
+
+                subcompanySelectTask.innerHTML = `<option value="${userSubcompany}">${userSubcompany}</option>`;
+                subcompanySelectTask.disabled = true; // Disable the subcompany select for center-manager
+
+                // Populate Office Boys for the selected company and subcompany
+                populateOfficeBoys(userCompany, userSubcompany);
+
+                const companySelectAssign = document.getElementById('assign-task-company-select');
+                companySelectAssign.innerHTML = `<option value="${userCompany}">${userCompany}</option>`;
+                companySelectAssign.disabled = true;
+
+                const subcompanySelectAssign = document.getElementById('assign-task-subcompany-select');
+                subcompanySelectAssign.innerHTML = `<option value="${userSubcompany}">${userSubcompany}</option>`;
+                subcompanySelectAssign.disabled = true;
+
+                const companySelectDelete = document.getElementById('delete-task-company-select');
+                companySelectDelete.innerHTML = `<option value="${userCompany}">${userCompany}</option>`;
+                companySelectDelete.disabled = true;
+
+                const subcompanySelectDelete = document.getElementById('delete-task-subcompany-select');
+                subcompanySelectDelete.innerHTML = `<option value="${userSubcompany}">${userSubcompany}</option>`;
+                subcompanySelectDelete.disabled = true;
+
+                populateUnassignedTasks(userCompany, userSubcompany); // Populating unassigned tasks
+                populateOfficeBoysForAssign(userCompany, userSubcompany);
+                populateTaskDropdownForDelete(userCompany, userSubcompany); // Populate tasks for deletion
+
+
+            } else if (userData.role === 'developer' || userData.role === 'admin') {
+                // For developers or admins, populate the dropdown with all companies
+                populateExistingCompaniesDropdown('existing-company-select');
+                populateCompanyDropdownForTask();
+                populateCompanyDropdownForAssign();
+                populateCompanyDropdownForDelete();
+            }
+
+            // Show Add Company section only for developers and hide for others
+            if (userData.role === 'developer') {
+                document.getElementById('add-company-section').style.display = 'block';
+            } else {
+                // Hide Add Company section for all roles other than developer
+                document.getElementById('add-company-section').style.display = 'none';
+            }
+
+            // Check if the user is an owner, developer, or admin
+            if (userData.role === 'owner' || userData.role === 'developer' || userData.role === 'admin') {
+                // Show Add Subcompany to Existing Company Section
+                document.getElementById('add-subcompany-form').parentNode.style.display = 'block';
+            }
+        });
+    } else {
+        // If the user is not logged in, redirect to the login page
+        window.location.href = 'index.html';
+    }
+});
+
+function populateRoleSelect(currentUserRole) {
+    const roleSelect = document.getElementById('role-select');
+    roleSelect.innerHTML = '<option value="" disabled selected>Select Role</option>'; // Reset the dropdown
+
+    // Define role options for each type of user
+    const roleOptions = {
+        developer: ['developer', 'owner', 'center-manager', 'office-boy'],
+        owner: ['center-manager', 'office-boy'],
+        'center-manager': ['office-boy']
+    };
+
+    // Get the roles available based on the logged-in user's role
+    const availableRoles = roleOptions[currentUserRole] || [];
+
+    // Populate the dropdown with the available roles
+    availableRoles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role;
+        option.textContent = role.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()); // Capitalize roles
+        roleSelect.appendChild(option);
+    });
+}
+
+        // Variables to store subcompanies
+let subcompanies = [];
+
+// Add Subcompany to the List
+document.getElementById("add-subcompany-btn").addEventListener("click", function () {
+    const subcompanyName = document.getElementById("subcompany-name").value.trim();
+    if (subcompanyName) {
+        subcompanies.push(subcompanyName);  // Add to the subcompany array
+        document.getElementById("subcompany-name").value = ''; // Clear the input field
+        updateSubcompanyList(); // Update the displayed list
+        document.getElementById("add-company-btn").disabled = false; // Enable the Add Company button
+    } else {
+        alert("Please enter a subcompany name.");
+    }
+});
+
+// Function to update the displayed subcompany list
+function updateSubcompanyList() {
+    const subcompanyList = document.getElementById("subcompany-list");
+    subcompanyList.innerHTML = ''; // Clear the list
+
+    subcompanies.forEach((subcompany, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <span>${subcompany}</span>
+            <button type="button" onclick="removeSubcompany(${index})">Remove</button>
+        `;
+        subcompanyList.appendChild(li);
+    });
+
+    // Disable Add Company button if no subcompanies are present
+    document.getElementById("add-company-btn").disabled = subcompanies.length === 0;
+}
+
+// Function to remove a subcompany from the list
+function removeSubcompany(index) {
+    subcompanies.splice(index, 1); // Remove the subcompany from the array
+    updateSubcompanyList(); // Refresh the list
+}
+
+        // Add Company and Subcompanies to Firebase
+document.getElementById("add-company-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const companyName = document.getElementById("company-name").value.trim();
+    if (companyName && subcompanies.length > 0) {
+        const companyRef = database.ref('companies/' + companyName);
+
+        // Prepare the subcompanies as an object with their names as keys
+        const subcompanyObject = {};
+        subcompanies.forEach(subcompany => {
+            subcompanyObject[subcompany] = true; // Store each subcompany name as a key
+        });
+
+        // Add the company and subcompanies to Firebase
+        const companyData = {
+            name: companyName,
+            subcompanies: subcompanyObject // Store subcompanies under the company node
+        };
+
+        companyRef.set(companyData)
+            .then(() => {
+                alert("Company and subcompanies added successfully!");
+                document.getElementById("add-company-form").reset(); // Reset the form
+                subcompanies = []; // Clear the subcompany list
+                updateSubcompanyList(); // Clear the displayed list
+            })
+            .catch((error) => {
+                console.error("Error adding company:", error);
+                alert("Error adding company: " + error.message);
+            });
+    } else {
+        alert("Please enter a company name and at least one subcompany.");
+    }
+});
+
+
+
+function populateExistingCompaniesDropdown(dropdownId) {
+            const companySelect = document.getElementById(dropdownId);
+            companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+            database.ref('companies').once('value').then(snapshot => {
+                snapshot.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.key;
+                    option.textContent = company.key;
+                    companySelect.appendChild(option);
+                });
+            });
+        }
+
+        // Populate dropdowns on page load
+        populateExistingCompaniesDropdown('existing-company-select');
+
+        // Handle adding subcompanies to existing company
+        document.getElementById('add-subcompany-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const selectedCompany = document.getElementById('existing-company-select').value;
+            const newSubcompanyName = document.getElementById('new-subcompany-name').value.trim();
+
+            if (selectedCompany && newSubcompanyName) {
+                const subcompanyRef = database.ref(`companies/${selectedCompany}/subcompanies/${newSubcompanyName}`);
+                subcompanyRef.set(true)
+                .then(() => {
+                    alert('Subcompany added successfully!');
+                    document.getElementById('add-subcompany-form').reset();
+                })
+                .catch(error => {
+                    alert('Error adding subcompany: ' + error.message);
+                });
+            } else {
+                alert('Please select a company and enter a subcompany name.');
+            }
+        });
+
+// Fetch companies from Firebase and populate dropdowns
+function populateCompanyDropdown() {
+            const companySelect = document.createElement('select');
+            companySelect.id = 'company-select';
+            companySelect.required = true;
+            companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+
+            database.ref('companies').once('value').then(snapshot => {
+                snapshot.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.key; // Company name
+                    option.textContent = company.key;
+                    companySelect.appendChild(option);
+                });
+            });
+
+            return companySelect;
+        }
+
+// Fetch subcompanies based on selected company
+// Fetch subcompanies based on selected company and populate the dropdown with subcompany names
+function populateSubcompanyDropdown(companyName) {
+            const subcompanySelect = document.createElement('select');
+            subcompanySelect.id = 'subcompany-select';
+            subcompanySelect.required = true;
+            subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+
+            database.ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+                snapshot.forEach(subcompany => {
+                    const option = document.createElement('option');
+                    option.value = subcompany.key;
+                    option.textContent = subcompany.key;
+                    subcompanySelect.appendChild(option);
+                });
+            });
+
+            return subcompanySelect;
+        }
+
+    // Populate Company Dropdowns
+function populateCompanyDropdown(selectId) {
+    const companySelect = document.getElementById(selectId);
+    companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+    database.ref('companies').once('value').then(snapshot => {
+        snapshot.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company.key;
+            option.textContent = company.key;
+            companySelect.appendChild(option);
+        });
+    });
+}
+
+// Populate Subcompany Dropdowns
+function populateSubcompanyDropdown(companyName, subcompanySelectId) {
+    const subcompanySelect = document.getElementById(subcompanySelectId);
+    subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+    database.ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+        snapshot.forEach(subcompany => {
+            const option = document.createElement('option');
+            option.value = subcompany.key;
+            option.textContent = subcompany.key;
+            subcompanySelect.appendChild(option);
+        });
+        subcompanySelect.disabled = false; // Enable dropdown after loading
+    });
+}
+
+// Populate Task Dropdown for Delete Task Section
+function populateTaskDropdownForDelete(companyName, subcompanyName) {
+    const taskSelect = document.getElementById('delete-task-select');
+    taskSelect.innerHTML = '<option value="" disabled selected>Select Task</option>';
+    database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`).once('value').then(snapshot => {
+        snapshot.forEach(task => {
+            const option = document.createElement('option');
+            option.value = task.key;
+            option.textContent = task.val().task;
+            taskSelect.appendChild(option);
+        });
+        taskSelect.disabled = false; // Enable dropdown after loading
+    });
+}
+
+// Event Listeners for Delete Task Section
+document.getElementById('delete-task-company-select').addEventListener('change', function() {
+    const companyName = this.value;
+    populateSubcompanyDropdown(companyName, 'delete-task-subcompany-select');
+});
+
+document.getElementById('delete-task-subcompany-select').addEventListener('change', function() {
+    const companyName = document.getElementById('delete-task-company-select').value;
+    const subcompanyName = this.value;
+    populateTaskDropdownForDelete(companyName, subcompanyName);
+});
+
+// populateCompanyDropdown('remove-user-company-select');
+populateCompanyDropdown('delete-task-company-select');
+
+// Handle dynamic fields based on role selection
+// document.getElementById("role-select").addEventListener("change", function () {
+//     const role = this.value;
+//     const dynamicFields = document.getElementById("dynamic-fields");
+//     dynamicFields.innerHTML = ''; // Clear previous fields
+
+//     // Add email field (common for all roles)
+//     dynamicFields.innerHTML += `
+//         <label for="user-email">Email:</label>
+//         <input type="email" id="user-email" required>
+//     `;
+
+//     if (role === "owner") {
+//         // Show text input for company name if role is owner
+//         dynamicFields.innerHTML += `
+//             <label for="company-select">Select Company:</label>
+//             <select id="company-select" required></select>
+//         `;
+
+//         populateExistingCompaniesDropdown('company-select');
+//     } else if (role === "center-manager" || role === "office-boy") {
+//         // Show both company and subcompany selection for center manager and office boy roles
+//         dynamicFields.innerHTML += `
+//             <label for="company-select">Select Company:</label>
+//             <select id="company-select" required></select>
+//             <label for="subcompany-select">Select Subcompany:</label>
+//             <select id="subcompany-select" required disabled></select>
+//         `;
+//         populateCompanyDropdownForUser("company-select");
+
+//         // Event listener to populate subcompanies when company is selected
+//         document.getElementById("company-select").addEventListener("change", function () {
+//             const companyName = this.value;
+//             populateSubcompanyDropdownForUser(companyName, "subcompany-select");
+//         });
+//     }
+// });
+
+document.getElementById("role-select").addEventListener("change", function () {
+    const role = this.value;
+    const dynamicFields = document.getElementById("dynamic-fields");
+    dynamicFields.innerHTML = ''; // Clear previous fields
+
+    // Add email field (common for all roles)
+    dynamicFields.innerHTML += `
+        <label for="user-email">Email:</label>
+        <input type="email" id="user-email" required>
+    `;
+    
+    const currentUser = firebase.auth().currentUser;
+
+    // Fetch current user data from Firebase Database
+    firebase.database().ref('users/' + currentUser.uid).once('value').then(snapshot => {
+        const userData = snapshot.val();
+        const currentUserRole = userData.role;
+        const currentUserCompany = userData.companyName;
+        const currentUserSubcompany = userData.subcompanyName;
+
+        if (userData.role === "owner" && role === "center-manager") {
+            dynamicFields.innerHTML += `
+                <label for="company-select">Company:</label>
+                <select id="company-select" required>
+                    <option value="${currentUserCompany}">${currentUserCompany}</option>
+                </select>
+                <label for="subcompany-select">Select Subcompany:</label>
+                <select id="subcompany-select" required>
+                    <option value="" disabled selected>Select Subcompany</option>
+                </select>
+            `;
+            // Disable the company dropdown since it's automatically selected
+            document.getElementById("company-select").disabled = true;
+
+            // Populate subcompany dropdown with available subcompanies for the selected company
+            populateSubcompanyDropdownForUser(currentUserCompany, "subcompany-select");
+
+        // 2. Owner -> Adding Office Boy
+        } 
+        else if (userData.role === "owner" && role === "office-boy") {
+            dynamicFields.innerHTML += `
+                <label for="company-select">Company:</label>
+                <select id="company-select" required>
+                    <option value="${currentUserCompany}">${currentUserCompany}</option>
+                </select>
+                <label for="subcompany-select">Select Subcompany:</label>
+                <select id="subcompany-select" required>
+                    <option value="" disabled selected>Select Subcompany</option>
+                </select>
+            `;
+            // Disable the company dropdown since it's automatically selected
+            document.getElementById("company-select").disabled = true;
+
+            // Populate subcompany dropdown with available subcompanies for the selected company
+            populateSubcompanyDropdownForUser(currentUserCompany, "subcompany-select");
+
+        // Developer or other roles -> Manual selection of company/subcompany
+        } 
+        else if (currentUserRole === "center-manager" && role === "office-boy") {
+            dynamicFields.innerHTML += `
+                <label for="company-select">Company:</label>
+                <select id="company-select" required>
+                    <option value="${currentUserCompany}">${currentUserCompany}</option>
+                </select>
+                <label for="subcompany-select">Subcompany:</label>
+                <select id="subcompany-select" required>
+                    <option value="${currentUserSubcompany}">${currentUserSubcompany}</option>
+                </select>
+            `;
+            // Disable both company and subcompany dropdowns since they are auto-selected
+            document.getElementById("company-select").disabled = true;
+            document.getElementById("subcompany-select").disabled = true;
+
+        // Developer or other roles -> Manual selection of company/subcompany
+        } 
+
+    // For Owner role, only the company name is needed (no subcompany)
+    else if (role === "owner") {
+        dynamicFields.innerHTML += `
+            <label for="company-select">Select Company:</label>
+            <select id="company-select" required></select>
+        `;
+        populateExistingCompaniesDropdown('company-select');
+    }
+    // For Center Manager and Office Boy roles, both company and subcompany selection are needed
+    else if (role === "center-manager" || role === "office-boy") {
+        dynamicFields.innerHTML += `
+            <label for="company-select">Select Company:</label>
+            <select id="company-select" required></select>
+            <label for="subcompany-select">Select Subcompany:</label>
+            <select id="subcompany-select" required disabled></select>
+        `;
+        populateCompanyDropdownForUser("company-select");
+
+        // Event listener to populate subcompanies when company is selected
+        document.getElementById("company-select").addEventListener("change", function () {
+            const companyName = this.value;
+            populateSubcompanyDropdownForUser(companyName, "subcompany-select");
+        });
+    }
+});
+});
+
+// Add User Logic Based on Role
+document.getElementById("add-user-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const role = document.getElementById("role-select").value;
+    const email = document.getElementById("user-email").value;
+    let companyName = "";
+    let subcompanyName = "";
+
+    if (role === "owner") {
+        companyName = document.getElementById("company-select").value;
+    } else if (role === "center-manager" || role === "office-boy") {
+        companyName = document.getElementById("company-select").value;
+        subcompanyName = document.getElementById("subcompany-select").value;
+    }
+
+    const defaultPassword = "123456";
+    const appLink = "https://app.propclean.pro/";
+
+    // Save the current admin (currentUser) credentials
+    // const currentUser = firebase.auth().currentUser;
+    // const currentEmail = currentUser.email;
+    // const currentPassword = prompt("Please enter your current password to verify your identity:");
+
+    // if (!currentPassword) {
+    //     alert("Admin credentials are missing. Please log in again.");
+    //     return;
+    // }
+
+    // // Store the current admin credentials in localStorage
+    // localStorage.setItem("adminEmail", currentEmail);
+    // localStorage.setItem("adminPassword", currentPassword);
+
+    // Re-authenticate the current user (admin) before creating a new user
+    // const credential = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
+    // currentUser.reauthenticateWithCredential(credential)
+    //     .then(() => {
+    //         // Now that the admin has reauthenticated, create the new user
+    //         return auth.createUserWithEmailAndPassword(email, defaultPassword);
+    //     })
+
+    // Save the current admin's email and UID to local storage for re-authentication
+    const currentAdminEmail = firebase.auth().currentUser.email;
+    const currentAdminUID = firebase.auth().currentUser.uid;
+    
+    // Temporarily store the current user's credentials in localStorage
+    localStorage.setItem("adminEmail", currentAdminEmail);
+    localStorage.setItem("adminUID", currentAdminUID);
+
+    firebase.auth().createUserWithEmailAndPassword(email, defaultPassword)
+        .then((userCredential) => {
+            const user = userCredential.user;
+
+            // Create the user data object
+            const userData = {
+                email: email,
+                role: role,
+                blocked: false
+            };
+
+            if (role === "owner") {
+                userData.companyName = companyName;
+            } else if (role === "center-manager" || role === "office-boy") {
+                userData.companyName = companyName;
+                userData.subcompanyName = subcompanyName;
+            }
+
+            let userCompanyRef;
+
+            if (role === "owner") {
+                userCompanyRef = database.ref(`companies/${companyName}/owners/${user.uid}`);
+            } else if (role === "center-manager") {
+                userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers/${user.uid}`);
+            } else if (role === "office-boy") {
+                userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys/${user.uid}`);
+            } else if (role === "developer") {
+                userCompanyRef = database.ref(`users/${user.uid}`);
+            }
+
+            const globalUserRef = database.ref(`users/${user.uid}`);
+
+            return Promise.all([
+                userCompanyRef.set(userData),
+                globalUserRef.set(userData)
+            ]);
+        })
+        // .then(() => {
+        //     // Sign the new user out and re-authenticate the admin
+        //     return auth.signOut().then(() => {
+        //         return auth.signInWithEmailAndPassword(currentEmail, currentPassword);
+        //     });
+        // })
+        // .then(() => {
+        //     // Automatically sign back in as admin
+        //     const adminEmail = localStorage.getItem("adminEmail");
+        //     const adminPassword = localStorage.getItem("adminPassword");
+
+        //     return auth.signInWithEmailAndPassword(adminEmail, adminPassword);
+        // })
+        // .then(() => {
+        //     // Sign out the newly created user
+        //     return auth.signOut();
+        // })
+        // .then(() => {
+        //     // Re-authenticate as the original admin using stored email and a session-based re-sign-in
+        //     const adminEmail = localStorage.getItem("adminEmail");
+        //     return auth.signInWithEmailAndPassword(adminEmail, defaultPassword);  // Reusing admin default password
+        // })
+        .then(() => {
+            sendEmail(email, email, defaultPassword, appLink); // Send email to the new user
+            console.log("User added successfully to Firebase. Sending email...");
+
+            alert("New user added successfully, and admin session is preserved!");
+            document.getElementById("add-user-form").reset(); // Reset the form
+        })
+        .catch((error) => {
+            console.error("Error adding user:", error);
+            alert("Error adding user: " + error.message);
+        });
+});
+
+// document.getElementById("add-user-form").addEventListener("submit", function (event) {
+//     event.preventDefault();
+
+//     const role = document.getElementById("role-select").value;
+//     const email = document.getElementById("user-email").value;
+//     let companyName = "";
+//     let subcompanyName = "";
+
+//     if (role === "owner") {
+//         companyName = document.getElementById("company-select").value;
+//     } else if (role === "center-manager" || role === "office-boy") {
+//         companyName = document.getElementById("company-select").value;
+//         subcompanyName = document.getElementById("subcompany-select").value;
+//     }
+
+//     const defaultPassword = "123456";
+//     const appLink = "https://app.propclean.pro/";
+
+//     const currentUser = firebase.auth().currentUser;
+//     const currentEmail = currentUser.email;
+//     const currentPassword = prompt("Please enter your current password to stay logged in:");
+
+//     console.log(`Creating user: ${email} with role: ${role}`);
+//     sendEmail(email, email, defaultPassword, appLink);
+
+//     // Create the new user in Firebase Authentication
+//     auth.createUserWithEmailAndPassword(email, defaultPassword)
+//         .then((userCredential) => {
+//             const user = userCredential.user;
+
+//             // Create the user data object
+//             const userData = {
+//                 email: email,
+//                 role: role,
+//                 blocked: false
+//             };
+
+//             // Add companyName and subcompanyName based on the role
+//             if (role === "owner") {
+//                 userData.companyName = companyName;
+//             } else if (role === "center-manager" || role === "office-boy") {
+//                 userData.companyName = companyName;
+//                 userData.subcompanyName = subcompanyName;
+//             }
+
+
+//             let userCompanyRef;
+
+//             // Determine where to store the user based on the role under company/subcompany
+//             if (role === "owner") {
+//                 userCompanyRef = database.ref(`companies/${companyName}/owners/${user.uid}`);
+//             } else if (role === "center-manager") {
+//                 userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers/${user.uid}`);
+//             } else if (role === "office-boy") {
+//                 userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys/${user.uid}`);
+//             } else if (role === "developer") {
+//                 // Developers are stored under the global `users` node
+//                 userCompanyRef = database.ref(`users/${user.uid}`);
+//             }
+
+//             // Also store the user under the global "users" node
+//             const globalUserRef = database.ref(`users/${user.uid}`);
+
+//             // Store user data in both company/subcompany node and global users node
+//             return Promise.all([
+//                 userCompanyRef.set(userData),  // Store in the company/subcompany node
+//                 globalUserRef.set(userData)    // Store in the global users node
+//             ]);
+
+//             // Store user data in Firebase
+//        // Ensure that userRef is not undefined before calling .set()
+//        if (userRef) {
+//                 return userRef.set(userData);
+//             } else {
+//                 throw new Error("Invalid role or missing company/subcompany details.");
+//             }
+//         })
+//         .then(() => {
+//             // Log out the newly created user to prevent auto-login
+//             return auth.signOut();
+//         })
+//         .then(() => {
+//             // Re-authenticate the current (admin) user with their credentials
+//             return auth.signInWithEmailAndPassword(currentEmail, currentPassword);
+//         })
+//         .then(() => {
+//             console.log("Re-authenticated as admin");
+//             alert("New user added successfully, and admin re-authenticated!");
+//             document.getElementById("add-user-form").reset();
+//         })
+//         .then(() => {
+//             // Only send the email if user is added successfully
+//             console.log("User added successfully to Firebase. Sending email..."); // Log user added
+
+//             // Send email using EmailJS
+//             sendEmail(email, email, defaultPassword, appLink);
+            
+//             alert("New user added successfully and email sent!");
+//             document.getElementById("add-user-form").reset(); 
+//         })
+//         .catch((error) => {
+//             console.error("Error adding user:", error);
+//             alert("Error adding user: " + error.message);
+//         });
+// });
+
 
         // Function to reset the status of all tasks to 'incomplete'
         async function resetAllTasks() {
@@ -422,24 +1356,171 @@
             }
         });
 
-        // Function to populate the dropdown with tasks that have no assigned user
-function populateUnassignedTaskDropdown(office) {
-    const tasksRef = database.ref(office);
-    tasksRef.once('value', snapshot => {
-        const tasks = snapshot.val();
-        const unassignedTaskSelect = document.getElementById('unassigned-task-select');
-        unassignedTaskSelect.innerHTML = ''; // Clear existing options
+// Populate Company Dropdown
+function populateCompanyDropdownForTask() {
+            const companySelect = document.getElementById('task-company-select');
+            companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
 
-        for (const taskId in tasks) {
-            if (!tasks[taskId].assigned) { // Check if the task has no assigned user
-                const taskOption = document.createElement('option');
-                taskOption.value = taskId;
-                taskOption.textContent = tasks[taskId].task;
-                unassignedTaskSelect.appendChild(taskOption);
-            }
+            database.ref('companies').once('value').then(snapshot => {
+                snapshot.forEach(company => {
+                    const option = document.createElement('option');
+                    option.value = company.key;
+                    option.textContent = company.key;
+                    companySelect.appendChild(option);
+                });
+            });
         }
+
+// Populate Subcompany Dropdown based on selected company
+function populateSubcompanyDropdownForTask(companyName) {
+            const subcompanySelect = document.getElementById('task-subcompany-select');
+            subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+
+            database.ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+                snapshot.forEach(subcompany => {
+                    const option = document.createElement('option');
+                    option.value = subcompany.key;
+                    option.textContent = subcompany.key;
+                    subcompanySelect.appendChild(option);
+                });
+                subcompanySelect.disabled = false;
+            });
+        }
+
+        // Populate Office Boys for the selected Subcompany
+        function populateOfficeBoys(companyName, subcompanyName) {
+            const userSelect = document.getElementById('user-select');
+            userSelect.innerHTML = '<option value="" disabled selected>Select Office Boy</option>'; 
+
+            database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`).once('value').then(snapshot => {
+                snapshot.forEach(officeBoy => {
+                    const option = document.createElement('option');
+                    option.value = officeBoy.key;
+                    option.textContent = officeBoy.val().email;
+                    userSelect.appendChild(option);
+                });
+            });
+        }
+
+
+// Event listener for company selection to populate subcompany dropdown
+document.getElementById('task-company-select').addEventListener('change', function () {
+            const companyName = this.value;
+            populateSubcompanyDropdownForTask(companyName);
+        });
+
+        // Event listener for subcompany selection to populate office boys
+        document.getElementById('task-subcompany-select').addEventListener('change', function () {
+            const companyName = document.getElementById('task-company-select').value;
+            const subcompanyName = this.value;
+            populateOfficeBoys(companyName, subcompanyName);
+        });
+
+        // Populate Company Dropdown for Assign Task
+function populateCompanyDropdownForAssign() {
+    const companySelect = document.getElementById('assign-task-company-select');
+    companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+
+    database.ref('companies').once('value').then(snapshot => {
+        snapshot.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company.key;
+            option.textContent = company.key;
+            companySelect.appendChild(option);
+        });
     });
 }
+
+// Populate Subcompany Dropdown based on selected company for Assign Task
+function populateSubcompanyDropdownForAssign(companyName) {
+    const subcompanySelect = document.getElementById('assign-task-subcompany-select');
+    subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+
+    database.ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+        snapshot.forEach(subcompany => {
+            const option = document.createElement('option');
+            option.value = subcompany.key;
+            option.textContent = subcompany.key;
+            subcompanySelect.appendChild(option);
+        });
+        subcompanySelect.disabled = false;
+    });
+}
+
+// Populate Unassigned Tasks for the selected Subcompany
+function populateUnassignedTasks(companyName, subcompanyName) {
+    const unassignedTaskSelect = document.getElementById('unassigned-task-select');
+    unassignedTaskSelect.innerHTML = '<option value="" disabled selected>Select Unassigned Task</option>';
+
+    database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`).once('value').then(snapshot => {
+        snapshot.forEach(task => {
+            if (!task.val().assigned) { // Check if task has no assigned user
+                const option = document.createElement('option');
+                option.value = task.key;
+                option.textContent = task.val().task;
+                unassignedTaskSelect.appendChild(option);
+            }
+        });
+        unassignedTaskSelect.disabled = false;
+    });
+}
+
+// Populate Office Boys for the selected Subcompany for Assign Task
+function populateOfficeBoysForAssign(companyName, subcompanyName) {
+    const userSelect = document.getElementById('assign-user-select');
+    userSelect.innerHTML = '<option value="" disabled selected>Select Office Boy</option>';
+
+    database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`).once('value').then(snapshot => {
+        snapshot.forEach(officeBoy => {
+            const option = document.createElement('option');
+            option.value = officeBoy.key;
+            option.textContent = officeBoy.val().email;
+            userSelect.appendChild(option);
+        });
+        userSelect.disabled = false;
+    });
+}
+
+// Event listener for company selection to populate subcompany dropdown for Assign Task
+document.getElementById('assign-task-company-select').addEventListener('change', function () {
+    const companyName = this.value;
+    populateSubcompanyDropdownForAssign(companyName);
+});
+
+// Event listener for subcompany selection to populate unassigned tasks and office boys
+document.getElementById('assign-task-subcompany-select').addEventListener('change', function () {
+    const companyName = document.getElementById('assign-task-company-select').value;
+    const subcompanyName = this.value;
+    populateUnassignedTasks(companyName, subcompanyName);
+    populateOfficeBoysForAssign(companyName, subcompanyName);
+});
+
+// Event listener for assigning a user to an unassigned task
+document.getElementById('assign-task-button').addEventListener('click', function() {
+    const companyName = document.getElementById('assign-task-company-select').value;
+    const subcompanyName = document.getElementById('assign-task-subcompany-select').value;
+    const taskId = document.getElementById('unassigned-task-select').value;
+    const assignedUser = document.getElementById('assign-user-select').value;
+
+    if (taskId && assignedUser) {
+        const taskRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
+        taskRef.update({
+            assigned: assignedUser
+        })
+        .then(() => {
+            alert('Task assigned successfully');
+            populateUnassignedTasks(companyName, subcompanyName); // Refresh the unassigned task dropdown after assignment
+        })
+        .catch(error => {
+            console.error('Error assigning task:', error);
+            alert('Error assigning task');
+        });
+    } else {
+        alert('Please select a task and a user');
+    }
+});
+// Initialize the company dropdown on page load for Assign Task section
+populateCompanyDropdownForAssign();
 
         function populateRemoveUserDropdown(office) {
             const usersRef = database.ref('users');
@@ -497,11 +1578,12 @@ function populateUnassignedTaskDropdown(office) {
             });
         }
 
-        // Function to add a new task to the selected office
-        document.getElementById('add-task-form').addEventListener('submit', function(event) {
+        // Add Task to Firebase under selected company and subcompany
+        document.getElementById('add-task-form').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const office = document.getElementById('office-select').value;
+            const companyName = document.getElementById('task-company-select').value;
+            const subcompanyName = document.getElementById('task-subcompany-select').value;
             const taskName = document.getElementById('task-name').value;
             const taskTime = document.getElementById('task-time').value;
             const assignedUser = document.getElementById('user-select').value;
@@ -515,20 +1597,27 @@ function populateUnassignedTaskDropdown(office) {
                 status: 'incomplete'
             };
 
-            console.log('Adding task:', newTask); // Debugging line
+            // Add the new task under the selected company and subcompany in Firebase
+            const newTaskRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`).push();
+            // Also add the same task under the global tasks node in Firebase
+    const globalTaskRef = database.ref('tasks').push();
 
-            const newTaskRef = database.ref(`${office}`).push();
-            newTaskRef.set(newTask)
+             Promise.all([
+        newTaskRef.set(newTask),
+        globalTaskRef.set(newTask)
+    ])
                 .then(() => {
                     alert('Task added successfully');
                     document.getElementById('add-task-form').reset();
-                    populateTaskDropdown(office); // Refresh the task dropdown after adding a new task
                 })
                 .catch(error => {
                     console.error('Error adding task:', error);
                     alert('Error adding task');
                 });
         });
+
+        // Initialize the company dropdown on page load
+        populateCompanyDropdownForTask();
 
         // Event listener for assigning a user to an unassigned task
 document.getElementById('assign-task-button').addEventListener('click', function() {
@@ -605,6 +1694,54 @@ document.getElementById('del').addEventListener('click', function(event) {
         alert('Please select a user to remove');
     }
 });
+
+function populateSubcompanyDropdownForDelete(companyName) {
+    const subcompanySelect = document.getElementById('delete-task-subcompany-select');
+    subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+
+    database.ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+        snapshot.forEach(subcompany => {
+            const option = document.createElement('option');
+            option.value = subcompany.key;
+            option.textContent = subcompany.key;
+            subcompanySelect.appendChild(option);
+        });
+        subcompanySelect.disabled = false; // Enable dropdown after loading
+    });
+}
+
+// Function to populate the company dropdown for adding a user
+function populateCompanyDropdownForUser(selectId) {
+    const companySelect = document.getElementById(selectId);
+    companySelect.innerHTML = '<option value="" disabled selected>Select Company</option>';
+
+    database.ref('companies').once('value').then(snapshot => {
+        snapshot.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company.key;
+            option.textContent = company.key;
+            companySelect.appendChild(option);
+        });
+    });
+}
+
+// Function to populate subcompanies when a company is selected
+function populateSubcompanyDropdownForUser(companyName, selectId) {
+    const subcompanySelect = document.getElementById(selectId);
+    subcompanySelect.innerHTML = '<option value="" disabled selected>Select Subcompany</option>';
+
+    // Fetch subcompanies for the selected company from Firebase
+    firebase.database().ref(`companies/${companyName}/subcompanies`).once('value').then(snapshot => {
+        snapshot.forEach(subcompany => {
+            const option = document.createElement('option');
+            option.value = subcompany.key;
+            option.textContent = subcompany.key;
+            subcompanySelect.appendChild(option);
+        });
+        subcompanySelect.disabled = false; // Enable the dropdown after loading subcompanies
+    });
+}
+
     </script>
 </body>
 </html>

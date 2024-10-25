@@ -12,37 +12,48 @@ const auth = getAuth(app);
 
 const urlParams = new URLSearchParams(window.location.search);
 const taskId = urlParams.get('id');
-const office = urlParams.get('office');
+const companyName = urlParams.get('company');
+const subcompanyName = urlParams.get('subcompany');
 
-let taskPath;
-switch (office) {
-    case 'workviaa':
-        taskPath = `Workviaa/${taskId}`;
-        break;
-    case 'workdesq':
-        taskPath = `Workdesq/${taskId}`;
-        break;
-    case 'sso':
-        taskPath = `Sapna Sangeeta/${taskId}`;
-        break;
-    case 'karyasthal':
-        taskPath = `Karyasthal/${taskId}`;
-        break;
-    case 'cubispace':
-        taskPath = `Cubispace/${taskId}`;
-        break;
-    case 'worqspot':
-        taskPath = `Worqspot/${taskId}`;
-        break;
-    default:
-        document.getElementById("task-name").textContent = "Unknown office";
-        console.error('Unknown office:', office);
-        throw new Error('Unknown office');
+// let taskPath;
+// switch (office) {
+//     case 'workviaa':
+//         taskPath = `Workviaa/${taskId}`;
+//         break;
+//     case 'workdesq':
+//         taskPath = `Workdesq/${taskId}`;
+//         break;
+//     case 'sso':
+//         taskPath = `Sapna Sangeeta/${taskId}`;
+//         break;
+//     case 'karyasthal':
+//         taskPath = `Karyasthal/${taskId}`;
+//         break;
+//     case 'cubispace':
+//         taskPath = `Cubispace/${taskId}`;
+//         break;
+//     case 'worqspot':
+//         taskPath = `Worqspot/${taskId}`;
+//         break;
+//     default:
+//         document.getElementById("task-name").textContent = "Unknown office";
+//         console.error('Unknown office:', office);
+//         throw new Error('Unknown office');
+// }
+
+// console.log('Fetching task from path:', taskPath);
+
+if (!taskId || !companyName || !subcompanyName) {
+    document.getElementById("task-name").textContent = "Invalid task or company ID";
+    throw new Error('Invalid task, company, or subcompany ID');
 }
 
-console.log('Fetching task from path:', taskPath);
-
+const taskPath = `companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`;
 const taskRef = ref(database, taskPath);
+
+// Also set up a reference to the global tasks path
+const globalTaskRef = ref(database, `tasks/${taskId}`);
+
 onValue(taskRef, (snapshot) => {
     if (snapshot.exists()) {
         const taskData = snapshot.val();
@@ -75,7 +86,7 @@ onValue(taskRef, (snapshot) => {
             newButton.classList.remove("completed");
             newButton.disabled = false;
             newButton.addEventListener("click", () => {
-                window.location.href = `upload.html?id=${taskId}&office=${office}`;
+                window.location.href = `upload.html?id=${taskId}&company=${companyName}&subcompany=${subcompanyName}`;
             });
         } else if (taskData.status.toLowerCase() === "complete") {
             newButton.textContent = "Completed";

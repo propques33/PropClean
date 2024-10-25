@@ -244,13 +244,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const urlParams = new URLSearchParams(window.location.search);
         const taskId = urlParams.get('id');
-        const office = urlParams.get('office');
+        const company = urlParams.get('company');
+        const subcompany = urlParams.get('subcompany');
 
-        if (!taskId || !office) {
-            document.getElementById("task-name").textContent = "Invalid task or office ID";
-            document.getElementById("task-name").setAttribute('data-translate', "Invalid task or office ID");
-            throw new Error('Invalid task or office ID');
+        if (!taskId || !company || !subcompany) {
+          document.getElementById("task-name").textContent = "Invalid task, company, or subcompany ID";
+          document.getElementById("task-name").setAttribute('data-translate', "Invalid task, company, or subcompany ID");
+          throw new Error('Invalid task, company, or subcompany ID');
         }
+
+        function formatTimeToAMPM(timeString) {
+    if (!timeString) return "Invalid Time";
+    const [hours, minutes] = timeString.split(':');
+    let hour = parseInt(hours, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12; // Convert 24-hour to 12-hour format
+    return `${hour}:${minutes} ${period}`;
+}
 
         const firebaseConfig = {
             apiKey: "API_KEY",
@@ -270,23 +280,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const database = firebase.database();
         const auth = firebase.auth();
 
-        const officeMap = {
-            'workviaa': 'Workviaa',
-            'workdesq': 'Workdesq',
-            'sso': 'Sapna Sangeeta',
-            'karyasthal': 'Karyasthal',
-            'cubispace': 'Cubispace',
-            'worqspot':'Worqspot'
-        };
+        // const officeMap = {
+        //     'workviaa': 'Workviaa',
+        //     'workdesq': 'Workdesq',
+        //     'sso': 'Sapna Sangeeta',
+        //     'karyasthal': 'Karyasthal',
+        //     'cubispace': 'Cubispace',
+        //     'worqspot':'Worqspot'
+        // };
 
-        const correctedOffice = officeMap[office.toLowerCase()];
-        if (!correctedOffice) {
-            document.getElementById("task-name").textContent = "Invalid office name";
-            throw new Error('Invalid office name');
-        }
+        // const correctedOffice = officeMap[office.toLowerCase()];
+        // if (!correctedOffice) {
+        //     document.getElementById("task-name").textContent = "Invalid office name";
+        //     throw new Error('Invalid office name');
+        // }
 
-        const taskPath = `${correctedOffice}/${taskId}`;
-        const taskRef = database.ref(taskPath);
+        const taskPath = `companies/${company}/subcompanies/${subcompany}/tasks/${taskId}`;
+    const taskRef = database.ref(taskPath);
 
         taskRef.once('value').then((snapshot) => {
             if (snapshot.exists()) {
@@ -298,6 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // document.getElementById("task-time").textContent = `Time: ${taskData.time}`;
                 const statusButton = document.getElementById("status-button");
 
+                // Format the task time using the helper function
+        const formattedTaskTime = formatTimeToAMPM(taskData.time);
+
                 taskNameElement.textContent = `${taskData.task}`;
                 taskNameElement.setAttribute('data-translate', `${taskData.task}`);
                 taskNameElement.style.fontSize = "20px";
@@ -305,21 +318,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskNameElement.style.color = "#000";
                 taskNameElement.style.margin = "10px 4px";
 
-                taskTimeElement.textContent = `${taskData.time}`;
-                taskTimeElement.setAttribute('data-translate', `${taskData.time}`);
+                taskTimeElement.textContent = `${formattedTaskTime}`;
+                taskTimeElement.setAttribute('data-translate', `${formattedTaskTime}`);
                 taskTimeElement.style.fontSize = "20px";
                 taskTimeElement.style.color = "#666";
                 taskTimeElement.style.margin = "10px 7px";
                 taskTimeElement.style.fontWeight = "600";
                 taskTimeElement.style.color = "#000";
                 
-                taskAssignedElement.textContent = `${taskData.assigned}`;
-                taskAssignedElement.setAttribute('data-translate', `${taskData.assigned}`);
-                taskAssignedElement.style.fontSize = "20px";
+                const assignedUserId = taskData.assigned;
+        if (assignedUserId) {
+            const userRef = database.ref(`users/${assignedUserId}`);
+            userRef.once('value').then((userSnapshot) => {
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.val();
+                    taskAssignedElement.textContent = userData.email;
+                    taskAssignedElement.setAttribute('data-translate', userData.email);
+                    taskAssignedElement.style.fontSize = "20px";
                 taskAssignedElement.style.color = "#666";
                 taskAssignedElement.style.margin = "10px 7px";
                 taskAssignedElement.style.fontWeight = "600";
                 taskAssignedElement.style.color = "#000";
+                } else {
+                    taskAssignedElement.textContent = "User not found";
+                }
+            }).catch((error) => {
+                console.error("Error fetching user details:", error);
+                taskAssignedElement.textContent = "Error loading user";
+            });
+        } else {
+            taskAssignedElement.textContent = "No user assigned";
+        }
 
 
                 if (taskData.status.toLowerCase() === "complete" || taskData.status.toLowerCase() === "approved") {
@@ -331,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusButton.textContent = "Mark as Complete";
                     statusButton.setAttribute('data-translate', "Mark as Complete");
                     statusButton.addEventListener("click", () => {
-                        window.location.href = `upload.html?id=${taskId}&office=${correctedOffice}`;
+                        window.location.href = `upload.html?id=${taskId}&company=${company}&subcompany=${subcompany}`;
                     });
                 }
 
@@ -405,25 +434,60 @@ document.addEventListener('DOMContentLoaded', () => {
     //     });
     // }
 
-    function resetTasksInOffice(office) {
-            const tasksRef = database.ref(office);
-            tasksRef.once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const taskKey = childSnapshot.key;
-                    tasksRef.child(taskKey).update({
-                        status: 'incomplete',
-                        imageUrl: null,
-                        completedBy: null,
-                        uploadTime: null,
-                        rating: 0
+    // function resetTasksInOffice(office) {
+    //         const tasksRef = database.ref(office);
+    //         tasksRef.once('value').then(snapshot => {
+    //             snapshot.forEach(childSnapshot => {
+    //                 const taskKey = childSnapshot.key;
+    //                 tasksRef.child(taskKey).update({
+    //                     status: 'incomplete',
+    //                     imageUrl: null,
+    //                     completedBy: null,
+    //                     uploadTime: null,
+    //                     rating: 0
+    //                 });
+    //             });
+    //         }).then(() => {
+    //             console.log(`Tasks in ${office} have been reset.`);
+    //         }).catch(error => {
+    //             console.error(`Error resetting tasks in ${office}:`, error);
+    //         });
+    //     }
+    function resetTasksInSubcompany(company, subcompany) {
+        const tasksRef = database.ref(`companies/${company}/subcompanies/${subcompany}/tasks`);
+        tasksRef.once('value').then(snapshot => {
+            snapshot.forEach(childSnapshot => {
+                const taskKey = childSnapshot.key;
+                tasksRef.child(taskKey).update({
+                    status: 'incomplete',
+                    imageUrl: null,
+                    completedBy: null,
+                    uploadTime: null,
+                    rating: 0
+                });
+            });
+        }).then(() => {
+            console.log(`Tasks in ${company}/${subcompany} have been reset.`);
+        }).catch(error => {
+            console.error(`Error resetting tasks in ${company}/${subcompany}:`, error);
+        });
+    }
+
+    function resetTasksForAllCompanies() {
+        const companiesRef = database.ref('companies');
+        companiesRef.once('value').then(snapshot => {
+            snapshot.forEach(companySnapshot => {
+                const company = companySnapshot.key;
+                const subcompaniesRef = database.ref(`companies/${company}/subcompanies`);
+                subcompaniesRef.once('value').then(subcompanySnapshot => {
+                    subcompanySnapshot.forEach(subcompany => {
+                        const subcompanyName = subcompany.key;
+                        resetTasksInSubcompany(company, subcompanyName);
                     });
                 });
-            }).then(() => {
-                console.log(`Tasks in ${office} have been reset.`);
-            }).catch(error => {
-                console.error(`Error resetting tasks in ${office}:`, error);
             });
-        }
+        });
+    }
 
     // function removeOldBackups() {
     //     const taskHistoryRef = database.ref('taskhistory');
@@ -461,34 +525,31 @@ document.addEventListener('DOMContentLoaded', () => {
     //     resetTasksIfNeeded();
 
     function resetTasksIfNeeded() {
-            const resetRef = database.ref('lastResetDate');
-            resetRef.once('value').then(snapshot => {
-                const lastResetDate = snapshot.val();
-                const currentDate = new Date();
-                const currentDay = currentDate.toISOString().split('T')[0];
-                const currentHour = currentDate.getHours();
-                const currentMinute = currentDate.getMinutes();
+        const resetRef = database.ref('lastResetDate');
+        resetRef.once('value').then(snapshot => {
+            const lastResetDate = snapshot.val();
+            const currentDate = new Date();
+            const currentDay = currentDate.toISOString().split('T')[0];
+            const currentHour = currentDate.getHours();
+            const currentMinute = currentDate.getMinutes();
 
-                // Check if the last reset date is not today and it's 6:05 AM
-                if (lastResetDate !== currentDay && currentHour === 6 && currentMinute === 5) {
-                    const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
-                    officeRefs.forEach(office => {
-                        resetTasksInOffice(office);
-                    });
-                    resetRef.set(currentDay);
-                    console.log('Tasks reset successfully at 6:05 AM.');
-                }
-            }).catch(error => {
-                console.error('Error checking reset time:', error);
-            });
-        }
+            // Check if the last reset date is not today and it's 6:05 AM
+            if (lastResetDate !== currentDay && currentHour === 6 && currentMinute === 5) {
+                resetTasksForAllCompanies();
+                resetRef.set(currentDay);
+                console.log('Tasks reset successfully at 6:05 AM.');
+            }
+        }).catch(error => {
+            console.error('Error checking reset time:', error);
+        });
+    }
 
-        // Call this function to check for reset on page load
-        resetTasksIfNeeded();
+    // Call this function to check for reset on page load
+    resetTasksIfNeeded();
 
-        // Optional: Use setInterval to check every minute if needed
-        setInterval(resetTasksIfNeeded, 60000); // Check every 60 seconds
+    // Optional: Use setInterval to check every minute if needed
+    setInterval(resetTasksIfNeeded, 60000); // Check every 60 seconds
     </script>
-    <script src="taskDetails.js"></script>
+    <script type="module" src="taskDetails.js"></script>
 </body>
 </html>

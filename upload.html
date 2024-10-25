@@ -137,7 +137,13 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const taskId = urlParams.get('id');
-        const office = urlParams.get('office');
+        const companyName = urlParams.get('company');
+        const subcompanyName = urlParams.get('subcompany');
+
+        if (!taskId || !companyName || !subcompanyName) {
+            alert("Invalid task, company, or subcompany ID");
+            throw new Error('Invalid task, company, or subcompany ID');
+        }
 
         // Get access to the webcam stream
         navigator.mediaDevices.getUserMedia({
@@ -193,21 +199,44 @@
                 const user = auth.currentUser;
                 const userEmail = user ? user.email : 'unknown';
 
-                // Update task status and record upload time and user email
-                const taskRef = database.ref(`${office}/${taskId}`);
-                taskRef.update({
-                    status: 'complete',
-                    uploadTime: new Date().toISOString(),
-                    completedBy: userEmail,
-                    imageUrl: downloadURL
-                }).then(() => {
-                    console.log('Task status updated to Complete');
-                    alert('Image uploaded successfully and task marked as complete!');
-                    window.location.href = `daily.html`;
-                    history.replaceState(null, '', 'land.html');
-                }).catch((error) => {
-                    console.error('Error updating task status:', error);
-                });
+                // Update task status in two locations: company-specific and global
+                const companyTaskPath = `companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`;
+                    const globalTaskPath = `tasks/${taskId}`;
+
+                    const taskUpdates = {
+                        status: 'complete',
+                        uploadTime: new Date().toISOString(),
+                        completedBy: userEmail,
+                        imageUrl: downloadURL
+                    };
+
+                    database.ref(companyTaskPath).update(taskUpdates).then(() => {
+                        console.log('Task status updated to Complete in company-specific path');
+                    }).catch((error) => {
+                        console.error('Error updating task status in company-specific path:', error);
+                    });
+
+                    database.ref(globalTaskPath).update(taskUpdates).then(() => {
+                        console.log('Task status updated to Complete in global path');
+                        alert('Image uploaded successfully and task marked as complete!');
+                        window.location.href = `daily.html`;
+                    }).catch((error) => {
+                        console.error('Error updating task status in global path:', error);
+                    });
+
+                // taskRef.update({
+                //     status: 'complete',
+                //     uploadTime: new Date().toISOString(),
+                //     completedBy: userEmail,
+                //     imageUrl: downloadURL
+                // }).then(() => {
+                //     console.log('Task status updated to Complete');
+                //     alert('Image uploaded successfully and task marked as complete!');
+                //     window.location.href = `daily.html`;
+                //     history.replaceState(null, '', 'land.html');
+                // }).catch((error) => {
+                //     console.error('Error updating task status:', error);
+                // });
             }).catch((error) => {
                     console.error('Error getting download URL:', error);
                 });
@@ -231,7 +260,7 @@
         }
 
         document.getElementById("back").addEventListener("click", () => {
-            window.location.href = `taskdetails.html?id=${taskId}&office=${office}`;
+            window.location.href = `taskdetails.html?id=${taskId}&company=${companyName}&subcompany=${subcompanyName}`;
         });
 
         // document.getElementById("logoutBtn").addEventListener("click", function() {

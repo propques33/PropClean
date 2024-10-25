@@ -315,7 +315,9 @@ button#save-info{
     <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
     <a href="land.html"><img src="user.png">Homepage</a>
     <a href="#" id="adminDashboardLink" style="display: none; text-wrap: wrap;" onclick="navigateTo('reports.html')"><img src="admin-panel.png">View Reports</a>
-    <a href="#" id="adminDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('admin-dashboard.html')"><img src="admin-panel.png">Admin Dashboard</a>
+    
+    <a href="#" id="ownerDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('ownerdashboard.html')"><img src="admin-panel.png">Owner Dashboard</a>
+    <a href="#" id="adminDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('admin-dashboard.html')"><img src="admin-panel.png">Space Setup</a>
     <a href="#" id="logoutBtn"><img src="logout.png">Logout</a>
   </div>
   <select id="languageSelector">
@@ -389,7 +391,7 @@ button#save-info{
       </div>
     </div>
     <div class="bt">
-      <button onclick="navigateTo('daily.html')" class="daily" data-translate>Daily Tasks</button>
+      <button onclick="navigateTo('daily.html')" class="daily" id="btndaily" data-translate>Daily Tasks</button>
     <button onclick="navigateTo('reports.html')" class="repo" data-translate>See Reports</button>
     </div>
   </div>
@@ -443,13 +445,13 @@ button#save-info{
       return adminEmails.includes(email);
     }
 
-    function showPopup() {
-    document.getElementById('additional-info').style.display = 'flex';
-  }
+  //   function showPopup() {
+  //   document.getElementById('additional-info').style.display = 'flex';
+  // }
 
-  function hidePopup() {
-    document.getElementById('additional-info').style.display = 'none';
-  }
+  // function hidePopup() {
+  //   document.getElementById('additional-info').style.display = 'none';
+  // }
   </script>
   <script>
      const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
@@ -527,68 +529,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (userData) {
             const userOffice = userData.office;
+            const userRole = userData.role;
 
-            if(userOffice==="defaultOffice" || !userOffice){
-              showPopup();
-              document.getElementById('save-info').addEventListener('click', () => {
-                const office = document.getElementById('office').value;
-
-                if (office) {
-                saveUserOffice(userRef, user.email, office);
-              } else {
-                alert('Please select an office.');
-              }})
-            }
-            else {
-          setupUserInterface(userOffice, user.email);
+            // Determine visibility of admin-related elements
+                    if (['center-manager'].includes(userRole)) {
+                        // Show sidebar items for admins, developers, and center managers
+                        document.getElementById("adminDashboardLink").style.display = "block";
+                        document.getElementById("adminDashboardLink1").style.display = "block";
+                        document.querySelector("button.repo").style.display = "block";
+                    }
+                    if(['developer', 'owner'].includes(userRole)){
+                      document.getElementById("adminDashboardLink1").style.display = "block";
+                      document.getElementById("btndaily").style.display = "none";
+                    }
+                    if(['owner'].includes(userRole)){
+                      document.getElementById("ownerDashboardLink1").style.display = "block";
+                      document.getElementById("adminDashboardLink").style.display = "block";
+                    }
+            
+            if (userRole === "developer") {
+          console.log("User is a developer, showing admin features.");
+          setupUserInterface(userOffice, user.email, true); // Treat developer as admin
         }
-            // else{
-            //   document.body.classList.add(userOffice);
+            // else if(userOffice==="defaultOffice" || !userOffice){
+            //   showPopup();
+            //   document.getElementById('save-info').addEventListener('click', () => {
+            //     const office = document.getElementById('office').value;
 
-            //   if (isAdmin(user.email)) {
-            //     document.getElementById("adminDashboardLink").style.display = "block";
-            //     document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
-            //     document.querySelector("button.repo").style.display = "block";
+            //     if (office) {
+            //     saveUserOffice(userRef, user.email, office);
             //   } else {
-            //     document.getElementById("adminDashboardLink").style.display = "none";
-            //     document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should be displayed for non-admins
+            //     alert('Please select an office.');
             //   }
-            //   loadTasksBasedOnOffice(userOffice);
+            // })
             // }
-        } else {
-          console.error("User data not found for user: ", user.uid);
-          showPopup();
+            else {
+          setupUserInterface(userOffice, user.email,userRole==="admin"|| userRole === "owner" || userRole === "center-manager");
+        }
+        } 
+      //   else {
+      //     console.error("User data not found for user: ", user.uid);
+      //     showPopup();
 
-          document.getElementById('save-info').addEventListener('click', () => {
-            const office = document.getElementById('office').value;
+      //     document.getElementById('save-info').addEventListener('click', () => {
+      //       const office = document.getElementById('office').value;
 
-            if (office) {
-            saveUserOffice(userRef, user.email, office);
-          } else {
-            alert('Please select an office.');
-          }
-          //   if(office){
-          //     set(userRef, {
-          //       email: user.email,
-          //       office: office
-          //     }).then(() => {
-          //       hidePopup();
-          //       document.body.classList.add(office);
-
-          //       if (isAdmin(user.email)) {
-          //       document.getElementById("adminDashboardLink").style.display = "block";
-          //     }
-
-          //     loadTasksBasedOnOffice(userOffice);
-          //   }).catch((error) => {
-          //     console.error("Error saving user data: ", error);
-          //     alert('Error saving user data.');
-          //   });
-          // } else {
-          //   alert('Please select an office.');
-          // }
-        });
-      }
+      //       if (office) {
+      //       saveUserOffice(userRef, user.email, office);
+      //     } else {
+      //       alert('Please select an office.');
+      //     }
+      //   });
+      // }
     }, (error) => {
         console.error("Error fetching user data: ", error);
         alert('Error fetching user data.');
@@ -599,34 +591,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  function saveUserOffice(userRef, email, office) {
-  set(userRef, {
-    email: email,
-    office: office
-  }).then(() => {
-    hidePopup();
-    setupUserInterface(office, email);
-  }).catch((error) => {
-    console.error("Error saving user data: ", error);
-    alert('Error saving user data.');
-  });
-}
+//   function saveUserOffice(userRef, email, office) {
+//   set(userRef, {
+//     email: email,
+//     office: office
+//   }).then(() => {
+//     hidePopup();
+//     setupUserInterface(office, email);
+//   }).catch((error) => {
+//     console.error("Error saving user data: ", error);
+//     alert('Error saving user data.');
+//   });
+// }
 
 function setupUserInterface(office, email) {
   document.body.classList.add(office);
 
-  if (isAdmin(email)) {
-    document.getElementById("adminDashboardLink").style.display = "block";
-    document.getElementById("adminDashboardLink1").style.display = "block";
-    document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should also be displayed for admins
-    document.querySelector("button.repo").style.display = "block";
-  } else {
-    document.getElementById("adminDashboardLink").style.display = "none";
-    document.getElementById("adminDashboardLink1").style.display = "none";
-    document.getElementById("logoutBtn").style.display = "block"; // Assuming logout button should be displayed for non-admins
-  }
+  if (showAdminOptions) {
+        // document.getElementById("adminDashboardLink").style.display = "block";
+        document.getElementById("adminDashboardLink1").style.display = "block";
+        document.getElementById("btndaily").style.display = "none";
+        // document.querySelector("button.repo").style.display = "block";
+      } else {
+        document.getElementById("adminDashboardLink").style.display = "none";
+        document.getElementById("adminDashboardLink1").style.display = "none";
+      }
+      document.getElementById("logoutBtn").style.display = "block";
 
-  loadTasksBasedOnOffice(office);
+  // Load tasks if not a developer
+  if (office !== undefined && office !== "defaultOffice" && email) {
+        loadTasksBasedOnOffice(office);
+      }
 }
 
 
@@ -651,9 +646,12 @@ function setupUserInterface(office, email) {
         case 'worqspot':
             tasksRef = ref(database, "Worqspot");
             break;
-        default:
+            default:
+          // Do not show "Unknown office" for developers
+          if (email !== 'developer') {
             alert('Unknown office');
-            return;
+          }
+          return;
     }
     fetchAndDisplayTasks(tasksRef);
 }

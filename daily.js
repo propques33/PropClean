@@ -60,24 +60,24 @@ function showShimmerEffect() {
     shimmerEls.forEach(shimmerEl => shimmerEl.remove());
   }
 
-function isAdmin(email) {
-  const adminEmails = ["shanvishukla39@gmail.com",
-  "thomas@propques.com",
-  "amdixit1711@gmail.com",
-  "sales@karyasthal.com",
-  "aman.sales@workdesq.com",
-  "cm.aamir@worqspot.com",
-  "ops@workviaa.com",
-  "sapnasangeetaoffices@gmail.com",
-  "prashant.m@cubispace.com",
-  "cubispace@gmail.com",
-  "karyasthal@gmail.com",
-  "workdesq@gmail.com",
-  "workvia@gmail.com",
-  "sapnasangeeta@gmail.com",
-  "worqspot@gmail.com"];
-  return adminEmails.includes(email);
-}
+// function isAdmin(email) {
+//   const adminEmails = ["shanvishukla39@gmail.com",
+//   "thomas@propques.com",
+//   "amdixit1711@gmail.com",
+//   "sales@karyasthal.com",
+//   "aman.sales@workdesq.com",
+//   "cm.aamir@worqspot.com",
+//   "ops@workviaa.com",
+//   "sapnasangeetaoffices@gmail.com",
+//   "prashant.m@cubispace.com",
+//   "cubispace@gmail.com",
+//   "karyasthal@gmail.com",
+//   "workdesq@gmail.com",
+//   "workvia@gmail.com",
+//   "sapnasangeeta@gmail.com",
+//   "worqspot@gmail.com"];
+//   return adminEmails.includes(email);
+// }
 
 onAuthStateChanged(auth, user => {
     if (user) {
@@ -85,42 +85,45 @@ onAuthStateChanged(auth, user => {
         onValue(userRef, (snapshot) => {
             const userData = snapshot.val();
             if (userData) {
-                const userOffice = userData.office;
+                const companyName = userData.companyName;
+        const subcompanyName = userData.subcompanyName;
+        const role = userData.role;
 
-                if (isAdmin(user.email)) {
-                    document.getElementById("adminDashboardLink").style.display = "block";
-                    document.getElementById("adminDashboardLink1").style.display = "block";
-                    document.getElementById("adminOfficeSelectionBtn").style.display = "block";
-                }
+                // if (isAdmin(user.email)) {
+                //     document.getElementById("adminDashboardLink").style.display = "block";
+                //     document.getElementById("adminDashboardLink1").style.display = "block";
+                //     document.getElementById("adminOfficeSelectionBtn").style.display = "block";
+                // }
 
-                switch (userOffice) {
-                    case 'workviaa':
-                        tasksRef = ref(database, "Workviaa");
-                        break;
-                    case 'workdesq':
-                        tasksRef = ref(database, "Workdesq");
-                        break;
-                    case 'sso':
-                        tasksRef = ref(database, "Sapna Sangeeta");
-                        break;
-                    case 'karyasthal':
-                        tasksRef = ref(database, "Karyasthal");
-                        break;
-                    case 'cubispace':
-                        tasksRef = ref(database, "Cubispace");
-                        break;
-                    case 'worqspot':
-                        tasksRef = ref(database, "Worqspot");
-                        break;
-                    default:
-                        alert('Unknown office');
-                        window.location.href = 'index.html';
-                        return;
-                }
-                document.body.classList.add(userOffice);
-                fetchAndDisplayTasks(tasksRef);
+                // switch (userOffice) {
+                //     case 'workviaa':
+                //         tasksRef = ref(database, "Workviaa");
+                //         break;
+                //     case 'workdesq':
+                //         tasksRef = ref(database, "Workdesq");
+                //         break;
+                //     case 'sso':
+                //         tasksRef = ref(database, "Sapna Sangeeta");
+                //         break;
+                //     case 'karyasthal':
+                //         tasksRef = ref(database, "Karyasthal");
+                //         break;
+                //     case 'cubispace':
+                //         tasksRef = ref(database, "Cubispace");
+                //         break;
+                //     case 'worqspot':
+                //         tasksRef = ref(database, "Worqspot");
+                //         break;
+                //     default:
+                //         alert('Unknown office');
+                //         window.location.href = 'index.html';
+                //         return;
+                // }
+                // document.body.classList.add(userOffice);
+                const tasksRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+        fetchAndDisplayTasks(tasksRef, companyName, subcompanyName);
                 setInterval(() => {
-                    fetchAndUpdateTaskStatuses(tasksRef);
+                    fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName);
                 }, 3600000); 
             } else {
                 alert('User data not found.');
@@ -132,8 +135,7 @@ onAuthStateChanged(auth, user => {
     }
 });
 
-function fetchAndDisplayTasks(ref) {
-    tasksRef=ref;
+function fetchAndDisplayTasks(tasksRef, companyName, subcompanyName) {
     showShimmerEffect(); // Show shimmer effect while data is loading
   
     onValue(tasksRef, function(snapshot) {
@@ -171,7 +173,7 @@ function fetchAndDisplayTasks(ref) {
   
         tasksArray.forEach(function(taskItem) {
           let taskData = taskItem[1];
-          appendTaskToShoppingListEl(taskItem[0], taskData);
+          appendTaskToShoppingListEl(taskItem[0], taskData, companyName, subcompanyName);
         });
         const preferredLanguage = getPreferredLanguage();
         translatePage(preferredLanguage);
@@ -196,6 +198,15 @@ function parseTime(timeString) {
     if (period === 'PM' && hours !== 12) hours += 12;
     if (period === 'AM' && hours === 12) hours = 0;
     return hours * 60 + minutes;
+}
+
+function formatTimeToAMPM(timeString) {
+    if (!timeString) return "Invalid Time";
+    const [hours, minutes] = timeString.split(':');
+    let hour = parseInt(hours, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12; // Convert 24-hour to 12-hour format
+    return `${hour}:${minutes} ${period}`;
 }
 
 function clearShoppingListEl() {
@@ -243,8 +254,11 @@ document.addEventListener('DOMContentLoaded', () => {
       translatePage(preferredLanguage);
     });
 
-function appendTaskToShoppingListEl(taskId, taskData) {
+function appendTaskToShoppingListEl(taskId, taskData, companyName, subcompanyName) {
+    console.log("cn"+companyName);
+    console.log("scn"+subcompanyName);
     let newEl = document.createElement("li");
+    newEl.setAttribute('data-task-id', taskId);
     newEl.style.display = "flex";
     newEl.style.flexDirection = "column";
     newEl.style.justifyContent = "between";
@@ -476,8 +490,9 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     taskTimeHeadingEl.style.padding = "2px 0px";
     taskTimeHeadingEl.style.borderRadius = "3px";
 
+    let formattedTaskTime = formatTimeToAMPM(taskData.time);
     let timeDetailEl = document.createElement("span");
-    timeDetailEl.textContent = taskData.time;
+    timeDetailEl.textContent = formattedTaskTime;
     timeDetailEl.style.fontSize = "18px";
     timeDetailEl.style.fontWeight = "bold";
     timeDetailEl.style.color = "#335ef7";
@@ -534,16 +549,22 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     assigned.style.padding = "2px 0px";
     assigned.style.borderRadius = "3px";
 
+    // Fetch the email for the assigned user ID
+    fetchUserEmailById(taskData.assigned)
+        .then(email => {
     let assignedDetail = document.createElement("span");
-    assignedDetail.textContent = taskData.assigned;
+    assignedDetail.textContent = email;
     assignedDetail.style.fontSize = "18px";
     assignedDetail.style.fontWeight = "bold";
     assignedDetail.style.color = "#335ef7";
     assignedDetail.style.margin = "0 auto";
     assignedDetail.style.marginTop = "8px";
     assignedDetail.style.width = "80%";
+    textContainerEl.appendChild(assignedDetail);
+        })
 
     let statusEl = document.createElement("span");
+    statusEl.className = "statusEl";
     statusEl.textContent=taskData.status;
     statusEl.setAttribute('data-translate', taskData.status);
     statusEl.style.display = "inline-block";
@@ -577,7 +598,6 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     textContainerEl.appendChild(uploadTimeHeadingEl);
     textContainerEl.appendChild(timeDetailE2);
     textContainerEl.appendChild(assigned);
-    textContainerEl.appendChild(assignedDetail);
     textContainerEl.appendChild(statusEl);
 
     // Append image and text container to the list item
@@ -585,14 +605,35 @@ function appendTaskToShoppingListEl(taskId, taskData) {
     newEl.appendChild(textContainerEl);
 
     newEl.addEventListener("click", function() {
-        const office = document.body.className; // Get the office class set on the body
-        window.location.href = `taskDetails.html?id=${taskId}&office=${office}`;
+        if (companyName && subcompanyName) {
+            console.log(`Navigating to taskDetails.html with ID: ${taskId}, Company: ${companyName}, Subcompany: ${subcompanyName}`); // Debugging log
+            window.location.href = `taskDetails.html?id=${taskId}&company=${companyName}&subcompany=${subcompanyName}`;
+        } else {
+            console.error("Company name or subcompany name is missing.");
+        }
     });
 
     shoppingListEl.appendChild(newEl);
 }
+
+function fetchUserEmailById(userId) {
+    return new Promise((resolve, reject) => {
+        const userRef = ref(database, 'users/' + userId);
+        onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData && userData.email) {
+                resolve(userData.email);
+            } else {
+                reject("No email found for user ID");
+            }
+        }, (error) => {
+            reject(error);
+        });
+    });
+}
+
 let tasksRef;
-function fetchAndUpdateTaskStatuses() {
+function fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName) {
     onValue(tasksRef, function(snapshot) {
         if (snapshot.exists()) {
             let tasksArray = Object.entries(snapshot.val());
@@ -631,39 +672,48 @@ onAuthStateChanged(auth, user => {
         onValue(userRef, (snapshot) => {
             const userData = snapshot.val();
             if (userData) {
-                const userOffice = userData.office;
-                if (isAdmin(user.email)) {
-                    document.getElementById("adminDashboardLink").style.display = "block";
-                    document.getElementById("adminOfficeSelectionBtn").textContent = userOffice;
-                }
+                const companyName = userData.companyName;
+        const subcompanyName = userData.subcompanyName;
+        const role = userData.role;
+                // if (isAdmin(user.email)) {
+                //     document.getElementById("adminDashboardLink").style.display = "block";
+                //     document.getElementById("adminOfficeSelectionBtn").textContent = userOffice;
+                // }
 
-                switch (userOffice) {
-                    case 'workviaa':
-                        tasksRef = ref(database, "Workviaa");
-                        break;
-                    case 'workdesq':
-                        tasksRef = ref(database, "Workdesq");
-                        break;
-                    case 'sso':
-                        tasksRef = ref(database, "Sapna Sangeeta");
-                        break;
-                    case 'worqspot':
-                        tasksRef = ref(database, "Worqspot");
-                        break;
-                    case 'karyasthal':
-                        tasksRef = ref(database, "Karyasthal");
-                        break;
-                    case 'cubispace':
-                        tasksRef = ref(database, "Cubispace");
-                        break;
-                    default:
-                        alert('Unknown office');
-                        window.location.href = 'index.html';
-                        return;
-                }
+                // switch (userOffice) {
+                //     case 'workviaa':
+                //         tasksRef = ref(database, "Workviaa");
+                //         break;
+                //     case 'workdesq':
+                //         tasksRef = ref(database, "Workdesq");
+                //         break;
+                //     case 'sso':
+                //         tasksRef = ref(database, "Sapna Sangeeta");
+                //         break;
+                //     case 'worqspot':
+                //         tasksRef = ref(database, "Worqspot");
+                //         break;
+                //     case 'karyasthal':
+                //         tasksRef = ref(database, "Karyasthal");
+                //         break;
+                //     case 'cubispace':
+                //         tasksRef = ref(database, "Cubispace");
+                //         break;
+                //     default:
+                //         alert('Unknown office');
+                //         window.location.href = 'index.html';
+                //         return;
+                // }
 
-                document.body.classList.add(userOffice);
-                fetchAndDisplayTasks(tasksRef);
+                // document.body.classList.add(userOffice);
+                const tasksRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+        fetchAndDisplayTasks(tasksRef, companyName, subcompanyName);
+        setInterval(() => {
+            fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName);
+          }, 3600000);
+
+          // Start reset interval check every 5 minutes
+          startResetInterval(companyName, subcompanyName);
             } else {
                 alert('User data not found.');
                 window.location.href = 'index.html';
@@ -673,4 +723,48 @@ onAuthStateChanged(auth, user => {
         window.location.href = 'index.html';
     }
 });
+
+// Function to start the reset interval check every 5 minutes
+function startResetInterval(companyName, subcompanyName) {
+    setInterval(() => {
+        console.log("Checking if task reset is needed...");
+        checkAndResetIfNeeded(companyName, subcompanyName);
+    }, 5 * 60 * 1000); // 5-minute interval
+}
+
+// Function to reset tasks
+function resetTasks(companyName, subcompanyName) {
+    const tasksRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+  
+    onValue(tasksRef, (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        const taskId = childSnapshot.key;
+        const taskRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
+        update(taskRef, {
+          status: "incomplete",
+          imageUrl: null,
+          completedBy: null,
+          uploadTime: null,
+          rating: 0
+        }).then(() => {
+          console.log(`Tasks for ${companyName} - ${subcompanyName} have been reset.`);
+        }).catch((error) => {
+          console.error(`Error resetting tasks for ${companyName} - ${subcompanyName}:`, error);
+        });
+      });
+    });
+  }
+  
+  // Function to check if reset is needed
+  function checkAndResetIfNeeded(companyName, subcompanyName) {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+  
+    if (currentHour === 0 && currentMinute >= 10 && currentMinute < 15) {
+      console.log("Resetting tasks at:", now.toLocaleString());
+      resetTasks(companyName, subcompanyName);
+    }
+  }
+  
 

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+	<title>PropClean</title>
+
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+	<link href="static/css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<style>
+	/* Countdown Timer Styling */
+	#timer-container {
+		background-color: #f8f9fa;
+		padding: 10px;
+		text-align: center;
+		font-family: 'Inter', sans-serif;
+		font-weight: 600;
+		color: #343a40;
+		border-bottom: 2px solid #dee2e6;
+		margin-bottom: 20px;
+	}
+	#countdown-timer {
+		font-size: 1.25rem;
+		color: #007bff;
+	}
+</style>
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar" style="margin-top: 20px;">
+				<a class="sidebar-brand" href="ownerdashboard.html">
+          <span class="align-middle">PropClean</span>
+        </a>
+
+				<ul class="sidebar-nav">
+
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="ownerdashboard.html">
+              <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="admin-dashboard.html" target="_blank">
+              <i class="align-middle" data-feather="user"></i> <span class="align-middle">Space Configuration</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="reports.html" target="_blank">
+              <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">View Reports</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="land.html" target="_blank">
+              <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Stock Inventory</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="land.html" target="_blank">
+              <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Track Users</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="land.html" target="_blank">
+              <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Logout</span>
+            </a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="main">
+			<div id="timer-container">
+				<p>Time Remaining for Trial: <span id="countdown-timer">30d 00h 00m 00s</span></p>
+			</div>
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+          <i class="hamburger align-self-center"></i>
+        </a>
+
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
+						
+						
+						<li class="nav-item dropdown">
+							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+                <i class="align-middle" data-feather="settings"></i>
+              </a>
+
+							<!-- <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+                <span class="text-dark">Charles Hall</span>
+              </a> -->
+							<div class="dropdown-menu dropdown-menu-end">
+								<a class="dropdown-item" href="ownerdashboard.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
+								<a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="pie-chart"></i> Analytics</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="admin-dashboard.html"><i class="align-middle me-1" data-feather="settings"></i> Settings & Privacy</a>
+								<a class="dropdown-item" href="land.html"><i class="align-middle me-1" data-feather="help-circle"></i> Help Center</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="land.html">Log out</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+					 <!-- Dropdown to select subcompany -->
+    <label for="subcompanySelect">Select Subcompany:</label>
+    <select id="subcompanySelect" class="form-select" ></select>
+
+	<!-- Date picker -->
+<label for="dateSelect" style="margin-top: 20px;">Select Date:</label>
+<input type="date" id="dateSelect" class="form-control" />
+					<h1 class="h3 mb-3" style="margin-top: 20px;"><strong>Analytics</strong> Dashboard</h1>
+
+					<div class="row">
+						<div class="col-xl-6 col-xxl-5 d-flex">
+							<div class="w-100">
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Approved Tasks</h5>
+													</div>
+
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="truck"></i>
+														</div>
+													</div>
+												</div>
+												<h1 id="approvedTasks" class="mt-1 mb-3">Loading...</h1>
+												<!-- <div class="mb-0">
+													<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
+													<span class="text-muted">Since last week</span>
+												</div> -->
+											</div>
+										</div>
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Incomplete Tasks</h5>
+													</div>
+
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="users"></i>
+														</div>
+													</div>
+												</div>
+												<h1 id="incompleteTasks" class="mt-1 mb-3">Loading...</h1>
+												<!-- <div class="mb-0">
+													<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
+													<span class="text-muted">Since last week</span>
+												</div> -->
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Status Pending</h5>
+													</div>
+
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="users"></i>
+														</div>
+													</div>
+												</div>
+												<h1 id="statusPending" class="mt-1 mb-3">Loading...</h1>
+												<!-- <div class="mb-0">
+													<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
+													<span class="text-muted">Since last week</span>
+												</div> -->
+											</div>
+										</div>
+										<div class="card">
+											<div class="card-body">
+												<div class="row">
+													<div class="col mt-0">
+														<h5 class="card-title">Total Tasks</h5>
+													</div>
+
+													<div class="col-auto">
+														<div class="stat text-primary">
+															<i class="align-middle" data-feather="shopping-cart"></i>
+														</div>
+													</div>
+												</div>
+												<h1 id="totalTasks" class="mt-1 mb-3">Loading...</h1>
+												<!-- <div class="mb-0">
+													<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> 5.25% </span>
+													<span class="text-muted">Since last week</span>
+												</div> -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xl-6 col-xxl-7">
+							<div class="card flex-fill w-100">
+								<div class="card-header">
+
+									<h5 class="card-title mb-0">Daily Completed Tasks</h5>
+								</div>
+								<div class="card-body py-3">
+									<div class="chart chart-sm">
+										<canvas id="chartjs-dashboard-line"></canvas>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+						<div class="row">
+							<div class="row">
+								<div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+									<div class="card flex-fill w-100">
+										<div class="card-header">
+		
+											<h5 class="card-title mb-0">Property Health</h5>
+										</div>
+										<div class="card-body d-flex">
+											<div class="align-self-center w-100">
+												<div class="py-3">
+													<div class="chart chart-xs">
+														<canvas id="chartjs-dashboard-pie"></canvas>
+													</div>
+												</div>
+		
+												<table class="table mb-0">
+													<tbody>
+														<tr>
+															<td>Poor</td>
+															<td class="text-end">&lt;4.0</td>
+														</tr>
+														<tr>
+															<td>Good</td>
+															<td class="text-end">&lt;8.0 </td>
+														</tr>
+														<tr>
+															<td>Excellent</td>
+															<td class="text-end">>8.0</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+							<div class="col-12 col-lg-8 col-xxl-9 d-flex">
+								<div class="card flex-fill">
+									<div class="card-header">
+	
+										<h5 class="card-title mb-0">Users in Office</h5>
+									</div>
+									<table class="table table-hover my-0">
+										<thead>
+											<tr>
+												<th>Email</th>
+												<th class="d-none d-xl-table-cell">Role</th>
+												<th class="d-none d-xl-table-cell">Company</th>
+												<th>Subcompany</th>
+												<th class="d-none d-md-table-cell">Status</th>
+											</tr>
+										</thead>
+										<tbody id="userTableBody">
+											<!-- <tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr>
+											<tr>
+												<td>off1@gmail.com</td>
+												<td class="d-none d-xl-table-cell">Center Manager</td>
+												<td class="d-none d-xl-table-cell">Test_company</td>
+												<td class="d-none d-md-table-cell">Test_sc1</td>
+												<td><span class="badge bg-success">Status</span></td>
+											</tr> -->
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-12 col-lg-8 col-xxl-9 d-flex">
+							<div class="card flex-fill">
+								<div class="card-header">
+
+									<h5 class="card-title mb-0">Pending Tasks</h5>
+								</div>
+								<table class="table table-hover my-0">
+									<thead>
+										<tr>
+											<th>Task Name</th>
+											<th class="d-none d-xl-table-cell">Task Date</th>
+											<th class="d-none d-md-table-cell">Assigned</th>
+											<th>Status</th>
+										</tr>
+									</thead>
+									<tbody id="pendingTasksTableBody">
+										<!-- <tr>
+											<td>Project Apollo</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-success">Done</span></td>
+										</tr>
+										<tr>
+											<td>Project Fireball</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-danger">Cancelled</span></td>
+										</tr>
+										<tr>
+											<td>Project Hades</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-success">Done</span></td>
+										</tr>
+										<tr>
+											<td>Project Nitro</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-warning">In progress</span></td>
+										</tr>
+										<tr>
+											<td>Project Phoenix</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-success">Done</span></td>
+										</tr>
+										<tr>
+											<td>Project X</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-success">Done</span></td>
+										</tr>
+										<tr>
+											<td>Project Romeo</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-success">Done</span></td>
+										</tr>
+										<tr>
+											<td>Project Wombat</td>
+											<td class="d-none d-xl-table-cell">01/01/2021</td>
+											<td class="d-none d-xl-table-cell">off1@gmail.com</td>
+											<td><span class="badge bg-warning">In progress</span></td>
+										</tr> -->
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-12 col-lg-4 col-xxl-3 d-flex">
+							<div class="card flex-fill w-100">
+								<div class="card-header">
+
+									<h5 class="card-title mb-0">Daily Pending Tasks</h5>
+								</div>
+								<div class="card-body d-flex w-100">
+									<div class="align-self-center chart chart-lg">
+										<canvas id="chartjs-dashboard-bar"></canvas>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</main>
+		</div>
+	</div>
+
+	<!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script> -->
+	<script>
+		const firebaseConfig = {
+            apiKey: "AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0",
+            authDomain: "propclean.firebaseapp.com",
+            databaseURL: "https://propclean-default-rtdb.firebaseio.com",
+            projectId: "propclean",
+            storageBucket: "propclean.appspot.com",
+            messagingSenderId: "795234019311",
+            appId: "1:795234019311:web:369566b90b91139164781a",
+            measurementId: "G-CE3LFP4HSJ"
+        };
+
+		// Initialize Firebase
+		if (!firebase.apps.length) {
+			firebase.initializeApp(firebaseConfig);
+		}
+		const database = firebase.database();
+    const auth = firebase.auth();
+
+	// Get DOM Elements
+    const subcompanySelect = document.getElementById("subcompanySelect");
+	const dateSelect = document.getElementById("dateSelect");
+    const approvedTasksEl = document.getElementById("approvedTasks");
+    const incompleteTasksEl = document.getElementById("incompleteTasks");
+    const statusPendingEl = document.getElementById("statusPending");
+    const totalTasksEl = document.getElementById("totalTasks");
+
+	// Load data when subcompany or date changes
+subcompanySelect.addEventListener("change", loadDashboardData);
+dateSelect.addEventListener("change", loadDashboardData);
+
+// Function to load data based on selected subcompany and date
+function loadDashboardData() {
+    const selectedSubcompany = subcompanySelect.value;
+    const selectedDate = dateSelect.value || new Date().toISOString().split("T")[0]; // Default to today if no date selected
+
+    // Ensure both subcompany and date are selected before loading data
+    if (selectedSubcompany && selectedDate) {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                const userRef = database.ref(`users/${user.uid}`);
+                userRef.once("value", snapshot => {
+                    const userData = snapshot.val();
+                    const companyName = userData.companyName;
+
+                    fetchStats(companyName, selectedSubcompany, selectedDate);
+                    loadUsersInOffice(companyName, selectedSubcompany, selectedDate);
+                    loadPendingTasks(companyName, selectedSubcompany, selectedDate);
+                });
+            } else {
+                console.log("User not authenticated. Redirecting to login...");
+                window.location.href = "index.html";
+            }
+        });
+    }
+}
+
+	// Fetch user's company name and populate subcompany dropdown
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            console.log("User authenticated:", user.uid);
+            const userRef = database.ref(`users/${user.uid}`);
+            userRef.once("value", snapshot => {
+                const userData = snapshot.val();
+                const companyName = userData.companyName;
+                populateSubcompanies(companyName);
+            });
+        } else {
+            console.log("User not authenticated. Redirecting to login...");
+            window.location.href = "index.html";
+        }
+    });
+
+	// Populate subcompanies once the user's company name is retrieved
+function populateSubcompanies(companyName) {
+    const subcompaniesRef = database.ref(`companies/${companyName}/subcompanies`);
+    subcompaniesRef.once("value", snapshot => {
+        snapshot.forEach(childSnapshot => {
+            const subcompanyName = childSnapshot.key;
+            const option = document.createElement("option");
+            option.value = subcompanyName;
+            option.textContent = subcompanyName;
+            subcompanySelect.appendChild(option);
+        });
+        console.log("Subcompanies populated for company:", companyName);
+    });
+}
+
+    function fetchStats(companyName, subcompanyName,selectedDate) {
+        const date = new Date().toISOString().split("T")[0];
+        const statsRef = database.ref(`backup/${selectedDate}/companies/${companyName}/subcompanies/${subcompanyName}/stats`);
+        
+        statsRef.once("value", snapshot => {
+            if (snapshot.exists()) {
+                const stats = snapshot.val();
+                approvedTasksEl.textContent = stats.approvedTasks || 0;
+                incompleteTasksEl.textContent = stats.incompleteTasks || 0;
+                statusPendingEl.textContent = stats.statusPending || 0;
+                totalTasksEl.textContent = stats.totalTasks || 0;
+                console.log("Stats loaded:", stats);
+            } else {
+                approvedTasksEl.textContent = 0;
+                incompleteTasksEl.textContent = 0;
+                statusPendingEl.textContent = 0;
+                totalTasksEl.textContent = 0;
+                console.warn("Stats not found for the selected subcompany.");
+            }
+        });
+    }
+
+	function loadUsersInOffice(companyName, subcompanyName, selectedDate) {
+        const usersTableBody = document.getElementById("userTableBody");
+        usersTableBody.innerHTML = ''; // Clear existing rows
+
+        const officeBoysRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`);
+        officeBoysRef.once('value', snapshot => {
+            const officeBoys = snapshot.val();
+            if (officeBoys) {
+                Object.values(officeBoys).forEach(user => {
+                    appendUserRow(user, 'Office Boy', companyName, subcompanyName);
+                });
+            }
+        });
+
+        const centerManagersRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers`);
+        centerManagersRef.once('value', snapshot => {
+            const centerManagers = snapshot.val();
+            if (centerManagers) {
+                Object.values(centerManagers).forEach(user => {
+                    appendUserRow(user, 'Center Manager', companyName, subcompanyName);
+                });
+            }
+        });
+    }
+
+function appendUserRow(user, role, companyName, subcompanyName) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${user.email || 'N/A'}</td>
+        <td>${role}</td>
+        <td>${companyName}</td>
+        <td>${subcompanyName}</td>
+        <td>${user.blocked ? 'Blocked' : 'Active'}</td>
+    `;
+    userTableBody.appendChild(row);
+}
+
+// Fetch Pending Tasks for Selected Company and Subcompany
+function loadPendingTasks(companyName, subcompanyName, selectedDate) {
+			const pendingTasksRef = database.ref(`backup/${selectedDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+			const pendingTasksTableBody = document.getElementById("pendingTasksTableBody");
+			pendingTasksTableBody.innerHTML = ''; // Clear existing data
+
+			pendingTasksRef.once('value', snapshot => {
+				const tasks = snapshot.val();
+				if (tasks) {
+					Object.entries(tasks).forEach(([taskId, taskDetails]) => {
+						if (taskDetails.status === 'incomplete') { // Filter for incomplete tasks
+							appendPendingTaskRow(taskDetails, selectedDate);
+						}
+					});
+				} else {
+					pendingTasksTableBody.innerHTML = '<tr><td colspan="4">No pending tasks found.</td></tr>';
+				}
+			});
+		}
+
+		function appendPendingTaskRow(taskDetails, selectedDate) {
+			const row = document.createElement("tr");
+			row.innerHTML = `
+				<td>${taskDetails.task || 'N/A'}</td>
+				<td>${selectedDate}</td>
+				<td>${taskDetails.assigned || 'N/A'}</td>
+				<td>Incomplete</td>
+			`;
+			document.getElementById("pendingTasksTableBody").appendChild(row);
+		}
+	</script>
+	<script>
+		// Set the countdown end time to 30 days from the current time
+		const countdownEnd = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
+	
+		// Function to update the countdown every second
+		function updateCountdown() {
+			const now = new Date().getTime();
+			const distance = countdownEnd - now;
+	
+			// Calculate time parts
+			const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+			const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+	
+			// Update the HTML content with the calculated time parts
+			document.getElementById("countdown-timer").innerHTML = 
+				`${days}d ${hours}h ${minutes}m ${seconds}s`;
+	
+			// Stop countdown if the time is up
+			if (distance < 0) {
+				document.getElementById("countdown-timer").innerHTML = "Trial Expired!";
+				clearInterval(countdownInterval); // Clear the interval
+			}
+		}
+	
+		// Call the updateCountdown function every second
+		const countdownInterval = setInterval(updateCountdown, 1000);
+	</script>
+	<script type="module" src="static/js/app.js"></script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
+			var gradient = ctx.createLinearGradient(0, 0, 0, 225);
+			gradient.addColorStop(0, "rgba(215, 227, 244, 1)");
+			gradient.addColorStop(1, "rgba(215, 227, 244, 0)");
+			// Line chart
+			new Chart(document.getElementById("chartjs-dashboard-line"), {
+				type: "line",
+				data: {
+					labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+					datasets: [{
+						label: "Sales ($)",
+						fill: true,
+						backgroundColor: gradient,
+						borderColor: window.theme.primary,
+						data: [
+							2115,
+							1562,
+							1584,
+							1892,
+							1587,
+							1923,
+							2566,
+							2448,
+							2805,
+							3438,
+							2917,
+							3327
+						]
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					tooltips: {
+						intersect: false
+					},
+					hover: {
+						intersect: true
+					},
+					plugins: {
+						filler: {
+							propagate: false
+						}
+					},
+					scales: {
+						xAxes: [{
+							reverse: true,
+							gridLines: {
+								color: "rgba(0,0,0,0.0)"
+							}
+						}],
+						yAxes: [{
+							ticks: {
+								stepSize: 1000
+							},
+							display: true,
+							borderDash: [3, 3],
+							gridLines: {
+								color: "rgba(0,0,0,0.0)"
+							}
+						}]
+					}
+				}
+			});
+		});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Pie chart
+			new Chart(document.getElementById("chartjs-dashboard-pie"), {
+				type: "pie",
+				data: {
+					labels: ["Chrome", "Firefox", "IE"],
+					datasets: [{
+						data: [4306, 3801, 1689],
+						backgroundColor: [
+							window.theme.primary,
+							window.theme.warning,
+							window.theme.danger
+						],
+						borderWidth: 5
+					}]
+				},
+				options: {
+					responsive: !window.MSInputMethodContext,
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					cutoutPercentage: 75
+				}
+			});
+		});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Bar chart
+			new Chart(document.getElementById("chartjs-dashboard-bar"), {
+				type: "bar",
+				data: {
+					labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+					datasets: [{
+						label: "This year",
+						backgroundColor: window.theme.primary,
+						borderColor: window.theme.primary,
+						hoverBackgroundColor: window.theme.primary,
+						hoverBorderColor: window.theme.primary,
+						data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
+						barPercentage: .75,
+						categoryPercentage: .5
+					}]
+				},
+				options: {
+					maintainAspectRatio: false,
+					legend: {
+						display: false
+					},
+					scales: {
+						yAxes: [{
+							gridLines: {
+								display: false
+							},
+							stacked: false,
+							ticks: {
+								stepSize: 20
+							}
+						}],
+						xAxes: [{
+							stacked: false,
+							gridLines: {
+								color: "transparent"
+							}
+						}]
+					}
+				}
+			});
+		});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var markers = [{
+					coords: [31.230391, 121.473701],
+					name: "Shanghai"
+				},
+				{
+					coords: [28.704060, 77.102493],
+					name: "Delhi"
+				},
+				{
+					coords: [6.524379, 3.379206],
+					name: "Lagos"
+				},
+				{
+					coords: [35.689487, 139.691711],
+					name: "Tokyo"
+				},
+				{
+					coords: [23.129110, 113.264381],
+					name: "Guangzhou"
+				},
+				{
+					coords: [40.7127837, -74.0059413],
+					name: "New York"
+				},
+				{
+					coords: [34.052235, -118.243683],
+					name: "Los Angeles"
+				},
+				{
+					coords: [41.878113, -87.629799],
+					name: "Chicago"
+				},
+				{
+					coords: [51.507351, -0.127758],
+					name: "London"
+				},
+				{
+					coords: [40.416775, -3.703790],
+					name: "Madrid "
+				}
+			];
+			var map = new jsVectorMap({
+				map: "world",
+				selector: "#world_map",
+				zoomButtons: true,
+				markers: markers,
+				markerStyle: {
+					initial: {
+						r: 9,
+						strokeWidth: 7,
+						stokeOpacity: .4,
+						fill: window.theme.primary
+					},
+					hover: {
+						fill: window.theme.primary,
+						stroke: window.theme.primary
+					}
+				},
+				zoomOnScroll: false
+			});
+			window.addEventListener("resize", () => {
+				map.updateSize();
+			});
+		});
+	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var date = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+			var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+			document.getElementById("datetimepicker-dashboard").flatpickr({
+				inline: true,
+				prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+				nextArrow: "<span title=\"Next month\">&raquo;</span>",
+				defaultDate: defaultDate
+			});
+		});
+	</script>
+
+</body>
+
+</html>

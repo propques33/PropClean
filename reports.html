@@ -7,46 +7,115 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Rubik', sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f0f2f5;
             margin: 0;
             padding: 20px;
+            color: #333;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         }
         h1 {
             text-align: center;
+            color: #0056d6;
+            font-weight: 800;
+            font-size: 2.5em;
+            background-color: #eaeffe;
+            width:240px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            margin:0 auto;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        label {
+            color: #444;
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-left: 10px;
+        }
+        select, input[type="date"], button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 30px;
+            background-color: #ffffff;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        select:focus, input[type="date"]:focus {
+            border-color: #0056d6;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 86, 214, 0.4);
+        }
+        button {
+            background-color: #0056d6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #0041a3;
+            transform: translateY(-2px);
         }
         .table-container {
             width: 100%;
             overflow-x: auto;
+            margin-top: 30px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #0056d6;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1em;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e0f3ff;
         }
         .status-complete {
-            color: green;
+            color: #28a745;
+            font-weight: bold;
         }
         .status-incomplete {
-            color: red;
+            color: #dc3545;
+            font-weight: bold;
         }
         .admin-only {
             display: none;
@@ -63,8 +132,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.5);
             padding-top: 60px;
         }
         .modal-content {
@@ -72,49 +140,127 @@
             width: 80%;
             max-width: 600px;
             position: relative;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 30px;
         }
-        .close{
-      border:none;
-      position: absolute;
-      margin-bottom: 20px;
-      top: 10px;
-      right: 10px;
-      font-size: 30px;
-      color:red;
-      border-radius: 99%;
-      padding: 6px 15px;
-      transition: all 100ms ease-in-out;
-      cursor: pointer;
-    }
-    .close:hover,.close:focus{
-      background-color: red;
-      color:white;
-    }
+        .close {
+            border: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            color: #dc3545;
+            border-radius: 50%;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .close:hover, .close:focus {
+            background-color: #dc3545;
+            color: white;
+        }
         .modal img {
             width: 100%;
             height: auto;
+            border-radius: 8px;
         }
         .star {
-    font-size: 20px;
+            font-size: 24px;
+            color: gold;
+            cursor: pointer;
+            margin-right: 5px;
+            transition: transform 0.2s;
+        }
+        .star:hover, .star:hover ~ .star {
+            color: darkorange;
+            transform: scale(1.2);
+        }
+        .action-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .action-button.approve {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .action-button.approve:hover {
+            background-color: #218838;
+        }
+        .action-button.disapprove {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .action-button.disapprove:hover {
+            background-color: #c82333;
+        }
+        /* Star rating styling - Increase the size */
+.star {
+    font-size: 28px; /* Increased size */
     color: gold;
     cursor: pointer;
     margin-right: 5px;
+    transition: transform 0.2s;
+}
+.star:hover, .star:hover ~ .star {
+    color: darkorange;
+    transform: scale(1.2);
 }
 
-.star:hover,
-.star:hover ~ .star {
-    color: darkorange;
+/* Approve button - Change to blue */
+.action-button.approve {
+    background-color: #007bff; /* Blue */
+    color: #fff;
 }
+.action-button.approve:hover {
+    background-color: #0056b3; /* Darker blue */
+}
+
+/* Disapprove button - Change to red */
+.action-button.disapprove {
+    background-color: #dc3545; /* Red */
+    color: #fff;
+}
+.action-button.disapprove:hover {
+    background-color: #c82333; /* Darker red */
+}
+
+/* Styling for Approved and Disapproved status */
+.status-approved {
+    color: #28a745; /* Green color for Approved */
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.status-disapproved {
+    color: #dc3545; /* Red color for Disapproved */
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Select Office</h1>
-        <select id="officeSelect"></select>
+        <h1>Task Reports</h1>
+        <label for="companySelect">Select Company</label>
+        <select id="companySelect" disabled></select>
+
+        <label for="subcompanySelect">Select SubCompany</label>
+        <select id="subcompanySelect" disabled></select>
+
+        <label for="dateSelect">Select Date:</label>
+        <input type="date" id="dateSelect" max="" />
+
         <button onclick="loadReports()">Load Reports</button>
-        <div id="reportsContainer" class="table-container"></div>
+        <div id="reportsContainer" class="table-container">
+        </div>
         <div id="adminContainer" class="admin-only">
-            <h2>Users in Office</h2>
             <div id="usersContainer" class="table-container"></div>
         </div>
     </div>
@@ -147,31 +293,35 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        const adminInfo = {
-            "shanvishukla39@gmail.com": "Workviaa",
-            "cubispace@gmail.com": "Cubispace",
-            "karyasthal@gmail.com": "Karyasthal",
-            "workdesq@gmail.com": "Workdesq",
-            "workvia@gmail.com": "Workviaa",
-            "sapnasangeeta@gmail.com": "Sapna Sangeeta",
-            "worqspot@gmail.com": "Worqspot",
-            "shanvishukla39@gmail.com": "Workviaa",
-            "thomas@propques.com": "Workdesq",
-            "amdixit1711@gmail.com": "Workviaa",
-            "prashant.m@cubispace.com": "Cubispace",
-            "sales@karyasthal.com":"Karyasthal","aman.sales@workdesq.com":"Workdesq","cm.aamir@worqspot.com":"Worqspot","ops@workviaa.com":"Workviaa","sapnasangeetaoffices@gmail.com":"Sapna Sangeeta"
-        };
+        // const adminInfo = {
+        //     "shanvishukla39@gmail.com": "Workviaa",
+        //     "cubispace@gmail.com": "Cubispace",
+        //     "karyasthal@gmail.com": "Karyasthal",
+        //     "workdesq@gmail.com": "Workdesq",
+        //     "workvia@gmail.com": "Workviaa",
+        //     "sapnasangeeta@gmail.com": "Sapna Sangeeta",
+        //     "worqspot@gmail.com": "Worqspot",
+        //     "shanvishukla39@gmail.com": "Workviaa",
+        //     "thomas@propques.com": "Workdesq",
+        //     "amdixit1711@gmail.com": "Workviaa",
+        //     "prashant.m@cubispace.com": "Cubispace",
+        //     "sales@karyasthal.com":"Karyasthal","aman.sales@workdesq.com":"Workdesq","cm.aamir@worqspot.com":"Worqspot","ops@workviaa.com":"Workviaa","sapnasangeetaoffices@gmail.com":"Sapna Sangeeta"
+        // };
 
         auth.onAuthStateChanged(user => {
             if (user) {
                 const userRef = database.ref('users/' + user.uid);
                 userRef.once('value').then(snapshot => {
                     const userData = snapshot.val();
-                    if (user.email in adminInfo) {
-                        populateOfficeSelect(true, adminInfo[user.email]);
-                        document.getElementById('adminContainer').classList.add('active');
+                    // Check if the user is an owner and if they have a companyName
+            if (userData && userData.role === 'owner' && userData.companyName) {
+                populateCompanyDropdown(userData.companyName);
+                populateSubcompanyDropdown(userData.companyName);
+            }
+                    else if (userData && userData.companyName && userData.subcompanyName) {
+                        populateCompanyAndSubcompany(userData.companyName, userData.subcompanyName);
                     } else {
-                        populateOfficeSelect(false, userData.office);
+                        alert("User data not found.");
                     }
                     resetTasksIfNeeded();
                 });
@@ -180,27 +330,132 @@
             }
         });
 
-        function populateOfficeSelect(isAdmin, userOffice) {
-            const officeSelect = document.getElementById('officeSelect');
-            officeSelect.innerHTML = ''; // Clear any existing options
+        function populateCompanyDropdown(companyName) {
+    const companySelect = document.getElementById('companySelect');
+    companySelect.innerHTML = ''; // Clear the existing options
 
-                const option = document.createElement('option');
-                option.value = userOffice;
-                option.textContent = userOffice;
-                officeSelect.appendChild(option);
-                officeSelect.value = userOffice;
+    // Populate company dropdown with the logged-in owner's company
+    const option = document.createElement('option');
+    option.value = companyName;
+    option.textContent = companyName;
+    companySelect.appendChild(option);
+    companySelect.value = companyName;
+}
+        // auth.onAuthStateChanged(user => {
+        //     if (user) {
+        //         const userRef = database.ref('users/' + user.uid);
+        //         userRef.once('value').then(snapshot => {
+        //             const userData = snapshot.val();
+        //             if (user.email in adminInfo) {
+        //                 populateOfficeSelect(true, adminInfo[user.email]);
+        //                 document.getElementById('adminContainer').classList.add('active');
+        //             } else {
+        //                 populateOfficeSelect(false, userData.office);
+        //             }
+        //             resetTasksIfNeeded();
+        //         });
+        //     } else {
+        //         window.location.href = 'index.html'; // Redirect to login if user is not authenticated
+        //     }
+        // });
+
+        function populateCompanyAndSubcompany(companyName, subcompanyName) {
+            const companySelect = document.getElementById('companySelect');
+            const subcompanySelect = document.getElementById('subcompanySelect');
+
+            // Populate company dropdown
+            const companyOption = document.createElement('option');
+            companyOption.value = companyName;
+            companyOption.textContent = companyName;
+            companySelect.appendChild(companyOption);
+            companySelect.value = companyName;
+
+            // Populate subcompany dropdown
+            const subcompanyOption = document.createElement('option');
+            subcompanyOption.value = subcompanyName;
+            subcompanyOption.textContent = subcompanyName;
+            subcompanySelect.appendChild(subcompanyOption);
+            subcompanySelect.value = subcompanyName;
+
+            document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0]; // Set current date as default
         }
+
+        function populateSubcompanyDropdown(companyName) {
+    const subcompanySelect = document.getElementById('subcompanySelect');
+    subcompanySelect.innerHTML = ''; // Clear the existing options
+
+    const subcompaniesRef = database.ref(`companies/${companyName}/subcompanies`);
+    subcompaniesRef.once('value', snapshot => {
+        const subcompanies = snapshot.val();
+        if (subcompanies) {
+            for (const subcompanyId in subcompanies) {
+                const subcompany = subcompanies[subcompanyId]; // Get the subcompany object
+                const subcompanyName = subcompany.name || subcompanyId; // Assuming the subcompany name is stored under 'name'
+                const option = document.createElement('option');
+                option.value = subcompanyId;
+                option.textContent = subcompanyName;
+                subcompanySelect.appendChild(option);
+            }
+
+            // Enable the subcompany dropdown after populating it
+            subcompanySelect.disabled = false;
+            document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0]; // Set current date as default
+        } else {
+            alert('No subcompanies found for this company.');
+        }
+    }).catch(error => {
+        console.error('Error fetching subcompanies:', error);
+        alert('Error occurred while fetching subcompanies.');
+    });
+}
+
+        // function populateOfficeSelect(isAdmin, userOffice) {
+        //     const officeSelect = document.getElementById('officeSelect');
+        //     officeSelect.innerHTML = ''; // Clear any existing options
+
+        //         const option = document.createElement('option');
+        //         option.value = userOffice;
+        //         option.textContent = userOffice;
+        //         officeSelect.appendChild(option);
+        //         officeSelect.value = userOffice;
+        // }
 
         function loadReports() {
-            const office = document.getElementById('officeSelect').value;
-            loadTaskReports(office);
-            loadUserReports(office);
+            const companyName = document.getElementById('companySelect').value;
+            const subcompanyName = document.getElementById('subcompanySelect').value;
+            const selectedDate = document.getElementById('dateSelect').value;
+
+            if (!companyName || !subcompanyName || !selectedDate) {
+                alert('Please select a company, subcompany, and date.');
+                return;
+            }
+            const currentDate = new Date().toISOString().split('T')[0];
+            const tasksPath = selectedDate === currentDate 
+                ? `companies/${companyName}/subcompanies/${subcompanyName}/tasks`
+                : `backup/${selectedDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+
+            loadTaskReports(tasksPath,companyName, subcompanyName);
+            loadUserReports(companyName, subcompanyName);
+            // Make sure the user container is displayed
+    const adminContainer = document.getElementById('adminContainer');
+    adminContainer.classList.add('active');
+            // Load office boys reports
         }
 
-        function loadTaskReports(office) {
+        // function loadReports() {
+        //     const office = document.getElementById('officeSelect').value;
+        //     loadTaskReports(office);
+        //     loadUserReports(office);
+        // }
+
+        // function loadTaskReports(office) {
+        //     const reportsContainer = document.getElementById('reportsContainer');
+        //     reportsContainer.innerHTML = `
+        //         <h1>${office} Tasks</h1>
+        function loadTaskReports(tasksPath,companyName, subcompanyName) {
             const reportsContainer = document.getElementById('reportsContainer');
             reportsContainer.innerHTML = `
-                <h1>${office} Tasks</h1>
+                <h1>Daily Reports</h1>
                 <table>
                     <thead>
                         <tr>
@@ -218,22 +473,26 @@
                 </table>
             `;
 
-            const tasksRef = firebase.database().ref(office);
-            tasksRef.on('value', snapshot => {
+            // const tasksRef = firebase.database().ref(office);
+            const tasksRef = database.ref(tasksPath);
+            tasksRef.once('value', snapshot => {
                 const tasks = snapshot.val();
                 const taskTableBody = document.getElementById('taskTableBody');
                 taskTableBody.innerHTML = ''; // Clear the table body
 
+                if (tasks) {
                 for (const taskId in tasks) {
                     const task = tasks[taskId];
                     const row = document.createElement('tr');
 
                     const taskNameCell = document.createElement('td');
                     taskNameCell.textContent = task.task;
+                    taskNameCell.style.fontWeight = 800;
                     row.appendChild(taskNameCell);
 
                     const dateCell = document.createElement('td');
                     dateCell.textContent = task.time;
+                    dateCell.style.fontWeight = 800;
                     row.appendChild(dateCell);
 
                     const statusCell = document.createElement('td');
@@ -263,38 +522,50 @@
 
                     // Star Rating Cell
             const ratingCell = document.createElement('td');
-            ratingCell.innerHTML = createStarRating(task.rating || 0, taskId, office, task.imageUrl); // Pass the imageUrl to the function
+            ratingCell.innerHTML = createStarRating(task.rating || 0,  taskId, companyName, subcompanyName,task.imageUrl || null); // Pass the imageUrl to the function
             row.appendChild(ratingCell);
                     
                     const actionCell = document.createElement('td');
                     if (task.status.toLowerCase() === 'complete') {
                         const approveButton = document.createElement('button');
                         approveButton.textContent = 'Approve';
-                        approveButton.onclick = () => approveTask(office, taskId);
+                        approveButton.classList.add('action-button', 'approve'); 
+                        approveButton.onclick = () => approveTask(companyName, subcompanyName, taskId);
                         actionCell.appendChild(approveButton);
 
                         const disapproveButton = document.createElement('button');
                         disapproveButton.textContent = 'Disapprove';
-                        disapproveButton.onclick = () => disapproveTask(office, taskId);
+                        disapproveButton.classList.add('action-button', 'disapprove');
+                        disapproveButton.onclick = () => disapproveTask(companyName, subcompanyName, taskId);
                         actionCell.appendChild(disapproveButton);
                     } else {
-                        actionCell.textContent = task.status === 'approved' ? 'Approved' : task.status === 'disapproved' ? 'Disapproved' : '';
+                        // Apply modern styling for approved/disapproved status
+    actionCell.innerHTML = task.status === 'approved' 
+        ? '<span class="status-approved">Approved</span>' 
+        : '<span class="status-disapproved">Disapproved</span>';
                     }
                     row.appendChild(actionCell);
 
                     taskTableBody.appendChild(row);
                 }
+            }
+            else {
+                    taskTableBody.innerHTML = '<tr><td colspan="6">No tasks found for the selected date.</td></tr>';
+                }
+            }).catch(error => {
+                console.error('Error fetching tasks:', error);
+                alert('Error occurred while fetching tasks.');
             });
         }
 
-        function createStarRating(rating, taskId, office, imageUrl) {
+        function createStarRating(rating, taskId, companyName, subcompanyName,imageUrl) {
     let starsHtml = '';
     const isClickable = imageUrl && rating === 0; // Only allow rating if image exists and rating is not yet given
 
     for (let i = 1; i <= 5; i++) {
         const filled = i <= rating ? '★' : '☆';
         const cursorStyle = isClickable ? 'pointer' : 'default';
-        starsHtml += `<span data-taskid="${taskId}" data-office="${office}" data-rating="${i}" class="star" style="cursor: ${cursorStyle}; font-size: 20px;">${filled}</span>`;
+        starsHtml += `<span data-taskid="${taskId}" data-company="${companyName}" data-subcompany="${subcompanyName}" data-rating="${i}" class="star" style="cursor: pointer; font-size: 20px;">${filled}</span>`;
     }
     return starsHtml;
 }
@@ -302,14 +573,15 @@
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('star') && event.target.style.cursor === 'pointer') {
         const taskId = event.target.getAttribute('data-taskid');
-        const office = event.target.getAttribute('data-office');
-        const rating = event.target.getAttribute('data-rating');
-        setTaskRating(office, taskId, rating);
+                const companyName = event.target.getAttribute('data-company');
+                const subcompanyName = event.target.getAttribute('data-subcompany');
+                const rating = event.target.getAttribute('data-rating');
+                setTaskRating(companyName, subcompanyName, taskId, rating);
     }
 });
 
-function setTaskRating(office, taskId, rating) {
-    const taskRef = firebase.database().ref(`${office}/${taskId}`);
+function setTaskRating(companyName, subcompanyName, taskId, rating) {
+    const taskRef = firebase.database().ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
     taskRef.update({
         rating: parseInt(rating)
     }).then(() => {
@@ -320,8 +592,8 @@ function setTaskRating(office, taskId, rating) {
     });
 }
 
-        function approveTask(office, taskId) {
-            const taskRef = firebase.database().ref(`${office}/${taskId}`);
+        function approveTask(companyName, subcompanyName, taskId) {
+            const taskRef = firebase.database().ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
             taskRef.update({
                 status: 'approved'
             }).then(() => {
@@ -332,8 +604,8 @@ function setTaskRating(office, taskId, rating) {
             });
         }
 
-        function disapproveTask(office, taskId) {
-            const taskRef = firebase.database().ref(`${office}/${taskId}`);
+        function disapproveTask(companyName, subcompanyName, taskId) {
+            const taskRef = firebase.database().ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
             taskRef.update({
                 status: 'incomplete',
                 imageUrl: null,
@@ -348,67 +620,163 @@ function setTaskRating(office, taskId, rating) {
             });
         }
 
-        function loadUserReports(office) {
+        function loadUserReports(companyName, subcompanyName) {
+            console.log("hell");
             const usersContainer = document.getElementById('usersContainer');
             usersContainer.innerHTML = `
-                <h1>Users in ${office}</h1>
+                <h1>User in Office</h1>
                 <table>
                     <thead>
                         <tr>
                             <th>Email</th>
-                            <th>Office</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                    <th>Role</th>
+                    <th>Company Name</th>
+                    <th>Subcompany Name</th>
+                    <th>Status</th>
+                    <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="userTableBody"></tbody>
                 </table>
             `;
 
-            const usersRef = firebase.database().ref('users');
-            usersRef.on('value', snapshot => {
-                const users = snapshot.val();
-                const userTableBody = document.getElementById('userTableBody');
-                userTableBody.innerHTML = ''; // Clear the table body
+            const userTableBody = document.getElementById('userTableBody');
+    userTableBody.innerHTML = ''; // Clear the table body
 
-                for (const userId in users) {
-                    const user = users[userId];
-                    if (user.office.toLowerCase() === office.toLowerCase()) {
-                        const row = document.createElement('tr');
-
-                        const emailCell = document.createElement('td');
-                        emailCell.textContent = user.email;
-                        row.appendChild(emailCell);
-
-                        const officeCell = document.createElement('td');
-                        officeCell.textContent = user.office;
-                        row.appendChild(officeCell);
-
-                        const statusCell = document.createElement('td');
-                        statusCell.textContent = user.blocked ? 'Blocked' : 'Active';
-                        row.appendChild(statusCell);
-
-                        const actionCell = document.createElement('td');
-                        const actionButton = document.createElement('button');
-                        actionButton.textContent = user.blocked ? 'Unblock' : 'Block';
-                        actionButton.onclick = () => toggleBlockUser(userId, user.blocked);
-                        actionCell.appendChild(actionButton);
-                        row.appendChild(actionCell);
-
-                        userTableBody.appendChild(row);
-                    }
-                }
-            });
+    // Fetch office boys
+    const officeBoysRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`);
+    officeBoysRef.on('value', snapshot => {
+        const officeBoys = snapshot.val();
+        if (officeBoys) {
+            for (const userId in officeBoys) {
+                const user = officeBoys[userId];
+                appendUserRow(user, "Office Boy", companyName, subcompanyName, userId);
+            }
+        } else {
+            appendNoDataMessage();
         }
+    });
 
-        function toggleBlockUser(userId, isBlocked) {
+    // Fetch center managers
+    const centerManagersRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers`);
+    centerManagersRef.on('value', snapshot => {
+        const centerManagers = snapshot.val();
+        if (centerManagers) {
+            for (const userId in centerManagers) {
+                const user = centerManagers[userId];
+                appendUserRow(user, "Center Manager", companyName, subcompanyName, userId);
+            }
+        } else {
+            appendNoDataMessage();
+        }
+    });
+
+    // Helper function to append user rows
+    function appendUserRow(user, role, companyName, subcompanyName, userId) {
+        const row = document.createElement('tr');
+
+        // Email
+        const emailCell = document.createElement('td');
+        emailCell.textContent = user.email || 'N/A';
+        row.appendChild(emailCell);
+
+        // Role (Office Boy / Center Manager)
+        const roleCell = document.createElement('td');
+        roleCell.textContent = role;
+        row.appendChild(roleCell);
+
+        // Company Name
+        const companyNameCell = document.createElement('td');
+        companyNameCell.textContent = companyName; // Display the companyName passed in
+        row.appendChild(companyNameCell);
+
+        // Subcompany Name
+        const subcompanyNameCell = document.createElement('td');
+        subcompanyNameCell.textContent = subcompanyName; // Display the subcompanyName passed in
+        row.appendChild(subcompanyNameCell);
+
+        // Status (Blocked or Active)
+        const statusCell = document.createElement('td');
+        statusCell.textContent = user.blocked ? 'Blocked' : 'Active';
+        row.appendChild(statusCell);
+
+        // Action (Block/Unblock)
+        const actionCell = document.createElement('td');
+        const actionButton = document.createElement('button');
+        actionButton.textContent = user.blocked ? 'Unblock' : 'Block';
+        const rolePath = role === 'Office Boy' ? 'officeBoys' : 'centerManagers';
+        actionButton.onclick = () => toggleBlockUser(companyName, subcompanyName, role === 'Office Boy' ? 'officeBoys' : 'centerManagers', userId, user.blocked);
+        actionCell.appendChild(actionButton);
+        row.appendChild(actionCell);
+
+        userTableBody.appendChild(row);
+    }
+
+    function appendNoDataMessage() {
+        const noDataMessage = document.createElement('tr');
+        noDataMessage.innerHTML = `<td colspan="6">No users found.</td>`;
+        userTableBody.appendChild(noDataMessage);
+    }
+}
+
+//             const usersRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`);
+//     usersRef.on('value', snapshot => {
+//         const users = snapshot.val();
+//         const userTableBody = document.getElementById('userTableBody');
+//         userTableBody.innerHTML = ''; // Clear the table body
+
+//         if (users) {
+//             for (const userId in users) {
+//                 const user = users[userId];
+//                 const row = document.createElement('tr');
+
+//                 // Email
+//                 console.log(user.email);
+//                 const emailCell = document.createElement('td');
+//                 emailCell.textContent = user.email || 'N/A';
+//                 row.appendChild(emailCell);
+
+//                 // Company Name
+//                 const companyNameCell = document.createElement('td');
+//                 companyNameCell.textContent = companyName; // Display the companyName passed in
+//                 row.appendChild(companyNameCell);
+
+//                 // Subcompany Name
+//                 const subcompanyNameCell = document.createElement('td');
+//                 subcompanyNameCell.textContent = subcompanyName; // Display the subcompanyName passed in
+//                 row.appendChild(subcompanyNameCell);
+
+//                 // Status (Blocked or Active)
+//                 const statusCell = document.createElement('td');
+//                 statusCell.textContent = user.blocked ? 'Blocked' : 'Active';
+//                 row.appendChild(statusCell);
+
+//                 // Action (Block/Unblock)
+//                 const actionCell = document.createElement('td');
+//                 const actionButton = document.createElement('button');
+//                 actionButton.textContent = user.blocked ? 'Unblock' : 'Block';
+//                 actionButton.onclick = () => toggleBlockUser(companyName, subcompanyName, userId, user.blocked);
+//                 actionCell.appendChild(actionButton);
+//                 row.appendChild(actionCell);
+
+//                 userTableBody.appendChild(row);
+//             }
+//         } else {
+//             const noDataMessage = document.createElement('tr');
+//             noDataMessage.innerHTML = `<td colspan="4">No office boys found.</td>`;
+//             userTableBody.appendChild(noDataMessage);
+//         }
+//     });
+// }
+
+        function toggleBlockUser(companyName, subcompanyName, rolePath, userId, isBlocked) {
     console.log(`Toggling block status for user ${userId}. Currently blocked: ${isBlocked}`);
-    const userRef = firebase.database().ref('users/' + userId);
+    const userRef = firebase.database().ref(`companies/${companyName}/subcompanies/${subcompanyName}/${rolePath}/${userId}`);
     userRef.update({
         blocked: !isBlocked
     }).then(() => {
         console.log(`User ${userId} block status updated successfully.`);
-        loadReports(); // Refresh the user reports to show updated status and button text
+        loadUserReports(companyName, subcompanyName);// Refresh the user reports to show updated status and button text
     }).catch(error => {
         console.error("Error updating user block status:", error);
         alert("Error occurred while updating the user block status. Please try again.");
@@ -436,68 +804,215 @@ function setTaskRating(office, taskId, rating) {
         }
 
 
-        function resetTasksIfNeeded() {
-    const resetRef = database.ref('lastResetDate');
+//         function resetTasksIfNeeded() {
+//     const resetRef = database.ref('lastResetDate');
     
-    resetRef.once('value').then(snapshot => {
-        const lastResetDate = snapshot.val();
-        const currentDate = new Date();
-        const currentDay = currentDate.toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+//     resetRef.once('value').then(snapshot => {
+//         const lastResetDate = snapshot.val();
+//         const currentDate = new Date();
+//         const currentDay = currentDate.toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
 
-        // Check if the current date is different from the last reset date
-        if (lastResetDate !== currentDay) {
-            const currentHour = currentDate.getHours();
-            if (currentHour >= 6) {
-                backupAndResetTasks();
-                resetRef.set(currentDay);
+//         // Check if the current date is different from the last reset date
+//         if (lastResetDate !== currentDay) {
+//             const currentHour = currentDate.getHours();
+//             const currentMinute = currentDate.getMinutes();
+//             // Backup and reset at 12:10 AM
+//             if (currentHour === 0 && currentMinute >= 10) {
+//             console.log(currentDate);
+//             console.log(currentHour);
+//             console.log(currentDay);
+//             console.log(currentHour);
+//             console.log(currentMinute);
+//                 backupAndResetTasks(currentDay);
+//                 resetRef.set(currentDay);
+//             }
+//         }
+//     });
+// }
+
+// Function to check if reset is needed based on the last reset date
+function checkAndResetIfNeeded() {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const resetDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+    // Firebase reference to store the last reset date
+    const lastResetRef = database.ref('lastResetDate');
+
+    lastResetRef.once('value').then(snapshot => {
+        const lastResetDate = snapshot.val();
+
+        // Check if 24 hours have passed since the last reset or if it's the first reset
+        if (!lastResetDate || new Date(lastResetDate).getDate() !== now.getDate()) {
+            // If it's 12:10 AM (or more than 24 hours since the last reset)
+            if ((currentHour === 0 && currentMinute >= 10 && currentMinute < 15) || new Date(lastResetDate).getDate() !== now.getDate()) {
+                console.log("Reset and backup starting at", now.toLocaleString());
+                backupAndResetTasks(resetDate);
+
+                // Update last reset date in Firebase
+                lastResetRef.set(resetDate);
             }
         }
+    }).catch(error => {
+        console.error("Error checking last reset date:", error);
     });
 }
 
-function backupAndResetTasks() {
-            const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
-            const backupDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+// Runs checkAndResetIfNeeded every minute to verify the time and reset status
+setInterval(() => {
+    console.log("Checking if reset is needed...");
+    checkAndResetIfNeeded();
+}, 60 * 1000); // Run every 1 minute
 
-            officeRefs.forEach(office => {
-                const tasksRef = database.ref(office);
-                const backupRef = database.ref(`backup/${office}/${backupDate}`); // Create a backup reference
 
-                tasksRef.once('value').then(snapshot => {
-                    const tasks = snapshot.val();
-                    if (tasks) {
-                        backupRef.set(tasks) // Backup tasks
-                        .then(() => {
-                            console.log(`Backup for ${office} on ${backupDate} successful.`);
-                            resetTasksInOffice(office); // Reset tasks after backup
-                        })
-                        .catch(error => {
-                            console.error(`Error backing up data for ${office}:`, error);
-                        });
+// function backupAndResetTasks(backupDate) {
+
+//             const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
+//             const backupDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+//             officeRefs.forEach(office => {
+//                 const tasksRef = database.ref(office);
+//                 const backupRef = database.ref(`backup/${office}/${backupDate}`); // Create a backup reference
+
+//                 tasksRef.once('value').then(snapshot => {
+//                     const tasks = snapshot.val();
+//                     if (tasks) {
+//                         backupRef.set(tasks) // Backup tasks
+//                         .then(() => {
+//                             console.log(`Backup for ${office} on ${backupDate} successful.`);
+//                             resetTasksInOffice(office); // Reset tasks after backup
+//                         })
+//                         .catch(error => {
+//                             console.error(`Error backing up data for ${office}:`, error);
+//                         });
+//                     }
+//                 });
+//             });
+//         }
+
+function backupAndResetTasks(backupDate) {
+    const companiesRef = database.ref('companies');
+
+    companiesRef.once('value').then(snapshot => {
+        const companies = snapshot.val();
+        if (companies) {
+            for (const companyName in companies) {
+                const subcompanies = companies[companyName].subcompanies;
+                if (subcompanies) {
+                    for (const subcompanyName in subcompanies) {
+                        const tasks = subcompanies[subcompanyName].tasks;
+
+                        if (tasks) {
+                            const backupPath = `backup/${backupDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+                            const backupRef = database.ref(backupPath);
+
+                            // Save tasks to backup and then reset them
+                            backupRef.set(tasks)
+                                .then(() => {
+                                    console.log(`Backup for ${companyName} - ${subcompanyName} on ${backupDate} successful.`);
+                                    calculateAndStoreStats(tasks, backupDate, companyName, subcompanyName); // Call to calculate stat
+                                    resetTasksInSubcompany(companyName, subcompanyName);
+                                })
+                                .catch(error => {
+                                    console.error(`Error backing up data for ${companyName} - ${subcompanyName}:`, error);
+                                });
+                        }
                     }
-                });
-            });
+                }
+            }
         }
+    }).catch(error => {
+        console.error('Error fetching companies:', error);
+    });
+}
 
-        function resetTasksInOffice(office) {
-            const tasksRef = database.ref(office);
-            tasksRef.once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const taskKey = childSnapshot.key;
-                    tasksRef.child(taskKey).update({
-                        status: 'incomplete',
-                        imageUrl: null,
-                        completedBy: null,
-                        uploadTime: null,
-                        rating: 0
-                    });
-                });
-            }).then(() => {
-                console.log(`Tasks in ${office} have been reset.`);
-            }).catch(error => {
-                console.error(`Error resetting tasks in ${office}:`, error);
-            });
+// New function to calculate and store stats
+function calculateAndStoreStats(tasks, date, companyName, subcompanyName) {
+    let totalTasks = 0;
+    let incompleteTasks = 0;
+    let completeTasks = 0;
+    let approvedTasks = 0;
+    let totalRating = 0;
+    let ratedTasks = 0;
+    const incompleteTaskList = [];
+
+    for (const taskId in tasks) {
+        const task = tasks[taskId];
+        totalTasks++;
+
+        // Check task status
+        if (task.status === 'incomplete') {
+            incompleteTasks++;
+            incompleteTaskList.push({ taskId, taskName: task.task });
+        } else if (task.status === 'complete') {
+            completeTasks++;
+        } else if (task.status === 'approved') {
+            approvedTasks++;
+            if (task.rating) {
+                totalRating += task.rating;
+                ratedTasks++;
+            }
         }
+    }
+
+    const averageRating = ratedTasks > 0 ? (totalRating / ratedTasks).toFixed(2) : 0; // Calculating average rating
+
+    // Path to store stats in Firebase
+    const statsRef = database.ref(`backup/${date}/companies/${companyName}/subcompanies/${subcompanyName}/stats`);
+    statsRef.set({
+        totalTasks: totalTasks,
+        incompleteTasks: incompleteTasks,
+        completeTasks: completeTasks,
+        approvedTasks: approvedTasks,
+        averageRating: parseFloat(averageRating),
+        incompleteTasksList: incompleteTaskList
+    }).then(() => {
+        console.log(`Stats for ${companyName} - ${subcompanyName} on ${date} saved successfully.`);
+    }).catch(error => {
+        console.error(`Error saving stats for ${companyName} - ${subcompanyName}:`, error);
+    });
+}
+
+function resetTasksInSubcompany(companyName, subcompanyName) {
+    const tasksRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+    tasksRef.once('value').then(snapshot => {
+        snapshot.forEach(childSnapshot => {
+            const taskKey = childSnapshot.key;
+            tasksRef.child(taskKey).update({
+                status: 'incomplete',
+                imageUrl: null,
+                completedBy: null,
+                uploadTime: null,
+                rating: 0
+            });
+        });
+    }).then(() => {
+        console.log(`Tasks for ${companyName} - ${subcompanyName} have been reset.`);
+    }).catch(error => {
+        console.error(`Error resetting tasks for ${companyName} - ${subcompanyName}:`, error);
+    });
+}
+
+        // function resetTasksInOffice(office) {
+        //     const tasksRef = database.ref(office);
+        //     tasksRef.once('value').then(snapshot => {
+        //         snapshot.forEach(childSnapshot => {
+        //             const taskKey = childSnapshot.key;
+        //             tasksRef.child(taskKey).update({
+        //                 status: 'incomplete',
+        //                 imageUrl: null,
+        //                 completedBy: null,
+        //                 uploadTime: null,
+        //                 rating: 0
+        //             });
+        //         });
+        //     }).then(() => {
+        //         console.log(`Tasks in ${office} have been reset.`);
+        //     }).catch(error => {
+        //         console.error(`Error resetting tasks in ${office}:`, error);
+        //     });
+        // }
 
 // function resetAllTasks() {
 //     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
