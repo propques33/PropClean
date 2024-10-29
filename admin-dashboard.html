@@ -327,8 +327,6 @@
     <button id="back"><span><img src="arrow.png"></span>Go Back</button>
     <div class="container">
         <h1 class="admin">Space Setup</h1>
-        <!-- Add Company and Subcompany Section -->
-       <!-- Add Company and Subcompany Section -->
 <div id="add-company-section" class="section" >
     <h2 class="ts">Add New Company</h2>
     <form id="add-company-form">
@@ -1071,6 +1069,65 @@ document.getElementById("role-select").addEventListener("change", function () {
 });
 });
 
+async function addUserWithoutSignIn(email, password, role, companyName = "", subcompanyName = "") {
+        try {
+            const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=
+AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email, password: password, returnSecureToken: false })
+            });
+            const result = await response.json();
+            if (result.error) {
+                console.error("Error adding user:", result.error);
+                alert("Error adding user: " + result.error.message);
+                return;
+            }
+            const userId = result.localId;
+            const userData = { email: email, role: role, companyName: companyName || null, subcompanyName: subcompanyName || null, blocked: false,registrationTime: Date.now() };
+             // Step 3: Add user data to global users node
+            await firebase.database().ref(`users/${userId}`).set(userData);
+
+            // Step 4: Add user data to the specific company/subcompany node if applicable
+            let userRefPath = "";
+            if (role === "owner") {
+                userRefPath = `companies/${companyName}/owners/${userId}`;
+            } else if (role === "center-manager") {
+                userRefPath = `companies/${companyName}/subcompanies/${subcompanyName}/centerManagers/${userId}`;
+            } else if (role === "office-boy") {
+                userRefPath = `companies/${companyName}/subcompanies/${subcompanyName}/officeBoys/${userId}`;
+            }
+
+         // If a company-specific path is determined, store the user data there as well
+         if (userRefPath) {
+            await firebase.database().ref(userRefPath).set(userData);
+        }
+
+
+            alert("User added successfully!");
+            sendEmail(email, email, password, "https://app.propclean.pro/");
+        } catch (error) {
+            console.error("Error adding user:", error);
+            alert("Error adding user: " + error.message);
+        }
+    }
+
+    function sendEmail(toEmail, loginEmail, password, appLink) {
+        var templateParams = {
+            user_email: loginEmail,
+            user_password: password,
+            app_link: appLink
+        };
+        emailjs.send('service_75pnkk7', 'template_mh12k7l', templateParams)
+        .then(function(response) {
+            console.log('Email sent successfully!', response.status, response.text);
+            alert("User added, and email sent successfully!");
+        }, function(error) {
+            console.log('Failed to send the email...', error);
+            alert("User added, but failed to send email. Please check your EmailJS configuration.");
+        });
+    }
+
 // Add User Logic Based on Role
 document.getElementById("add-user-form").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -1090,214 +1147,9 @@ document.getElementById("add-user-form").addEventListener("submit", function (ev
     const defaultPassword = "123456";
     const appLink = "https://app.propclean.pro/";
 
-    // Save the current admin (currentUser) credentials
-    // const currentUser = firebase.auth().currentUser;
-    // const currentEmail = currentUser.email;
-    // const currentPassword = prompt("Please enter your current password to verify your identity:");
-
-    // if (!currentPassword) {
-    //     alert("Admin credentials are missing. Please log in again.");
-    //     return;
-    // }
-
-    // // Store the current admin credentials in localStorage
-    // localStorage.setItem("adminEmail", currentEmail);
-    // localStorage.setItem("adminPassword", currentPassword);
-
-    // Re-authenticate the current user (admin) before creating a new user
-    // const credential = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
-    // currentUser.reauthenticateWithCredential(credential)
-    //     .then(() => {
-    //         // Now that the admin has reauthenticated, create the new user
-    //         return auth.createUserWithEmailAndPassword(email, defaultPassword);
-    //     })
-
-    // Save the current admin's email and UID to local storage for re-authentication
-    const currentAdminEmail = firebase.auth().currentUser.email;
-    const currentAdminUID = firebase.auth().currentUser.uid;
+    addUserWithoutSignIn(email, "123456", role, companyName, subcompanyName);
     
-    // Temporarily store the current user's credentials in localStorage
-    localStorage.setItem("adminEmail", currentAdminEmail);
-    localStorage.setItem("adminUID", currentAdminUID);
-
-    firebase.auth().createUserWithEmailAndPassword(email, defaultPassword)
-        .then((userCredential) => {
-            const user = userCredential.user;
-
-            // Create the user data object
-            const userData = {
-                email: email,
-                role: role,
-                blocked: false
-            };
-
-            if (role === "owner") {
-                userData.companyName = companyName;
-            } else if (role === "center-manager" || role === "office-boy") {
-                userData.companyName = companyName;
-                userData.subcompanyName = subcompanyName;
-            }
-
-            let userCompanyRef;
-
-            if (role === "owner") {
-                userCompanyRef = database.ref(`companies/${companyName}/owners/${user.uid}`);
-            } else if (role === "center-manager") {
-                userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers/${user.uid}`);
-            } else if (role === "office-boy") {
-                userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys/${user.uid}`);
-            } else if (role === "developer") {
-                userCompanyRef = database.ref(`users/${user.uid}`);
-            }
-
-            const globalUserRef = database.ref(`users/${user.uid}`);
-
-            return Promise.all([
-                userCompanyRef.set(userData),
-                globalUserRef.set(userData)
-            ]);
-        })
-        // .then(() => {
-        //     // Sign the new user out and re-authenticate the admin
-        //     return auth.signOut().then(() => {
-        //         return auth.signInWithEmailAndPassword(currentEmail, currentPassword);
-        //     });
-        // })
-        // .then(() => {
-        //     // Automatically sign back in as admin
-        //     const adminEmail = localStorage.getItem("adminEmail");
-        //     const adminPassword = localStorage.getItem("adminPassword");
-
-        //     return auth.signInWithEmailAndPassword(adminEmail, adminPassword);
-        // })
-        // .then(() => {
-        //     // Sign out the newly created user
-        //     return auth.signOut();
-        // })
-        // .then(() => {
-        //     // Re-authenticate as the original admin using stored email and a session-based re-sign-in
-        //     const adminEmail = localStorage.getItem("adminEmail");
-        //     return auth.signInWithEmailAndPassword(adminEmail, defaultPassword);  // Reusing admin default password
-        // })
-        .then(() => {
-            sendEmail(email, email, defaultPassword, appLink); // Send email to the new user
-            console.log("User added successfully to Firebase. Sending email...");
-
-            alert("New user added successfully, and admin session is preserved!");
-            document.getElementById("add-user-form").reset(); // Reset the form
-        })
-        .catch((error) => {
-            console.error("Error adding user:", error);
-            alert("Error adding user: " + error.message);
-        });
 });
-
-// document.getElementById("add-user-form").addEventListener("submit", function (event) {
-//     event.preventDefault();
-
-//     const role = document.getElementById("role-select").value;
-//     const email = document.getElementById("user-email").value;
-//     let companyName = "";
-//     let subcompanyName = "";
-
-//     if (role === "owner") {
-//         companyName = document.getElementById("company-select").value;
-//     } else if (role === "center-manager" || role === "office-boy") {
-//         companyName = document.getElementById("company-select").value;
-//         subcompanyName = document.getElementById("subcompany-select").value;
-//     }
-
-//     const defaultPassword = "123456";
-//     const appLink = "https://app.propclean.pro/";
-
-//     const currentUser = firebase.auth().currentUser;
-//     const currentEmail = currentUser.email;
-//     const currentPassword = prompt("Please enter your current password to stay logged in:");
-
-//     console.log(`Creating user: ${email} with role: ${role}`);
-//     sendEmail(email, email, defaultPassword, appLink);
-
-//     // Create the new user in Firebase Authentication
-//     auth.createUserWithEmailAndPassword(email, defaultPassword)
-//         .then((userCredential) => {
-//             const user = userCredential.user;
-
-//             // Create the user data object
-//             const userData = {
-//                 email: email,
-//                 role: role,
-//                 blocked: false
-//             };
-
-//             // Add companyName and subcompanyName based on the role
-//             if (role === "owner") {
-//                 userData.companyName = companyName;
-//             } else if (role === "center-manager" || role === "office-boy") {
-//                 userData.companyName = companyName;
-//                 userData.subcompanyName = subcompanyName;
-//             }
-
-
-//             let userCompanyRef;
-
-//             // Determine where to store the user based on the role under company/subcompany
-//             if (role === "owner") {
-//                 userCompanyRef = database.ref(`companies/${companyName}/owners/${user.uid}`);
-//             } else if (role === "center-manager") {
-//                 userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/centerManagers/${user.uid}`);
-//             } else if (role === "office-boy") {
-//                 userCompanyRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys/${user.uid}`);
-//             } else if (role === "developer") {
-//                 // Developers are stored under the global `users` node
-//                 userCompanyRef = database.ref(`users/${user.uid}`);
-//             }
-
-//             // Also store the user under the global "users" node
-//             const globalUserRef = database.ref(`users/${user.uid}`);
-
-//             // Store user data in both company/subcompany node and global users node
-//             return Promise.all([
-//                 userCompanyRef.set(userData),  // Store in the company/subcompany node
-//                 globalUserRef.set(userData)    // Store in the global users node
-//             ]);
-
-//             // Store user data in Firebase
-//        // Ensure that userRef is not undefined before calling .set()
-//        if (userRef) {
-//                 return userRef.set(userData);
-//             } else {
-//                 throw new Error("Invalid role or missing company/subcompany details.");
-//             }
-//         })
-//         .then(() => {
-//             // Log out the newly created user to prevent auto-login
-//             return auth.signOut();
-//         })
-//         .then(() => {
-//             // Re-authenticate the current (admin) user with their credentials
-//             return auth.signInWithEmailAndPassword(currentEmail, currentPassword);
-//         })
-//         .then(() => {
-//             console.log("Re-authenticated as admin");
-//             alert("New user added successfully, and admin re-authenticated!");
-//             document.getElementById("add-user-form").reset();
-//         })
-//         .then(() => {
-//             // Only send the email if user is added successfully
-//             console.log("User added successfully to Firebase. Sending email..."); // Log user added
-
-//             // Send email using EmailJS
-//             sendEmail(email, email, defaultPassword, appLink);
-            
-//             alert("New user added successfully and email sent!");
-//             document.getElementById("add-user-form").reset(); 
-//         })
-//         .catch((error) => {
-//             console.error("Error adding user:", error);
-//             alert("Error adding user: " + error.message);
-//         });
-// });
-
 
         // Function to reset the status of all tasks to 'incomplete'
         async function resetAllTasks() {

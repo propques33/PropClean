@@ -38,6 +38,33 @@
 		font-size: 1.25rem;
 		color: #007bff;
 	}
+	.lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.lock-message {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #007bff; /* Adjust color as needed */
+    text-align: center;
+}
+
+.timer {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff5733; /* Customize the color as desired */
+    text-align: center;
+    margin-bottom: 20px;
+}
 </style>
 <body>
 	<div class="wrapper">
@@ -89,8 +116,8 @@
 		</nav>
 
 		<div class="main">
-			<div id="timer-container">
-				<p>Time Remaining for Trial: <span id="countdown-timer">30d 00h 00m 00s</span></p>
+			<div id="trial-timer" class="timer">
+				<h2>Trial Time Remaining: <span id="countdown"></span></h2>
 			</div>
 			<nav class="navbar navbar-expand navbar-light navbar-bg">
 				<a class="sidebar-toggle js-sidebar-toggle">
@@ -233,6 +260,10 @@
 									<h5 class="card-title mb-0">Daily Completed Tasks</h5>
 								</div>
 								<div class="card-body py-3">
+									<!-- Lock Overlay -->
+        <div class="lock-overlay" id="completedTasksLock">
+            <div class="lock-message">🔒 Upgrade to Unlock</div>
+        </div>
 									<div class="chart chart-sm">
 										<canvas id="chartjs-dashboard-line"></canvas>
 									</div>
@@ -433,6 +464,10 @@
 									<h5 class="card-title mb-0">Daily Pending Tasks</h5>
 								</div>
 								<div class="card-body d-flex w-100">
+									 <!-- Lock Overlay -->
+        <div class="lock-overlay" id="pendingTasksLock">
+            <div class="lock-message">🔒 Upgrade to Unlock</div>
+        </div>
 									<div class="align-self-center chart chart-lg">
 										<canvas id="chartjs-dashboard-bar"></canvas>
 									</div>
@@ -497,6 +532,7 @@ function loadDashboardData() {
                     fetchStats(companyName, selectedSubcompany, selectedDate);
                     loadUsersInOffice(companyName, selectedSubcompany, selectedDate);
                     loadPendingTasks(companyName, selectedSubcompany, selectedDate);
+					loadAverageRating(companyName, selectedSubcompany, selectedDate); // Add this function call
                 });
             } else {
                 console.log("User not authenticated. Redirecting to login...");
@@ -504,6 +540,22 @@ function loadDashboardData() {
             }
         });
     }
+}
+
+function loadAverageRating(companyName, subcompanyName, selectedDate) {
+    const averageRatingRef = database.ref(`backup/${selectedDate}/companies/${companyName}/subcompanies/${subcompanyName}/stats/averageRating`);
+    
+    averageRatingRef.once("value", snapshot => {
+        if (snapshot.exists()) {
+            let averageRating = snapshot.val();
+            averageRating *= 2; // Scale rating to out of 10
+            updatePropertyHealthChart(averageRating); // Call the function to update chart with averageRating
+            console.log("Average Rating loaded:", averageRating);
+        } else {
+            console.warn("Average Rating not found for the selected subcompany.");
+            updatePropertyHealthChart(0); // Default value in case no rating is found
+        }
+    });
 }
 
 	// Fetch user's company name and populate subcompany dropdown
@@ -533,9 +585,25 @@ function populateSubcompanies(companyName) {
             option.textContent = subcompanyName;
             subcompanySelect.appendChild(option);
         });
+
+		// Set the first subcompany as default selection
+		if (subcompanySelect.options.length > 0) {
+                subcompanySelect.selectedIndex = 0;
+            }
+
+            // Set today's date as default selection
+            const today = new Date().toISOString().split("T")[0];
+            dateSelect.value = today;
+
+            // Load data for the selected subcompany and today's date
+            loadDashboardData();
         console.log("Subcompanies populated for company:", companyName);
     });
 }
+
+// Load data when subcompany or date changes
+subcompanySelect.addEventListener("change", loadDashboardData);
+    dateSelect.addEventListener("change", loadDashboardData);
 
     function fetchStats(companyName, subcompanyName,selectedDate) {
         const date = new Date().toISOString().split("T")[0];
@@ -626,6 +694,50 @@ function loadPendingTasks(companyName, subcompanyName, selectedDate) {
 			`;
 			document.getElementById("pendingTasksTableBody").appendChild(row);
 		}
+	</script>
+	<script>
+		// Duration of the trial period in milliseconds (e.g., 7 days)
+const TRIAL_PERIOD = 30 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        const userRef = database.ref('users/' + user.uid);
+        
+        userRef.once('value').then(snapshot => {
+            const userData = snapshot.val();
+            const registrationTime = userData.registrationTime;
+
+            if (registrationTime) {
+                const trialEndTime = registrationTime + TRIAL_PERIOD;
+                
+                // Function to update the countdown timer
+                function updateCountdown() {
+                    const currentTime = Date.now();
+                    const timeRemaining = trialEndTime - currentTime;
+
+                    if (timeRemaining <= 0) {
+                        document.getElementById("countdown").textContent = "Trial Expired";
+                        clearInterval(timerInterval); // Stop the timer when the trial ends
+                    } else {
+                        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+
+                        document.getElementById("countdown").textContent = 
+                            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    }
+                }
+
+                // Start updating the countdown every second
+                const timerInterval = setInterval(updateCountdown, 1000);
+                updateCountdown(); // Initial call to display the countdown immediately
+            } else {
+                document.getElementById("countdown").textContent = "Trial information unavailable.";
+            }
+        });
+    }
+});
 	</script>
 	<script>
 		// Set the countdown end time to 30 days from the current time
@@ -729,32 +841,51 @@ function loadPendingTasks(companyName, subcompanyName, selectedDate) {
 		});
 	</script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function() {
-			// Pie chart
-			new Chart(document.getElementById("chartjs-dashboard-pie"), {
-				type: "pie",
-				data: {
-					labels: ["Chrome", "Firefox", "IE"],
-					datasets: [{
-						data: [4306, 3801, 1689],
-						backgroundColor: [
-							window.theme.primary,
-							window.theme.warning,
-							window.theme.danger
-						],
-						borderWidth: 5
-					}]
-				},
-				options: {
-					responsive: !window.MSInputMethodContext,
-					maintainAspectRatio: false,
-					legend: {
-						display: false
-					},
-					cutoutPercentage: 75
-				}
-			});
-		});
+		// Function to update the Property Health Chart
+function updatePropertyHealthChart(averageRating) {
+    const data = {
+        labels: ["Poor", "Good", "Excellent"],
+        datasets: [{
+            data: [
+                averageRating < 4 ? averageRating : 0, // Poor
+                averageRating >= 4 && averageRating < 8 ? averageRating : 0, // Good
+                averageRating >= 8 ? averageRating : 0 // Excellent
+            ],
+            backgroundColor: [
+                window.theme.danger,
+                window.theme.warning,
+                window.theme.primary
+            ],
+            borderWidth: 5
+        }]
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+            display: false
+        },
+        cutoutPercentage: 75
+    };
+
+    // Create or update the chart
+    const ctx = document.getElementById("chartjs-dashboard-pie").getContext("2d");
+    if (window.propertyHealthChart) {
+        window.propertyHealthChart.data = data;
+        window.propertyHealthChart.update();
+    } else {
+        window.propertyHealthChart = new Chart(ctx, {
+            type: "pie",
+            data: data,
+            options: options
+        });
+    }
+}
+// Initialize the default load for the dashboard data
+document.addEventListener("DOMContentLoaded", function() {
+    loadDashboardData();
+});
 	</script>
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
@@ -769,7 +900,7 @@ function loadPendingTasks(companyName, subcompanyName, selectedDate) {
 						borderColor: window.theme.primary,
 						hoverBackgroundColor: window.theme.primary,
 						hoverBorderColor: window.theme.primary,
-						data: [54, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
+						data: [10, 67, 41, 55, 62, 45, 55, 73, 60, 76, 48, 79],
 						barPercentage: .75,
 						categoryPercentage: .5
 					}]
