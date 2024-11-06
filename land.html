@@ -315,16 +315,14 @@ button#save-info{
     <a href="javascript:void(0)" class="close-btn" onclick="closeNav()">&times;</a>
     <a href="land.html"><img src="user.png">Homepage</a>
     <a href="#" id="adminDashboardLink" style="display: none; text-wrap: wrap;" onclick="navigateTo('reports.html')"><img src="admin-panel.png">View Reports</a>
-    
     <a href="#" id="ownerDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('ownerdashboard.html')"><img src="admin-panel.png">Owner Dashboard</a>
     <a href="#" id="adminDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('admin-dashboard.html')"><img src="admin-panel.png">Space Setup</a>
     <a href="#" id="logoutBtn"><img src="logout.png">Logout</a>
   </div>
-  <select id="languageSelector" style="display: none;">
+  <!-- <select id="languageSelector" style="display: none;">
     <option value="en">English</option>
     <option value="hi">Hindi</option>
-    <!-- Add more languages as needed -->
-  </select>
+  </select> -->
   <div class="container">
     <div class="sub">
       <div>
@@ -391,8 +389,8 @@ button#save-info{
       </div>
     </div>
     <div class="bt">
-      <button onclick="navigateTo('daily.html')" class="daily" id="btndaily" data-translate>Daily Tasks</button>
-    <button onclick="navigateTo('reports.html')" class="repo" data-translate>See Reports</button>
+      <button onclick="navigateTo('daily.html')" class="daily" id="btndaily" data-translate style="display: none;">Daily Tasks</button>
+      <button onclick="navigateTo('reports.html')" class="repo" data-translate style="display: none;">See Reports</button>
     </div>
   </div>
   <div id="additional-info" style="display: none;">
@@ -453,7 +451,7 @@ button#save-info{
   //   document.getElementById('additional-info').style.display = 'none';
   // }
   </script>
-  <script>
+  <!-- <script>
      const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
 
 document.getElementById('languageSelector').addEventListener('change', function() {
@@ -496,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     
-  </script>
+  </script> -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
@@ -530,99 +528,48 @@ document.addEventListener('DOMContentLoaded', () => {
           if (userData) {
             const userOffice = userData.office;
             const userRole = userData.role;
-
-            // Determine visibility of admin-related elements
-                    if (['center-manager'].includes(userRole)) {
-                        // Show sidebar items for admins, developers, and center managers
-                        document.getElementById("adminDashboardLink").style.display = "block";
-                        document.getElementById("adminDashboardLink1").style.display = "block";
-                        document.querySelector("button.repo").style.display = "block";
-                    }
-                    if(['developer', 'owner'].includes(userRole)){
-                      document.getElementById("adminDashboardLink1").style.display = "block";
-                      document.getElementById("btndaily").style.display = "none";
-                    }
-                    if(['owner'].includes(userRole)){
-                      document.getElementById("ownerDashboardLink1").style.display = "block";
-                      document.getElementById("adminDashboardLink").style.display = "block";
-                    }
-            
-            if (userRole === "developer") {
-          console.log("User is a developer, showing admin features.");
-          setupUserInterface(userOffice, user.email, true); // Treat developer as admin
+            setupUserInterface(userRole); // Treat developer as admin
         }
-            // else if(userOffice==="defaultOffice" || !userOffice){
-            //   showPopup();
-            //   document.getElementById('save-info').addEventListener('click', () => {
-            //     const office = document.getElementById('office').value;
-
-            //     if (office) {
-            //     saveUserOffice(userRef, user.email, office);
-            //   } else {
-            //     alert('Please select an office.');
-            //   }
-            // })
-            // }
             else {
-          setupUserInterface(userOffice, user.email,userRole==="admin"|| userRole === "owner" || userRole === "center-manager");
+              console.error("User data not found");
         }
-        } 
-      //   else {
-      //     console.error("User data not found for user: ", user.uid);
-      //     showPopup();
-
-      //     document.getElementById('save-info').addEventListener('click', () => {
-      //       const office = document.getElementById('office').value;
-
-      //       if (office) {
-      //       saveUserOffice(userRef, user.email, office);
-      //     } else {
-      //       alert('Please select an office.');
-      //     }
-      //   });
-      // }
-    }, (error) => {
-        console.error("Error fetching user data: ", error);
-        alert('Error fetching user data.');
-        window.location.href = 'index.html';
       });
-    } else {
-      window.location.href = 'index.html';
-    }
-  });
-
-//   function saveUserOffice(userRef, email, office) {
-//   set(userRef, {
-//     email: email,
-//     office: office
-//   }).then(() => {
-//     hidePopup();
-//     setupUserInterface(office, email);
-//   }).catch((error) => {
-//     console.error("Error saving user data: ", error);
-//     alert('Error saving user data.');
-//   });
-// }
-
-function setupUserInterface(office, email) {
-  document.body.classList.add(office);
-
-  if (showAdminOptions) {
-        // document.getElementById("adminDashboardLink").style.display = "block";
-        document.getElementById("adminDashboardLink1").style.display = "block";
-        document.getElementById("btndaily").style.display = "none";
-        // document.querySelector("button.repo").style.display = "block";
-      } else {
-        document.getElementById("adminDashboardLink").style.display = "none";
-        document.getElementById("adminDashboardLink1").style.display = "none";
+        } 
+        else {
+        window.location.href = 'index.html';
       }
+    });
+
+    function setupUserInterface(role) {
+      console.log(role);
+      // Hide all sidebar links and buttons initially
+      document.getElementById("adminDashboardLink").style.display = "block";
+      document.getElementById("ownerDashboardLink1").style.display = "block";
+      document.getElementById("adminDashboardLink1").style.display = "block";
+      document.getElementById("btndaily").style.display = "block";
+      document.querySelector("button.repo").style.display = "block";
+
       document.getElementById("logoutBtn").style.display = "block";
 
-  // Load tasks if not a developer
-  if (office !== undefined && office !== "defaultOffice" && email) {
-        loadTasksBasedOnOffice(office);
+      // Show specific elements based on the user role
+      if (role === "developer") {
+        document.getElementById("adminDashboardLink").style.display = "none"; // Space Setup
+        document.getElementById("ownerDashboardLink1").style.display = "none";
+        document.getElementById("btndaily").style.display = "none";
+      document.querySelector("button.repo").style.display = "none";
+      } else if (role === "owner") {
+        document.getElementById("btndaily").style.display = "none";
+      document.querySelector("button.repo").style.display = "none";
+      } else if (role === "center-manager") {
+        document.getElementById("ownerDashboardLink1").style.display = "none";
+      } else if (role === "office-boy") {
+        document.getElementById("adminDashboardLink").style.display = "none"; 
+        document.getElementById("ownerDashboardLink1").style.display = "none";
+        document.getElementById("btndaily").style.display = "none";
+      document.querySelector("button.repo").style.display = "none"; 
+      document.getElementById("ownerDashboardLink1").style.display = "none";
       }
-}
+    }
 
 
   function loadTasksBasedOnOffice(office) {
@@ -717,6 +664,6 @@ function setupUserInterface(office, email) {
     }
   </script>
   <script src="logout.js" type="module"></script>
-  <script src="https://apis.google.com/js/api.js" async defer></script>
+  <!-- <script src="https://apis.google.com/js/api.js" async defer></script> -->
 </body>
 </html>
