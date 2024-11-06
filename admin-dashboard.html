@@ -1084,7 +1084,15 @@ AIzaSyAn2hwFs7g1StFNAGVbiOxTTcLbuNq1le0`, {
                 return;
             }
             const userId = result.localId;
-            const userData = { email: email, role: role, companyName: companyName || null, subcompanyName: subcompanyName || null, blocked: false,registrationTime: Date.now() };
+            // Define userData with all required fields
+        const userData = {
+            email: email,
+            role: role,
+            blocked: false,
+            companyName: companyName || null,
+            subcompanyName: subcompanyName || null,
+            registrationTime: Date.now()
+        };
              // Step 3: Add user data to global users node
             await firebase.database().ref(`users/${userId}`).set(userData);
 

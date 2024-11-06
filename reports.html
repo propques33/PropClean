@@ -843,21 +843,27 @@ function checkAndResetIfNeeded() {
     lastResetRef.once('value').then(snapshot => {
         const lastResetDate = snapshot.val();
 
-        // Check if 24 hours have passed since the last reset or if it's the first reset
-        if (!lastResetDate || new Date(lastResetDate).getDate() !== now.getDate()) {
-            // If it's 12:10 AM (or more than 24 hours since the last reset)
-            if ((currentHour === 0 && currentMinute >= 10 && currentMinute < 15) || new Date(lastResetDate).getDate() !== now.getDate()) {
-                console.log("Reset and backup starting at", now.toLocaleString());
-                backupAndResetTasks(resetDate);
+        // Backup conditions: either it's 12:10 AM or last reset was on a different day
+        const isMidnight = currentHour === 0 && currentMinute >= 10 && currentMinute < 15;
+        const isNewDay = !lastResetDate || lastResetDate !== resetDate;
 
-                // Update last reset date in Firebase
+        // Check if 24 hours have passed since the last reset or if it's the first reset
+        if (isMidnight || isNewDay) {
+            // If it's 12:10 AM (or more than 24 hours since the last reset)
+                console.log("Reset and backup starting at", now.toLocaleString());
+                backupAndResetTasks(resetDate).then(() => {
+                // Update last reset date in Firebase only after successful backup
                 lastResetRef.set(resetDate);
-            }
+                console.log("Backup and reset completed successfully.");
+            }).catch(error => {
+                console.error("Error during backup and reset:", error);
+            });
         }
     }).catch(error => {
         console.error("Error checking last reset date:", error);
     });
 }
+
 
 // Runs checkAndResetIfNeeded every minute to verify the time and reset status
 setInterval(() => {
