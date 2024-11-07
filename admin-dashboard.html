@@ -1505,24 +1505,25 @@ document.getElementById('assign-task-button').addEventListener('click', function
 
         // Event listener for deleting a task
         document.getElementById('delete-task-button').addEventListener('click', function() {
-            const office = document.getElementById('office-select').value;
-            const taskId = document.getElementById('task-select').value;
+    const companyName = document.getElementById('delete-task-company-select').value;
+    const subcompanyName = document.getElementById('delete-task-subcompany-select').value;
+    const taskId = document.getElementById('delete-task-select').value;
 
-            if (taskId) {
-                const taskRef = database.ref(`${office}/${taskId}`);
-                taskRef.remove()
-                    .then(() => {
-                        alert('Task deleted successfully');
-                        populateTaskDropdown(office); // Refresh the task dropdown after deletion
-                    })
-                    .catch(error => {
-                        console.error('Error deleting task:', error);
-                        alert('Error deleting task');
-                    });
-            } else {
-                alert('Please select a task to delete');
-            }
-        });
+    if (companyName && subcompanyName && taskId) {
+        const taskRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks/${taskId}`);
+        taskRef.remove()
+            .then(() => {
+                alert('Task deleted successfully');
+                populateTaskDropdownForDelete(companyName, subcompanyName); // Refresh the task dropdown after deletion
+            })
+            .catch(error => {
+                console.error('Error deleting task:', error);
+                alert('Error deleting task: ' + error.message);
+            });
+    } else {
+        alert('Please ensure a company, subcompany, and task are selected.');
+    }
+});
 
         // Event listener for removing a user
 document.getElementById('del').addEventListener('click', function(event) {
