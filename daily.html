@@ -238,11 +238,10 @@
     <a href="#" id="adminDashboardLink1" style="display: none; text-wrap: wrap;" onclick="navigateTo('admin-dashboard.html')"><img src="admin-panel.png">Admin Dashboard</a>
     <a href="#" id="logoutBtn"><img src="logout.png">Logout</a>
   </div>
-  <select id="languageSelector" style="display: none;">
+  <!-- <select id="languageSelector" style="display: none;">
     <option value="en">English</option>
     <option value="hi">Hindi</option>
-    <!-- Add more languages as needed -->
-  </select>
+  </select> -->
   <div class="container">
     <div class="head" data-translate>Daily Tasks</div>
     <div class="line"></div>
@@ -270,66 +269,6 @@
     function closeNav() {
       document.getElementById("sidebar").classList.remove("open");
     }
-
-    function isAdmin(email) {
-      const adminEmails = ["shanvishukla39@gmail.com",
-  "thomas@propques.com",
-  "amdixit1711@gmail.com",
-  "sales@karyasthal.com",
-  "aman.sales@workdesq.com",
-  "cm.aamir@worqspot.com",
-  "ops@workviaa.com",
-  "sapnasangeetaoffices@gmail.com",
-  "prashant.m@cubispace.com",
-  "cubispace@gmail.com",
-  "karyasthal@gmail.com",
-  "workdesq@gmail.com",
-  "workvia@gmail.com",
-  "sapnasangeeta@gmail.com",
-  "worqspot@gmail.com"];
-      return adminEmails.includes(email);
-    }
-
-    const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
-
-document.getElementById('languageSelector').addEventListener('change', function() {
-  const selectedLanguage = this.value;
-  localStorage.setItem('preferredLanguage', selectedLanguage);
-  translatePage(selectedLanguage);
-});
-
-function getPreferredLanguage() {
-      return localStorage.getItem('preferredLanguage') || 'en';
-    }
-
-async function translatePage(targetLanguage) {
-  const elementsToTranslate = document.querySelectorAll('[data-translate]');
-  elementsToTranslate.forEach(async (element) => {
-    const text = element.innerText;
-    const translatedText = await fetchTranslation(text, targetLanguage);
-    element.innerText = translatedText;
-  });
-}
-
-async function fetchTranslation(text, targetLanguage) {
-  const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      q: text,
-      target: targetLanguage,
-    })
-  });
-  const data = await response.json();
-  return data.data.translations[0].translatedText;
-}
-document.addEventListener('DOMContentLoaded', () => {
-      const preferredLanguage = getPreferredLanguage();
-      document.getElementById('languageSelector').value = preferredLanguage;
-      translatePage(preferredLanguage);
-    });
   </script>
   <script type="module" src="daily.js">
   </script>

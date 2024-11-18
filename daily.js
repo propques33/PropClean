@@ -60,24 +60,6 @@ function showShimmerEffect() {
     shimmerEls.forEach(shimmerEl => shimmerEl.remove());
   }
 
-// function isAdmin(email) {
-//   const adminEmails = ["shanvishukla39@gmail.com",
-//   "thomas@propques.com",
-//   "amdixit1711@gmail.com",
-//   "sales@karyasthal.com",
-//   "aman.sales@workdesq.com",
-//   "cm.aamir@worqspot.com",
-//   "ops@workviaa.com",
-//   "sapnasangeetaoffices@gmail.com",
-//   "prashant.m@cubispace.com",
-//   "cubispace@gmail.com",
-//   "karyasthal@gmail.com",
-//   "workdesq@gmail.com",
-//   "workvia@gmail.com",
-//   "sapnasangeeta@gmail.com",
-//   "worqspot@gmail.com"];
-//   return adminEmails.includes(email);
-// }
 
 onAuthStateChanged(auth, user => {
     if (user) {
@@ -86,45 +68,15 @@ onAuthStateChanged(auth, user => {
             const userData = snapshot.val();
             if (userData) {
                 const companyName = userData.companyName;
-        const subcompanyName = userData.subcompanyName;
-        const role = userData.role;
+                const subcompanyName = userData.subcompanyName;
+                const role = userData.role;
 
-                // if (isAdmin(user.email)) {
-                //     document.getElementById("adminDashboardLink").style.display = "block";
-                //     document.getElementById("adminDashboardLink1").style.display = "block";
-                //     document.getElementById("adminOfficeSelectionBtn").style.display = "block";
-                // }
-
-                // switch (userOffice) {
-                //     case 'workviaa':
-                //         tasksRef = ref(database, "Workviaa");
-                //         break;
-                //     case 'workdesq':
-                //         tasksRef = ref(database, "Workdesq");
-                //         break;
-                //     case 'sso':
-                //         tasksRef = ref(database, "Sapna Sangeeta");
-                //         break;
-                //     case 'karyasthal':
-                //         tasksRef = ref(database, "Karyasthal");
-                //         break;
-                //     case 'cubispace':
-                //         tasksRef = ref(database, "Cubispace");
-                //         break;
-                //     case 'worqspot':
-                //         tasksRef = ref(database, "Worqspot");
-                //         break;
-                //     default:
-                //         alert('Unknown office');
-                //         window.location.href = 'index.html';
-                //         return;
-                // }
-                // document.body.classList.add(userOffice);
                 const tasksRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
-        fetchAndDisplayTasks(tasksRef, companyName, subcompanyName);
+                fetchAndDisplayTasks(tasksRef, companyName, subcompanyName);
                 setInterval(() => {
                     fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName);
                 }, 3600000); 
+                startResetInterval(companyName, subcompanyName);
             } else {
                 alert('User data not found.');
                 window.location.href = 'index.html';
@@ -161,13 +113,6 @@ function fetchAndDisplayTasks(tasksRef, companyName, subcompanyName) {
 
             // Concatenate the two groups: from 8:00 AM onwards first, then before 8:00 AM
             tasksArray = tasksFrom8AM.concat(tasksBefore8AM);
-        // Sort tasks by time in ascending order
-        // tasksArray.sort((a, b) => {
-        //   const timeA = parseTime(a[1].time);
-        //   const timeB = parseTime(b[1].time);
-        //   return timeA - timeB;
-        // });
-        // tasksArray = tasksArray.filter(task => parseTime(task[1].time) >= parseTime("08:00 AM"));
         
         clearShoppingListEl();
   
@@ -175,18 +120,12 @@ function fetchAndDisplayTasks(tasksRef, companyName, subcompanyName) {
           let taskData = taskItem[1];
           appendTaskToShoppingListEl(taskItem[0], taskData, companyName, subcompanyName);
         });
-        const preferredLanguage = getPreferredLanguage();
-        translatePage(preferredLanguage);
       } else {
         shoppingListEl.innerHTML = "No tasks found";
       }
     });
   }
-//   document.getElementById('languageSelector').addEventListener('change', function() {
-//     const selectedLanguage = this.value;
-//     localStorage.setItem('preferredLanguage', selectedLanguage);
-//     translatePage(selectedLanguage);
-// });
+
 
 
 function parseTime(timeString) {
@@ -212,47 +151,6 @@ function formatTimeToAMPM(timeString) {
 function clearShoppingListEl() {
     shoppingListEl.innerHTML = "";
 }
-
-const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
-
-document.getElementById('languageSelector').addEventListener('change', function() {
-  const selectedLanguage = this.value;
-  localStorage.setItem('preferredLanguage', selectedLanguage);
-  translatePage(selectedLanguage);
-});
-
-function getPreferredLanguage() {
-      return localStorage.getItem('preferredLanguage') || 'en';
-    }
-
-async function translatePage(targetLanguage) {
-  const elementsToTranslate = document.querySelectorAll('[data-translate]');
-  elementsToTranslate.forEach(async (element) => {
-    const text = element.innerText;
-    const translatedText = await fetchTranslation(text, targetLanguage);
-    element.innerText = translatedText;
-  });
-}
-
-async function fetchTranslation(text, targetLanguage) {
-  const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      q: text,
-      target: targetLanguage,
-    })
-  });
-  const data = await response.json();
-  return data.data.translations[0].translatedText;
-}
-document.addEventListener('DOMContentLoaded', () => {
-      const preferredLanguage = getPreferredLanguage();
-      document.getElementById('languageSelector').value = preferredLanguage;
-      translatePage(preferredLanguage);
-    });
 
 function appendTaskToShoppingListEl(taskId, taskData, companyName, subcompanyName) {
     console.log("cn"+companyName);
@@ -283,162 +181,6 @@ function appendTaskToShoppingListEl(taskId, taskData, companyName, subcompanyNam
 
     // Set image source from taskData.imageUrlAtt
     imgEl.src = taskData.imageUrlAtt || "reception.avif"; 
-
-    // Set image source based on taskData.time
-    // imgEl.src = "cabin1.webp"; // Replace with the actual image path
-
-    // if (taskData.time === "07:00") {
-    //             imgEl.src = "cabin1.webp"; 
-    //         } else if (taskData.time === "9:00") {
-    //             imgEl.src = "water.jpg"; 
-    //         } else if (taskData.time === "9:30") {
-    //             imgEl.src = "reception.avif"; 
-    //         } 
-    //     else if (taskData.time === "10:00") {
-    //         imgEl.src = "glass.jpeg"; 
-    //     }
-    //     else if (taskData.time === "12:00") {
-    //         imgEl.src = "lunch.jpeg"; 
-    //     }
-    //     else if (taskData.time === "13:30") {
-    //         imgEl.src = "break.jpeg"; 
-    //     }
-    //     else if (taskData.time === "14:00") {
-    //         imgEl.src = "washroom.jpeg"; 
-    //     }
-    //     else if (taskData.time === "14:30") {
-    //         imgEl.src = "dustbin.webp"; 
-    //     }
-    //         else {
-    //             imgEl.src = "reception.avif"; 
-    //         }
-
-    // if(taskData.assigned==="Prakash")
-    // {
-    //     if(taskData.time==="08:20 AM")
-    //     {
-    //         imgEl.src = "water.jpg"; 
-    //     }
-    //     else if(taskData.time==="09:00 AM")
-    //     {
-    //         imgEl.src = "lunch.jpeg"; 
-    //     }
-    //     else if(taskData.time==="09:30 AM")
-    //         {
-    //             imgEl.src = "cabin.webp"; 
-    //         }
-    //     else if(taskData.time==="10:00 AM")
-    //         {
-    //             imgEl.src = "wet.jpeg"; 
-    //         }
-    //     else if(taskData.time==="12:30 PM")
-    //     {
-    //         imgEl.src = "pantry.jpeg"; 
-    //     }
-    //     else if(taskData.time==="1:30 PM")
-    //     {
-    //         imgEl.src = "break.jpeg"; 
-    //     }
-    //     else if(taskData.time==="2:30 PM")
-    //     {
-    //         imgEl.src = "client.jpeg"; 
-    //     }
-    //     else if(taskData.time==="2:40 PM")
-    //     {
-    //         imgEl.src = "reception.avif"; 
-    //     }
-    //     else{
-    //         imgEl.src = "reception.avif"; 
-    //     }
-    // }
-    // else if(taskData.assigned==="Ankesh")
-    // {
-    //     if(taskData.time==="1:30 PM")
-    //         {
-    //             imgEl.src = "wet.jpeg"; 
-    //         }
-    //     else if(taskData.time==="3:00 PM")
-    //         {
-    //             imgEl.src = "pantry.jpeg"; 
-    //         }
-    //     else if(taskData.time==="4:00 PM")
-    //     {
-    //         imgEl.src = "cabin.webp"; 
-    //     }
-    //     else if(taskData.time==="5:00 PM")
-    //         {
-    //             imgEl.src = "glass.jpeg"; 
-    //         }
-    //     else if(taskData.time==="6:00 PM")
-    //         {
-    //             imgEl.src = "plant.jpeg"; 
-    //         }
-    //     else if(taskData.time==="7:00 PM")
-    //         {
-    //             imgEl.src = "waste.webp"; 
-    //         }
-    //     else if(taskData.time==="8:00 PM")
-    //         {
-    //             imgEl.src = "client.jpeg"; 
-    //         }
-    //     else if(taskData.time==="9:00 PM")
-    //         {
-    //             imgEl.src = "dustbin.webp"; 
-    //         }
-    //     else{
-    //             imgEl.src = "reception.avif"; 
-    //         }
-    // }
-    // else if(taskData.assigned==="Neetesh")
-    //     {
-    //         if(taskData.time==="10:10 PM")
-    //             {
-    //                 imgEl.src = "lock.jpeg"; 
-    //             }
-    //         else if(taskData.time==="10:15 PM")
-    //             {
-    //                 imgEl.src = "washroom.jpeg"; 
-    //             }
-    //         else if(taskData.time==="11:00 PM")
-    //         {
-    //             imgEl.src = "wet.jpeg"; 
-    //         }
-    //         else if(taskData.time==="12:00 AM")
-    //             {
-    //                 imgEl.src = "reception.avif"; 
-    //             }
-    //         else if(taskData.time==="12:30 AM")
-    //             {
-    //                 imgEl.src = "stairs.jpeg"; 
-    //             }
-    //         else if(taskData.time==="1:00 AM")
-    //             {
-    //                 imgEl.src = "lift.jpg"; 
-    //             }
-    //         else if(taskData.time==="1:15 AM")
-    //             {
-    //                 imgEl.src = "terrace.jpeg"; 
-    //             }
-    //         else if(taskData.time==="6:00 AM")
-    //             {
-    //                 imgEl.src = "utensil.jpeg"; 
-    //             }
-    //         else if(taskData.time==="6:30 AM")
-    //             {
-    //                 imgEl.src = "cabin.webp"; 
-    //             }
-    //         else if(taskData.time==="7:00 AM")
-    //             {
-    //                 imgEl.src = "coffee.jpg"; 
-    //             }
-    //         else if(taskData.time==="7:30 AM")
-    //             {
-    //                 imgEl.src = "wet.jpeg"; 
-    //             }
-    //         else{
-    //                 imgEl.src = "reception.avif"; 
-    //             }
-    //     }
 
     // Create a container for the text details
     let textContainerEl = document.createElement("div");
@@ -632,7 +374,6 @@ function fetchUserEmailById(userId) {
     });
 }
 
-let tasksRef;
 function fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName) {
     onValue(tasksRef, function(snapshot) {
         if (snapshot.exists()) {
@@ -661,9 +402,9 @@ function fetchAndUpdateTaskStatuses(tasksRef, companyName, subcompanyName) {
         }
     });
 }
-setInterval(() => {
-    fetchAndUpdateTaskStatuses();
-}, 3600000);
+// setInterval(() => {
+//     fetchAndUpdateTaskStatuses();
+// }, 3600000);
 
 // Initial fetch to ensure data is loaded on page load
 onAuthStateChanged(auth, user => {
@@ -675,37 +416,6 @@ onAuthStateChanged(auth, user => {
                 const companyName = userData.companyName;
         const subcompanyName = userData.subcompanyName;
         const role = userData.role;
-                // if (isAdmin(user.email)) {
-                //     document.getElementById("adminDashboardLink").style.display = "block";
-                //     document.getElementById("adminOfficeSelectionBtn").textContent = userOffice;
-                // }
-
-                // switch (userOffice) {
-                //     case 'workviaa':
-                //         tasksRef = ref(database, "Workviaa");
-                //         break;
-                //     case 'workdesq':
-                //         tasksRef = ref(database, "Workdesq");
-                //         break;
-                //     case 'sso':
-                //         tasksRef = ref(database, "Sapna Sangeeta");
-                //         break;
-                //     case 'worqspot':
-                //         tasksRef = ref(database, "Worqspot");
-                //         break;
-                //     case 'karyasthal':
-                //         tasksRef = ref(database, "Karyasthal");
-                //         break;
-                //     case 'cubispace':
-                //         tasksRef = ref(database, "Cubispace");
-                //         break;
-                //     default:
-                //         alert('Unknown office');
-                //         window.location.href = 'index.html';
-                //         return;
-                // }
-
-                // document.body.classList.add(userOffice);
                 const tasksRef = ref(database, `companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
         fetchAndDisplayTasks(tasksRef, companyName, subcompanyName);
         setInterval(() => {
@@ -723,6 +433,9 @@ onAuthStateChanged(auth, user => {
         window.location.href = 'index.html';
     }
 });
+
+// Modified Reset Logic
+let hasResetTasksToday = false; // Flag to ensure single reset per day
 
 // Function to start the reset interval check every 5 minutes
 function startResetInterval(companyName, subcompanyName) {
@@ -755,16 +468,21 @@ function resetTasks(companyName, subcompanyName) {
     });
   }
   
-  // Function to check if reset is needed
-  function checkAndResetIfNeeded(companyName, subcompanyName) {
+  // Reset logic with date tracking
+let lastResetDate = null; // Tracks the date when tasks were last reset
+
+function checkAndResetIfNeeded(companyName, subcompanyName) {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-  
-    if (currentHour === 0 && currentMinute >= 10 && currentMinute < 15) {
-      console.log("Resetting tasks at:", now.toLocaleString());
-      resetTasks(companyName, subcompanyName);
+    const todayDate = now.toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
+    // Check if the time is 12:10 AM or later and tasks haven't been reset today
+    if (currentHour === 23 && currentMinute >= 55 && lastResetDate !== todayDate) {
+        console.log("Resetting tasks at:", now.toLocaleString());
+        resetTasks(companyName, subcompanyName);
+        lastResetDate = todayDate; // Update the last reset date to today
     }
-  }
+}
   
 

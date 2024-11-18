@@ -293,21 +293,6 @@
         const database = firebase.database();
         const auth = firebase.auth();
 
-        // const adminInfo = {
-        //     "shanvishukla39@gmail.com": "Workviaa",
-        //     "cubispace@gmail.com": "Cubispace",
-        //     "karyasthal@gmail.com": "Karyasthal",
-        //     "workdesq@gmail.com": "Workdesq",
-        //     "workvia@gmail.com": "Workviaa",
-        //     "sapnasangeeta@gmail.com": "Sapna Sangeeta",
-        //     "worqspot@gmail.com": "Worqspot",
-        //     "shanvishukla39@gmail.com": "Workviaa",
-        //     "thomas@propques.com": "Workdesq",
-        //     "amdixit1711@gmail.com": "Workviaa",
-        //     "prashant.m@cubispace.com": "Cubispace",
-        //     "sales@karyasthal.com":"Karyasthal","aman.sales@workdesq.com":"Workdesq","cm.aamir@worqspot.com":"Worqspot","ops@workviaa.com":"Workviaa","sapnasangeetaoffices@gmail.com":"Sapna Sangeeta"
-        // };
-
         auth.onAuthStateChanged(user => {
             if (user) {
                 const userRef = database.ref('users/' + user.uid);
@@ -377,23 +362,6 @@
     companySelect.appendChild(option);
     companySelect.value = companyName;
 }
-        // auth.onAuthStateChanged(user => {
-        //     if (user) {
-        //         const userRef = database.ref('users/' + user.uid);
-        //         userRef.once('value').then(snapshot => {
-        //             const userData = snapshot.val();
-        //             if (user.email in adminInfo) {
-        //                 populateOfficeSelect(true, adminInfo[user.email]);
-        //                 document.getElementById('adminContainer').classList.add('active');
-        //             } else {
-        //                 populateOfficeSelect(false, userData.office);
-        //             }
-        //             resetTasksIfNeeded();
-        //         });
-        //     } else {
-        //         window.location.href = 'index.html'; // Redirect to login if user is not authenticated
-        //     }
-        // });
 
         function populateCompanyAndSubcompany(companyName, subcompanyName) {
             const companySelect = document.getElementById('companySelect');
@@ -445,16 +413,6 @@
     });
 }
 
-        // function populateOfficeSelect(isAdmin, userOffice) {
-        //     const officeSelect = document.getElementById('officeSelect');
-        //     officeSelect.innerHTML = ''; // Clear any existing options
-
-        //         const option = document.createElement('option');
-        //         option.value = userOffice;
-        //         option.textContent = userOffice;
-        //         officeSelect.appendChild(option);
-        //         officeSelect.value = userOffice;
-        // }
 
         function loadReports() {
             const companyName = document.getElementById('companySelect').value;
@@ -472,22 +430,13 @@
 
             loadTaskReports(tasksPath,companyName, subcompanyName);
             loadUserReports(companyName, subcompanyName);
+
             // Make sure the user container is displayed
-    const adminContainer = document.getElementById('adminContainer');
-    adminContainer.classList.add('active');
+            const adminContainer = document.getElementById('adminContainer');
+            adminContainer.classList.add('active');
             // Load office boys reports
         }
 
-        // function loadReports() {
-        //     const office = document.getElementById('officeSelect').value;
-        //     loadTaskReports(office);
-        //     loadUserReports(office);
-        // }
-
-        // function loadTaskReports(office) {
-        //     const reportsContainer = document.getElementById('reportsContainer');
-        //     reportsContainer.innerHTML = `
-        //         <h1>${office} Tasks</h1>
         function loadTaskReports(tasksPath,companyName, subcompanyName) {
             const reportsContainer = document.getElementById('reportsContainer');
             reportsContainer.innerHTML = `
@@ -755,55 +704,6 @@ function setTaskRating(companyName, subcompanyName, taskId, rating) {
     }
 }
 
-//             const usersRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/officeBoys`);
-//     usersRef.on('value', snapshot => {
-//         const users = snapshot.val();
-//         const userTableBody = document.getElementById('userTableBody');
-//         userTableBody.innerHTML = ''; // Clear the table body
-
-//         if (users) {
-//             for (const userId in users) {
-//                 const user = users[userId];
-//                 const row = document.createElement('tr');
-
-//                 // Email
-//                 console.log(user.email);
-//                 const emailCell = document.createElement('td');
-//                 emailCell.textContent = user.email || 'N/A';
-//                 row.appendChild(emailCell);
-
-//                 // Company Name
-//                 const companyNameCell = document.createElement('td');
-//                 companyNameCell.textContent = companyName; // Display the companyName passed in
-//                 row.appendChild(companyNameCell);
-
-//                 // Subcompany Name
-//                 const subcompanyNameCell = document.createElement('td');
-//                 subcompanyNameCell.textContent = subcompanyName; // Display the subcompanyName passed in
-//                 row.appendChild(subcompanyNameCell);
-
-//                 // Status (Blocked or Active)
-//                 const statusCell = document.createElement('td');
-//                 statusCell.textContent = user.blocked ? 'Blocked' : 'Active';
-//                 row.appendChild(statusCell);
-
-//                 // Action (Block/Unblock)
-//                 const actionCell = document.createElement('td');
-//                 const actionButton = document.createElement('button');
-//                 actionButton.textContent = user.blocked ? 'Unblock' : 'Block';
-//                 actionButton.onclick = () => toggleBlockUser(companyName, subcompanyName, userId, user.blocked);
-//                 actionCell.appendChild(actionButton);
-//                 row.appendChild(actionCell);
-
-//                 userTableBody.appendChild(row);
-//             }
-//         } else {
-//             const noDataMessage = document.createElement('tr');
-//             noDataMessage.innerHTML = `<td colspan="4">No office boys found.</td>`;
-//             userTableBody.appendChild(noDataMessage);
-//         }
-//     });
-// }
 
         function toggleBlockUser(companyName, subcompanyName, rolePath, userId, isBlocked) {
     console.log(`Toggling block status for user ${userId}. Currently blocked: ${isBlocked}`);
@@ -839,135 +739,151 @@ function setTaskRating(companyName, subcompanyName, taskId, rating) {
             }
         }
 
+        const backupTime = { hour: 23, minute: 50 }; // 11:50 PM
+        const resetTime = { hour: 23, minute: 55 }; // 11:55 PM
+        const lastBackupRef = database.ref('lastBackupDate');
+        const lastResetRef = database.ref('lastResetDate');
 
-//         function resetTasksIfNeeded() {
-//     const resetRef = database.ref('lastResetDate');
-    
-//     resetRef.once('value').then(snapshot => {
-//         const lastResetDate = snapshot.val();
-//         const currentDate = new Date();
-//         const currentDay = currentDate.toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+        function checkBackupAndReset() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
 
-//         // Check if the current date is different from the last reset date
-//         if (lastResetDate !== currentDay) {
-//             const currentHour = currentDate.getHours();
-//             const currentMinute = currentDate.getMinutes();
-//             // Backup and reset at 12:10 AM
-//             if (currentHour === 0 && currentMinute >= 10) {
-//             console.log(currentDate);
-//             console.log(currentHour);
-//             console.log(currentDay);
-//             console.log(currentHour);
-//             console.log(currentMinute);
-//                 backupAndResetTasks(currentDay);
-//                 resetRef.set(currentDay);
-//             }
-//         }
-//     });
-// }
+            // Backup Logic
+            lastBackupRef.once('value').then(snapshot => {
+                const lastBackupDate = snapshot.val();
+                if (
+                    currentHour === backupTime.hour &&
+                    currentMinute >= backupTime.minute &&
+                    lastBackupDate !== todayDate
+                ) {
+                    backupTasks(todayDate).then(() => {
+                        lastBackupRef.set(todayDate);
+                        console.log("Backup completed successfully.");
+                    }).catch(error => {
+                        console.error("Error during backup:", error);
+                    });
+                }
+            });
 
-// Function to check if reset is needed based on the last reset date
-function checkAndResetIfNeeded() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const resetDate = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-
-    // Firebase reference to store the last reset date
-    const lastResetRef = database.ref('lastResetDate');
-
-    lastResetRef.once('value').then(snapshot => {
-        const lastResetDate = snapshot.val();
-
-        // Backup conditions: either it's 12:10 AM or last reset was on a different day
-        const isMidnight = currentHour === 0 && currentMinute >= 10 && currentMinute < 15;
-        const isNewDay = !lastResetDate || lastResetDate !== resetDate;
-
-        // Check if 24 hours have passed since the last reset or if it's the first reset
-        if (isMidnight || isNewDay) {
-            // If it's 12:10 AM (or more than 24 hours since the last reset)
-                console.log("Reset and backup starting at", now.toLocaleString());
-                backupAndResetTasks(resetDate).then(() => {
-                // Update last reset date in Firebase only after successful backup
-                lastResetRef.set(resetDate);
-                console.log("Backup and reset completed successfully.");
-            }).catch(error => {
-                console.error("Error during backup and reset:", error);
+            // Reset Logic
+            lastResetRef.once('value').then(snapshot => {
+                const lastResetDate = snapshot.val();
+                if (
+                    currentHour === resetTime.hour &&
+                    currentMinute >= resetTime.minute &&
+                    lastResetDate !== todayDate
+                ) {
+                    resetTasks().then(() => {
+                        lastResetRef.set(todayDate);
+                        console.log("Tasks reset successfully.");
+                    }).catch(error => {
+                        console.error("Error during reset:", error);
+                    });
+                }
             });
         }
-    }).catch(error => {
-        console.error("Error checking last reset date:", error);
-    });
-}
 
+        function backupTasks(backupDate) {
+            const companiesRef = database.ref('companies');
+            return companiesRef.once('value').then(snapshot => {
+                const companies = snapshot.val();
+                const promises = [];
 
-// Runs checkAndResetIfNeeded every minute to verify the time and reset status
-setInterval(() => {
-    console.log("Checking if reset is needed...");
-    checkAndResetIfNeeded();
-}, 60 * 1000); // Run every 1 minute
-
-
-// function backupAndResetTasks(backupDate) {
-
-//             const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot']; // Add all your office references here
-//             const backupDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-
-//             officeRefs.forEach(office => {
-//                 const tasksRef = database.ref(office);
-//                 const backupRef = database.ref(`backup/${office}/${backupDate}`); // Create a backup reference
-
-//                 tasksRef.once('value').then(snapshot => {
-//                     const tasks = snapshot.val();
-//                     if (tasks) {
-//                         backupRef.set(tasks) // Backup tasks
-//                         .then(() => {
-//                             console.log(`Backup for ${office} on ${backupDate} successful.`);
-//                             resetTasksInOffice(office); // Reset tasks after backup
-//                         })
-//                         .catch(error => {
-//                             console.error(`Error backing up data for ${office}:`, error);
-//                         });
-//                     }
-//                 });
-//             });
-//         }
-
-function backupAndResetTasks(backupDate) {
-    const companiesRef = database.ref('companies');
-
-    companiesRef.once('value').then(snapshot => {
-        const companies = snapshot.val();
-        if (companies) {
-            for (const companyName in companies) {
-                const subcompanies = companies[companyName].subcompanies;
-                if (subcompanies) {
-                    for (const subcompanyName in subcompanies) {
-                        const tasks = subcompanies[subcompanyName].tasks;
-
-                        if (tasks) {
-                            const backupPath = `backup/${backupDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
-                            const backupRef = database.ref(backupPath);
-
-                            // Save tasks to backup and then reset them
-                            backupRef.set(tasks)
-                                .then(() => {
-                                    console.log(`Backup for ${companyName} - ${subcompanyName} on ${backupDate} successful.`);
-                                    calculateAndStoreStats(tasks, backupDate, companyName, subcompanyName); // Call to calculate stat
-                                    resetTasksInSubcompany(companyName, subcompanyName);
-                                })
-                                .catch(error => {
-                                    console.error(`Error backing up data for ${companyName} - ${subcompanyName}:`, error);
-                                });
+                if (companies) {
+                    for (const companyName in companies) {
+                        const subcompanies = companies[companyName].subcompanies;
+                        if (subcompanies) {
+                            for (const subcompanyName in subcompanies) {
+                                const tasks = subcompanies[subcompanyName].tasks;
+                                if (tasks) {
+                                    const backupPath = `backup/${backupDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+                                    const backupRef = database.ref(backupPath);
+                                    promises.push(
+                                    backupRef.set(tasks).then(() => {
+                                        calculateAndStoreStats(tasks, backupDate, companyName, subcompanyName);
+                                    })
+                                );
+                                }
+                            }
                         }
                     }
                 }
-            }
+                return Promise.all(promises);
+            });
         }
-    }).catch(error => {
-        console.error('Error fetching companies:', error);
-    });
-}
+
+        function resetTasks() {
+            const companiesRef = database.ref('companies');
+            return companiesRef.once('value').then(snapshot => {
+                const companies = snapshot.val();
+                const promises = [];
+
+                if (companies) {
+                    for (const companyName in companies) {
+                        const subcompanies = companies[companyName].subcompanies;
+                        if (subcompanies) {
+                            for (const subcompanyName in subcompanies) {
+                                const tasksRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+                                promises.push(
+                                    tasksRef.once('value').then(snapshot => {
+                                        snapshot.forEach(childSnapshot => {
+                                            tasksRef.child(childSnapshot.key).update({
+                                                status: 'incomplete',
+                                                imageUrl: null,
+                                                completedBy: null,
+                                                uploadTime: null,
+                                                rating: 0
+                                            });
+                                        });
+                                    })
+                                );
+                            }
+                        }
+                    }
+                }
+                return Promise.all(promises);
+            });
+        }
+
+
+
+// function backupAndResetTasks(backupDate) {
+//     const companiesRef = database.ref('companies');
+
+//     companiesRef.once('value').then(snapshot => {
+//         const companies = snapshot.val();
+//         if (companies) {
+//             for (const companyName in companies) {
+//                 const subcompanies = companies[companyName].subcompanies;
+//                 if (subcompanies) {
+//                     for (const subcompanyName in subcompanies) {
+//                         const tasks = subcompanies[subcompanyName].tasks;
+
+//                         if (tasks) {
+//                             const backupPath = `backup/${backupDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+//                             const backupRef = database.ref(backupPath);
+
+//                             // Save tasks to backup and then reset them
+//                             backupRef.set(tasks)
+//                                 .then(() => {
+//                                     console.log(`Backup for ${companyName} - ${subcompanyName} on ${backupDate} successful.`);
+//                                     calculateAndStoreStats(tasks, backupDate, companyName, subcompanyName); // Call to calculate stat
+//                                     resetTasksInSubcompany(companyName, subcompanyName);
+//                                 })
+//                                 .catch(error => {
+//                                     console.error(`Error backing up data for ${companyName} - ${subcompanyName}:`, error);
+//                                 });
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }).catch(error => {
+//         console.error('Error fetching companies:', error);
+//     });
+// }
 
 // New function to calculate and store stats
 function calculateAndStoreStats(tasks, date, companyName, subcompanyName) {
@@ -1016,25 +932,30 @@ function calculateAndStoreStats(tasks, date, companyName, subcompanyName) {
     });
 }
 
-function resetTasksInSubcompany(companyName, subcompanyName) {
-    const tasksRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
-    tasksRef.once('value').then(snapshot => {
-        snapshot.forEach(childSnapshot => {
-            const taskKey = childSnapshot.key;
-            tasksRef.child(taskKey).update({
-                status: 'incomplete',
-                imageUrl: null,
-                completedBy: null,
-                uploadTime: null,
-                rating: 0
-            });
-        });
-    }).then(() => {
-        console.log(`Tasks for ${companyName} - ${subcompanyName} have been reset.`);
-    }).catch(error => {
-        console.error(`Error resetting tasks for ${companyName} - ${subcompanyName}:`, error);
-    });
-}
+// Run the backup and reset checks every 5 minutes
+setInterval(() => {
+        checkBackupAndReset();
+    }, 5 * 60 * 1000); // 5 minutes
+
+// function resetTasksInSubcompany(companyName, subcompanyName) {
+//     const tasksRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
+//     tasksRef.once('value').then(snapshot => {
+//         snapshot.forEach(childSnapshot => {
+//             const taskKey = childSnapshot.key;
+//             tasksRef.child(taskKey).update({
+//                 status: 'incomplete',
+//                 imageUrl: null,
+//                 completedBy: null,
+//                 uploadTime: null,
+//                 rating: 0
+//             });
+//         });
+//     }).then(() => {
+//         console.log(`Tasks for ${companyName} - ${subcompanyName} have been reset.`);
+//     }).catch(error => {
+//         console.error(`Error resetting tasks for ${companyName} - ${subcompanyName}:`, error);
+//     });
+// }
 
         // function resetTasksInOffice(office) {
         //     const tasksRef = database.ref(office);
