@@ -174,11 +174,10 @@
     <a href="#" id="adminDashboardLink" style="display: none; text-wrap: wrap;" onclick="navigateTo('reports.html')"><img src="admin-panel.png">View Reports</a>
     <a href="#" id="logoutBtn"><img src="logout.png">Logout</a>
   </div>
-  <select id="languageSelector">
+  <!-- <select id="languageSelector">
     <option value="en">English</option>
     <option value="hi">Hindi</option>
-    <!-- Add more languages as needed -->
-  </select>
+  </select> -->
   <h1 class="head">Task Details</h1>
     <div id="task-details">
         <img id="task-image" src="" alt="Task Image" style="width: 100%; height: 200px; border-radius: 8px; object-fit: cover;margin:0 auto; box-shadow: 4px 4px 15px 0px rgb(51, 94, 247, 0.2);">
@@ -191,48 +190,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script>
-        const apiKey = 'AIzaSyAHO1TzYBTB55_eOXdD6cmjGPmQqtdGxVs'; // Replace with your API key
-
-document.getElementById('languageSelector').addEventListener('change', function() {
-  const selectedLanguage = this.value;
-  localStorage.setItem('preferredLanguage', selectedLanguage);
-  translatePage(selectedLanguage);
-});
-
-function getPreferredLanguage() {
-      return localStorage.getItem('preferredLanguage') || 'en';
-    }
-
-async function translatePage(targetLanguage) {
-  const elementsToTranslate = document.querySelectorAll('[data-translate]');
-  elementsToTranslate.forEach(async (element) => {
-    const text = element.innerText;
-    const translatedText = await fetchTranslation(text, targetLanguage);
-    element.innerText = translatedText;
-  });
-}
-
-async function fetchTranslation(text, targetLanguage) {
-  const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      q: text,
-      target: targetLanguage,
-    })
-  });
-  const data = await response.json();
-  return data.data.translations[0].translatedText;
-}
-document.addEventListener('DOMContentLoaded', () => {
-      const preferredLanguage = getPreferredLanguage();
-      document.getElementById('languageSelector').value = preferredLanguage;
-      translatePage(preferredLanguage);
-    });
-    </script>
     <script>
        function openNav() {
       document.getElementById("sidebar").classList.add("open");
@@ -280,23 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const database = firebase.database();
         const auth = firebase.auth();
 
-        // const officeMap = {
-        //     'workviaa': 'Workviaa',
-        //     'workdesq': 'Workdesq',
-        //     'sso': 'Sapna Sangeeta',
-        //     'karyasthal': 'Karyasthal',
-        //     'cubispace': 'Cubispace',
-        //     'worqspot':'Worqspot'
-        // };
-
-        // const correctedOffice = officeMap[office.toLowerCase()];
-        // if (!correctedOffice) {
-        //     document.getElementById("task-name").textContent = "Invalid office name";
-        //     throw new Error('Invalid office name');
-        // }
-
         const taskPath = `companies/${company}/subcompanies/${subcompany}/tasks/${taskId}`;
-    const taskRef = database.ref(taskPath);
+        const taskRef = database.ref(taskPath);
 
         taskRef.once('value').then((snapshot) => {
             if (snapshot.exists()) {
@@ -304,12 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const taskNameElement = document.getElementById("task-name");
                 const taskTimeElement = document.getElementById("task-time");
                 const taskAssignedElement = document.getElementById("task-assigned");
-                // document.getElementById("task-name").textContent = `Task: ${taskData.task}`;
-                // document.getElementById("task-time").textContent = `Time: ${taskData.time}`;
                 const statusButton = document.getElementById("status-button");
 
                 // Format the task time using the helper function
-        const formattedTaskTime = formatTimeToAMPM(taskData.time);
+                const formattedTaskTime = formatTimeToAMPM(taskData.time);
 
                 taskNameElement.textContent = `${taskData.task}`;
                 taskNameElement.setAttribute('data-translate', `${taskData.task}`);
@@ -327,29 +267,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskTimeElement.style.color = "#000";
                 
                 const assignedUserId = taskData.assigned;
-        if (assignedUserId) {
-            const userRef = database.ref(`users/${assignedUserId}`);
-            userRef.once('value').then((userSnapshot) => {
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.val();
-                    taskAssignedElement.textContent = userData.email;
-                    taskAssignedElement.setAttribute('data-translate', userData.email);
-                    taskAssignedElement.style.fontSize = "20px";
-                taskAssignedElement.style.color = "#666";
-                taskAssignedElement.style.margin = "10px 7px";
-                taskAssignedElement.style.fontWeight = "600";
-                taskAssignedElement.style.color = "#000";
+                if (assignedUserId) {
+                    const userRef = database.ref(`users/${assignedUserId}`);
+                    userRef.once('value').then((userSnapshot) => {
+                        if (userSnapshot.exists()) {
+                            const userData = userSnapshot.val();
+                            taskAssignedElement.textContent = userData.email;
+                            taskAssignedElement.setAttribute('data-translate', userData.email);
+                            taskAssignedElement.style.fontSize = "20px";
+                        taskAssignedElement.style.color = "#666";
+                        taskAssignedElement.style.margin = "10px 7px";
+                        taskAssignedElement.style.fontWeight = "600";
+                        taskAssignedElement.style.color = "#000";
+                        } else {
+                            taskAssignedElement.textContent = "User not found";
+                        }
+                    }).catch((error) => {
+                        console.error("Error fetching user details:", error);
+                        taskAssignedElement.textContent = "Error loading user";
+                    });
                 } else {
-                    taskAssignedElement.textContent = "User not found";
+                    taskAssignedElement.textContent = "No user assigned";
                 }
-            }).catch((error) => {
-                console.error("Error fetching user details:", error);
-                taskAssignedElement.textContent = "Error loading user";
-            });
-        } else {
-            taskAssignedElement.textContent = "No user assigned";
-        }
-
 
                 if (taskData.status.toLowerCase() === "complete" || taskData.status.toLowerCase() === "approved") {
                     statusButton.textContent = "Completed";
@@ -366,13 +305,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const taskImage = document.getElementById("task-image");
                 taskImage.src = taskData.imageUrlAtt || "reception.avif"; // Replace with the actual image path
-    
-        translatePage(getPreferredLanguage());
+
             } else {
                 document.getElementById("task-name").textContent = "Task not found";
                 document.getElementById("task-name").setAttribute('data-translate', "Task not found");
                 document.getElementById("task-time").textContent = "";
-                translatePage(getPreferredLanguage());
             }
         }).catch((error) => {
             document.getElementById("task-name").textContent = "Error loading task details";
@@ -388,106 +325,41 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-    //     function backupAndResetTasks() {
-    //     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
-    //     const taskHistoryRef = database.ref('taskhistory');
-    //     const currentDate = new Date();
-    //     const backupDate = currentDate.toISOString().split('T')[0];
-
-    //     const backupPromises = officeRefs.map(office => {
-    //         const tasksRef = database.ref(office);
-    //         return tasksRef.once('value').then(snapshot => {
-    //             const officeTasks = snapshot.val();
-    //             if (officeTasks) {
-    //                 // Create backup in taskhistory with timestamp
-    //                 return taskHistoryRef.child(backupDate).child(office).set(officeTasks);
-    //             }
+    // function resetTasksInSubcompany(company, subcompany) {
+    //     const tasksRef = database.ref(`companies/${company}/subcompanies/${subcompany}/tasks`);
+    //     tasksRef.once('value').then(snapshot => {
+    //         snapshot.forEach(childSnapshot => {
+    //             const taskKey = childSnapshot.key;
+    //             tasksRef.child(taskKey).update({
+    //                 status: 'incomplete',
+    //                 imageUrl: null,
+    //                 completedBy: null,
+    //                 uploadTime: null,
+    //                 rating: 0
+    //             });
     //         });
-    //     });
-
-    //     Promise.all(backupPromises).then(() => {
-    //         // After backup, reset all tasks
-    //         resetAllTasks();
-    //         removeOldBackups();
-    //         database.ref('lastResetDate').set(backupDate);
+    //     }).then(() => {
+    //         console.log(`Tasks in ${company}/${subcompany} have been reset.`);
     //     }).catch(error => {
-    //         console.error("Error backing up and resetting tasks:", error);
+    //         console.error(`Error resetting tasks in ${company}/${subcompany}:`, error);
     //     });
     // }
 
-    // function resetAllTasks() {
-    //     const officeRefs = ['Workviaa', 'Workdesq', 'Sapna Sangeeta', 'Karyasthal', 'Cubispace', 'Worqspot'];
-    //     officeRefs.forEach(office => {
-    //         const tasksRef = database.ref(office);
-    //         tasksRef.once('value').then(snapshot => {
-    //             snapshot.forEach(childSnapshot => {
-    //                 const taskKey = childSnapshot.key;
-    //                 tasksRef.child(taskKey).update({
-    //                     status: 'incomplete',
-    //                     imageUrl: null,
-    //                     completedBy: null,
-    //                     uploadTime: null,
-    //                     rating:0
+    // function resetTasksForAllCompanies() {
+    //     const companiesRef = database.ref('companies');
+    //     companiesRef.once('value').then(snapshot => {
+    //         snapshot.forEach(companySnapshot => {
+    //             const company = companySnapshot.key;
+    //             const subcompaniesRef = database.ref(`companies/${company}/subcompanies`);
+    //             subcompaniesRef.once('value').then(subcompanySnapshot => {
+    //                 subcompanySnapshot.forEach(subcompany => {
+    //                     const subcompanyName = subcompany.key;
+    //                     resetTasksInSubcompany(company, subcompanyName);
     //                 });
     //             });
     //         });
     //     });
     // }
-
-    // function resetTasksInOffice(office) {
-    //         const tasksRef = database.ref(office);
-    //         tasksRef.once('value').then(snapshot => {
-    //             snapshot.forEach(childSnapshot => {
-    //                 const taskKey = childSnapshot.key;
-    //                 tasksRef.child(taskKey).update({
-    //                     status: 'incomplete',
-    //                     imageUrl: null,
-    //                     completedBy: null,
-    //                     uploadTime: null,
-    //                     rating: 0
-    //                 });
-    //             });
-    //         }).then(() => {
-    //             console.log(`Tasks in ${office} have been reset.`);
-    //         }).catch(error => {
-    //             console.error(`Error resetting tasks in ${office}:`, error);
-    //         });
-    //     }
-    function resetTasksInSubcompany(company, subcompany) {
-        const tasksRef = database.ref(`companies/${company}/subcompanies/${subcompany}/tasks`);
-        tasksRef.once('value').then(snapshot => {
-            snapshot.forEach(childSnapshot => {
-                const taskKey = childSnapshot.key;
-                tasksRef.child(taskKey).update({
-                    status: 'incomplete',
-                    imageUrl: null,
-                    completedBy: null,
-                    uploadTime: null,
-                    rating: 0
-                });
-            });
-        }).then(() => {
-            console.log(`Tasks in ${company}/${subcompany} have been reset.`);
-        }).catch(error => {
-            console.error(`Error resetting tasks in ${company}/${subcompany}:`, error);
-        });
-    }
-
-    function resetTasksForAllCompanies() {
-        const companiesRef = database.ref('companies');
-        companiesRef.once('value').then(snapshot => {
-            snapshot.forEach(companySnapshot => {
-                const company = companySnapshot.key;
-                const subcompaniesRef = database.ref(`companies/${company}/subcompanies`);
-                subcompaniesRef.once('value').then(subcompanySnapshot => {
-                    subcompanySnapshot.forEach(subcompany => {
-                        const subcompanyName = subcompany.key;
-                        resetTasksInSubcompany(company, subcompanyName);
-                    });
-                });
-            });
-        });
-    }
 
     // function removeOldBackups() {
     //     const taskHistoryRef = database.ref('taskhistory');
@@ -524,31 +396,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // }       
     //     resetTasksIfNeeded();
 
-    function resetTasksIfNeeded() {
-        const resetRef = database.ref('lastResetDate');
-        resetRef.once('value').then(snapshot => {
-            const lastResetDate = snapshot.val();
-            const currentDate = new Date();
-            const currentDay = currentDate.toISOString().split('T')[0];
-            const currentHour = currentDate.getHours();
-            const currentMinute = currentDate.getMinutes();
+    // function resetTasksIfNeeded() {
+    //     const resetRef = database.ref('lastResetDate');
+    //     resetRef.once('value').then(snapshot => {
+    //         const lastResetDate = snapshot.val();
+    //         const currentDate = new Date();
+    //         const currentDay = currentDate.toISOString().split('T')[0];
+    //         const currentHour = currentDate.getHours();
+    //         const currentMinute = currentDate.getMinutes();
 
-            // Check if the last reset date is not today and it's 6:05 AM
-            if (lastResetDate !== currentDay && currentHour === 6 && currentMinute === 5) {
-                resetTasksForAllCompanies();
-                resetRef.set(currentDay);
-                console.log('Tasks reset successfully at 6:05 AM.');
-            }
-        }).catch(error => {
-            console.error('Error checking reset time:', error);
-        });
-    }
+    //         // Check if the last reset date is not today and it's 6:05 AM
+    //         if (lastResetDate !== currentDay && currentHour === 6 && currentMinute === 5) {
+    //             resetTasksForAllCompanies();
+    //             resetRef.set(currentDay);
+    //             console.log('Tasks reset successfully at 6:05 AM.');
+    //         }
+    //     }).catch(error => {
+    //         console.error('Error checking reset time:', error);
+    //     });
+    // }
 
-    // Call this function to check for reset on page load
-    resetTasksIfNeeded();
+    // // Call this function to check for reset on page load
+    // resetTasksIfNeeded();
 
-    // Optional: Use setInterval to check every minute if needed
-    setInterval(resetTasksIfNeeded, 60000); // Check every 60 seconds
+    // // Optional: Use setInterval to check every minute if needed
+    // setInterval(resetTasksIfNeeded, 60000); // Check every 60 seconds
     </script>
     <script type="module" src="taskDetails.js"></script>
 </body>
