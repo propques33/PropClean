@@ -43,21 +43,7 @@ const forgotPasswordLink = document.getElementById("forgot-password") ? document
 const googleSignUpButton = document.getElementById("google-sign-up");
 
 const adminEmails = [
-  "shanvishukla39@gmail.com",
-  "thomas@propques.com",
-  "amdixit1711@gmail.com",
-  "sales@karyasthal.com",
-  "aman.sales@workdesq.com",
-  "cm.aamir@worqspot.com",
-  "ops@workviaa.com",
-  "sapnasangeetaoffices@gmail.com",
-  "prashant.m@cubispace.com",
-  "cubispace@gmail.com",
-  "karyasthal@gmail.com",
-  "workdesq@gmail.com",
-  "workvia@gmail.com",
-  "sapnasangeeta@gmail.com",
-  "worqspot@gmail.com"
+  "hello@gmail.com"
 ];
 
 
