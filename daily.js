@@ -478,7 +478,10 @@ function checkAndResetIfNeeded(companyName, subcompanyName) {
     const todayDate = now.toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
 
     // Check if the time is 12:10 AM or later and tasks haven't been reset today
-    if (currentHour === 23 && currentMinute >= 55 && lastResetDate !== todayDate) {
+    if (
+        (currentHour === resetTime.hour && currentMinute >= resetTime.minute && lastResetDate !== todayDate) ||
+        (!lastResetDate || (new Date() - new Date(lastResetDate)) >= 24 * 60 * 60 * 1000)
+      )  {
         console.log("Resetting tasks at:", now.toLocaleString());
         resetTasks(companyName, subcompanyName);
         lastResetDate = todayDate; // Update the last reset date to today

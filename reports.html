@@ -754,9 +754,9 @@ function setTaskRating(companyName, subcompanyName, taskId, rating) {
             lastBackupRef.once('value').then(snapshot => {
                 const lastBackupDate = snapshot.val();
                 if (
-                    currentHour === backupTime.hour &&
+                    (currentHour === backupTime.hour &&
                     currentMinute >= backupTime.minute &&
-                    lastBackupDate !== todayDate
+                    lastBackupDate !== todayDate) || isMoreThan24Hours(lastBackupDate, now)
                 ) {
                     backupTasks(todayDate).then(() => {
                         lastBackupRef.set(todayDate);
@@ -771,9 +771,9 @@ function setTaskRating(companyName, subcompanyName, taskId, rating) {
             lastResetRef.once('value').then(snapshot => {
                 const lastResetDate = snapshot.val();
                 if (
-                    currentHour === resetTime.hour &&
+                    (currentHour === resetTime.hour &&
                     currentMinute >= resetTime.minute &&
-                    lastResetDate !== todayDate
+                    lastResetDate !== todayDate) || isMoreThan24Hours(lastResetDate, now)
                 ) {
                     resetTasks().then(() => {
                         lastResetRef.set(todayDate);
@@ -784,6 +784,14 @@ function setTaskRating(companyName, subcompanyName, taskId, rating) {
                 }
             });
         }
+
+        // Helper function to check if more than 24 hours have passed
+function isMoreThan24Hours(lastDate, currentDate) {
+    if (!lastDate) return true;
+    const lastDateTime = new Date(lastDate).getTime();
+    const currentDateTime = currentDate.getTime();
+    return (currentDateTime - lastDateTime) > 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+}
 
         function backupTasks(backupDate) {
             const companiesRef = database.ref('companies');
