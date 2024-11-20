@@ -442,7 +442,7 @@ function startResetInterval(companyName, subcompanyName) {
     setInterval(() => {
         console.log("Checking if task reset is needed...");
         checkAndResetIfNeeded(companyName, subcompanyName);
-    }, 5 * 60 * 1000); // 5-minute interval
+    }, 2 * 60 * 1000); // 5-minute interval
 }
 
 // Function to reset tasks

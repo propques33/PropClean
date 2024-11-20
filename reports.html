@@ -933,9 +933,11 @@ function calculateAndStoreStats(tasks, date, companyName, subcompanyName) {
 }
 
 // Run the backup and reset checks every 5 minutes
+// Run the backup and reset checks every 2 minutes
 setInterval(() => {
-        checkBackupAndReset();
-    }, 5 * 60 * 1000); // 5 minutes
+    checkBackupAndReset();
+}, 2 * 60 * 1000);
+
 
 // function resetTasksInSubcompany(companyName, subcompanyName) {
 //     const tasksRef = database.ref(`companies/${companyName}/subcompanies/${subcompanyName}/tasks`);
