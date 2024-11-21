@@ -424,10 +424,18 @@
                 return;
             }
             const currentDate = new Date().toISOString().split('T')[0];
-            const tasksPath = selectedDate === currentDate 
-                ? `companies/${companyName}/subcompanies/${subcompanyName}/tasks`
-                : `backup/${selectedDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+            let tasksPath;
 
+            if (selectedDate === currentDate) {
+                // Fetch today's tasks
+                tasksPath = `companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+            } else {
+                // Fetch tasks for (selectedDate + 1)
+                const nextDay = new Date(selectedDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+                const nextDayDate = nextDay.toISOString().split('T')[0];
+                tasksPath = `backup/${nextDayDate}/companies/${companyName}/subcompanies/${subcompanyName}/tasks`;
+            }
             loadTaskReports(tasksPath,companyName, subcompanyName);
             loadUserReports(companyName, subcompanyName);
 
