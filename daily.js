@@ -437,12 +437,20 @@ onAuthStateChanged(auth, user => {
 // Modified Reset Logic
 let hasResetTasksToday = false; // Flag to ensure single reset per day
 
-// Function to start the reset interval check every 5 minutes
+// Function to start the reset interval check every minute
 function startResetInterval(companyName, subcompanyName) {
     setInterval(() => {
         console.log("Checking if task reset is needed...");
-        checkAndResetIfNeeded(companyName, subcompanyName);
-    }, 2 * 60 * 1000); // 5-minute interval
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+
+        // Check if the current time is 11:58 PM
+        if (currentHour === 23 && currentMinute === 58) {
+            console.log("Resetting tasks at 11:58 PM...");
+            resetTasks(companyName, subcompanyName);
+        }
+    }, 60 * 1000); // 1-minute interval
 }
 
 // Function to reset tasks
